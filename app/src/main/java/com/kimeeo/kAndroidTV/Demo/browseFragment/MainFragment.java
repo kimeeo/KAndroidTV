@@ -16,7 +16,15 @@ package com.kimeeo.kAndroidTV.Demo.browseFragment;
 
 
 import android.support.annotation.NonNull;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.ListRow;
+import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v17.leanback.widget.ObjectAdapter;
 import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.PresenterSelector;
+import android.support.v17.leanback.widget.Row;
+
 import com.kimeeo.kAndroidTV.Demo.presenter.*;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
@@ -30,10 +38,50 @@ public class MainFragment extends AbstractBrowseFragment {
         return new HeaderDataProvider();
     }
 
-    protected Presenter getPresenter(IHeaderItem headerItem) {
-        if(headerItem.getID().equals("1"))
-            return new TextCardPresenter();
-        else
-            return new CardPresenter();
+    @Override
+    protected PresenterSelector getPresenterSelector(IHeaderItem headerItem) {
+        if(headerItem.getID().equals("0"))
+            return new Row1PresenterSelector();
+        return new Row2PresenterSelector();
+    }
+    protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+        return new ListRow(header, listRowAdapter);
+    }
+
+    public static class ShodowListRow extends ListRow
+    {
+        public ShodowListRow(HeaderItem header, ObjectAdapter adapter) {
+            super(header, adapter);
+
+        }
+    }
+    protected PresenterSelector createListRowPresenterSelector() {
+        return new ShadowRowPresenterSelector();
+    }
+
+    public class ShadowRowPresenterSelector extends PresenterSelector {
+
+        private ListRowPresenter mShadowEnabledRowPresenter = new ListRowPresenter();
+        private ListRowPresenter mShadowDisabledRowPresenter = new ListRowPresenter();
+
+        public ShadowRowPresenterSelector() {
+            mShadowEnabledRowPresenter.setNumRows(1);
+            mShadowDisabledRowPresenter.setShadowEnabled(false);
+        }
+
+        @Override public Presenter getPresenter(Object item) {
+            if (item instanceof ShodowListRow)
+                return mShadowDisabledRowPresenter;
+            else
+                return mShadowEnabledRowPresenter;
+        }
+
+        @Override
+        public Presenter[] getPresenters() {
+            return new Presenter [] {
+                    mShadowDisabledRowPresenter,
+                    mShadowEnabledRowPresenter
+            };
+        }
     }
 }

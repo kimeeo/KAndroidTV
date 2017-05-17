@@ -31,19 +31,31 @@ public class CardPresenter extends AbstractCardPresenter {
 
     private static final int CARD_WIDTH = 313;
     private static final int CARD_HEIGHT = 176;
+    private  int color=-1;
 
+    public CardPresenter()
+    {
+
+    }
+    public CardPresenter(int color)
+    {
+        this.color=color;
+    }
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
         Movie movie = (Movie) item;
         ImageCardView cardView = (ImageCardView) viewHolder.view;
 
-        cardView.setTitleText(movie.getTitle());
+        if(color==-1)
+            cardView.setTitleText(movie.getTitle());
+
         cardView.setContentText(movie.getStudio());
     }
 
     @Override
     public void onUnbindViewHolder(ViewHolder viewHolder) {
         ImageCardView cardView = (ImageCardView) viewHolder.view;
+
         cardView.setBadgeImage(null);
         cardView.setMainImage(null);
     }

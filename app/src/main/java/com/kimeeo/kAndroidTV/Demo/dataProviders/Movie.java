@@ -29,6 +29,16 @@ public class Movie implements Serializable {
     private static long count = 0;
     private long id;
     private String title;
+
+    public int getType() {
+        return type;
+    }
+
+    public void setType(int type) {
+        this.type = type;
+    }
+
+    private int type;
     private String description;
     private String bgImageUrl;
     private String cardImageUrl;

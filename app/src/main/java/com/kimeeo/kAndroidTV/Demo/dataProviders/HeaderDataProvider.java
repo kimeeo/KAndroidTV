@@ -21,7 +21,7 @@ public class HeaderDataProvider extends StaticDataProvider {
             for (int i = 0; i < 3; i++) {
                 Header h=new Header();
                 h.setId(i+"");
-                h.setName("Category " +(pageCount+count));
+                h.setName("Category " +count);
                 h.setData(new MovieListDataProvider(i,h));
                 list.add(h);
                 count++;

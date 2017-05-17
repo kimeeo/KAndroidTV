@@ -4,28 +4,52 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
+import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.widget.*;
+import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroid.dataProvider.MonitorList;
 import com.kimeeo.kAndroidTV.R;
 
+import java.net.URI;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * Created by BhavinPadhiyar on 5/16/17.
  */
 
-abstract public class AbstractBrowseFragment extends BrowseFragment implements DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
+abstract public class AbstractBrowseFragment extends BrowseFragment implements BackgroundImageHelper.OnUpdate,DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
 
+
+
+    protected boolean supportBackgroundChange() {
+        return false;
+    }
+    protected URI getBackgroundImageURI(Object item) {
+        return null;
+    }
+
+    public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
+    {
+
+    }
+
+
+
+    protected BackgroundImageHelper backgroundImageHelper;
     protected AbstractArrayObjectAdapter mRowsAdapter;
     private boolean showBusyForFirstTimeLoad=true;
 
@@ -50,7 +74,13 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
             configDataManager(this.dataProvider);
         }
     }
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (null != backgroundImageHelper) {
+            backgroundImageHelper.cancel();
+        }
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -61,7 +91,12 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
         if(getDataProvider()==null)
             setDataProvider(createDataProvider());
         getDataProvider().setRefreshEnabled(false);
-        mRowsAdapter = createArrayObjectAdapter(createListRowPresenter());
+        PresenterSelector presenterSelector=createListRowPresenterSelector();
+        if(presenterSelector!=null)
+            mRowsAdapter = createArrayObjectAdapter(presenterSelector);
+        else
+            mRowsAdapter = createArrayObjectAdapter(createListRowPresenter());
+
         setAdapter(mRowsAdapter);
         setupEventListeners();
 
@@ -69,53 +104,58 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
             itemsAdded(0,getDataProvider());
 
         getDataProvider().next();
+        if(supportBackgroundChange())
+            backgroundImageHelper=getBackgroundImageHelper();
+
     }
 
+    private BackgroundImageHelper getBackgroundImageHelper() {
+        return new BackgroundImageHelper(getActivity(),this);
+    }
+
+
+    protected PresenterSelector createListRowPresenterSelector() {
+        return null;
+    }
     protected Presenter createListRowPresenter() {
         return new ListRowPresenter();
     }
     protected AbstractArrayObjectAdapter createArrayObjectAdapter(Presenter presenter) {
         return new DefaultArrayObjectAdapter(presenter);
     }
-
-    protected void loadRows()
-    {
-
+    protected AbstractArrayObjectAdapter createArrayObjectAdapter(PresenterSelector presenter) {
+        return new DefaultArrayObjectAdapter(presenter);
     }
-    abstract protected Presenter getPresenter(IHeaderItem headerItem);
-
     @Override
     public void itemsAdded(int index, List list) {
         for (int i = 0; i < list.size(); i++) {
             if(list.get(i) instanceof IHeaderItem)
             {
                 IHeaderItem headerItem= (IHeaderItem)list.get(i);
-                Presenter presenter = getPresenter(headerItem);
-                ArrayObjectAdapter listRowAdapter = getRowArrayObjectAdapter(headerItem,presenter);
+                PresenterSelector presenterSelector = getPresenterSelector(headerItem);
+                final ArrayObjectAdapter listRowAdapter = getRowArrayObjectAdapter(headerItem,presenterSelector);
+
                 List data = headerItem.getData();
                 for (int j = 0; j < data.size(); j++) {
                     listRowAdapter.add(data.get(j));
                 }
                 if(data instanceof DataProvider)
                 {
-                    RowUpdateWatcher rowUpdateWatcher =createRowUpdateWatcher();
-                    rowUpdateWatcher.setDataProvider((DataProvider)data);
-                    rowUpdateWatcher.setHeaderItem(headerItem);
-                    rowUpdateWatcher.setListRowAdapter(listRowAdapter);
-                    rowUpdateWatcher.startWatching();
-                    rowUpdateWatcher.next();
+                    DataProvider rowData = (DataProvider)data;
+                    if(listRowAdapter instanceof WatcherArrayObjectAdapter)
+                        ((WatcherArrayObjectAdapter)listRowAdapter).setDataProvider(rowData);
+                    rowData.next();
                 }
                 HeaderItem header = getHeaderItem(i, headerItem.getName());
-                mRowsAdapter.add(index+i,getListRow(header, listRowAdapter));
+                int row=index+i;
+                mRowsAdapter.add(row,getListRow(headerItem,header, listRowAdapter));
             }
         }
     }
 
-    protected RowUpdateWatcher createRowUpdateWatcher() {
-        return new RowUpdateWatcher();
-    }
 
-    protected Row getListRow(HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+    abstract protected PresenterSelector getPresenterSelector(IHeaderItem headerItem);
+    protected Row getListRow(IHeaderItem headerItem,HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
 
@@ -126,6 +166,9 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
 
     protected ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
         return new ArrayObjectAdapter(presenter);
+    }
+    protected ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,PresenterSelector presenterSelector) {
+        return new WatcherArrayObjectAdapter(presenterSelector);
     }
 
     @Override
@@ -163,7 +206,6 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
     @Override
     public void onFetchingFinish(boolean b) {
         hideBusy();
-
     }
 
     private void hideBusy() {
@@ -206,6 +248,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
             setSearchAffordanceColor(getResources().getColor(getSearchAffordanceColorRes()));
         else if(getSearchAffordanceColorValue()!=-1)
             setSearchAffordanceColor(getSearchAffordanceColorValue());
+
 
     }
     protected int getSearchAffordanceColorValue()
@@ -254,10 +297,17 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
         return null;
     }
     private void setupEventListeners() {
-        setOnSearchClickedListener(new SearchEventListeners());
+        if(searchSupport())
+            setOnSearchClickedListener(new SearchEventListeners());
+
         setOnItemViewClickedListener(new ItemViewClickedListener());
         setOnItemViewSelectedListener(new ItemViewSelectedListener());
     }
+
+    protected boolean searchSupport() {
+        return false;
+    }
+
     protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
 
     }
@@ -310,9 +360,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
                             }
                         }
                     }
-
                 }
-
                 for (int i = 0; i < dataProvider.size(); i++) {
                     if(dataProvider.get(i) instanceof IHeaderItem)
                     {
@@ -330,67 +378,21 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements D
                     }
                 }
             }
+
+            if(supportBackgroundChange())
+                backgroundImageHelper.start(item);
+
+
             AbstractBrowseFragment.this.onItemSelected(itemViewHolder,item,rowViewHolder,row);
         }
     }
+
+
+
     private final class SearchEventListeners implements View.OnClickListener {
         @Override
         public void onClick(View view) {
             onSearch();
-        }
-    }
-    public class RowUpdateWatcher implements MonitorList.OnChangeWatcher
-    {
-        public ArrayObjectAdapter getListRowAdapter() {
-            return listRowAdapter;
-        }
-
-        public void setListRowAdapter(ArrayObjectAdapter listRowAdapter) {
-            this.listRowAdapter = listRowAdapter;
-        }
-
-        protected ArrayObjectAdapter listRowAdapter;
-
-        public void setDataProvider(DataProvider dataProvider) {
-            this.dataProvider = dataProvider;
-        }
-
-        protected DataProvider dataProvider;
-
-        public IHeaderItem getHeaderItem() {
-            return headerItem;
-        }
-
-        public void setHeaderItem(IHeaderItem headerItem) {
-            this.headerItem = headerItem;
-        }
-
-        protected IHeaderItem headerItem;
-
-
-        public void startWatching()
-        {
-            dataProvider.addDataChangeWatcher(this);
-        }
-        public void next() {
-            dataProvider.next();
-        }
-
-        @Override
-        public void itemsAdded(int i, List list) {
-            for (int j = 0; j < list.size(); j++) {
-                listRowAdapter.add(list.get(j));
-            }
-        }
-
-        @Override
-        public void itemsRemoved(int i, List list) {
-            listRowAdapter.removeItems(i,list.size());
-        }
-
-        @Override
-        public void itemsChanged(int i, List list) {
-            listRowAdapter.notifyArrayItemRangeChanged(i,list.size());
         }
     }
 }

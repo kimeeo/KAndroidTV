@@ -20,8 +20,12 @@ public class MovieListDataProvider extends StaticDataProvider {
             List list = new ArrayList();
             for (int i = 0; i < 10; i++) {
                 Movie m = new Movie();
-                m.setTitle(" Page:"+pageCount+" Item:"+i);
+                m.setTitle(" Page:"+row+" Item:"+i);
                 m.setStudio("Youtunbe");
+                if(i>3)
+                    m.setType(1);
+                else
+                    m.setType(2);
                 list.add(m);
             }
             addData(list);
@@ -37,7 +41,7 @@ public class MovieListDataProvider extends StaticDataProvider {
 
     @Override
     protected void invokeLoadNext() {
-        if (pageCount != 3) {
+        if (pageCount != 4) {
             h.postDelayed(r, 2000);
             pageCount += 1;
         } else {

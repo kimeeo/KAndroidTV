@@ -1,0 +1,46 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 21
+        targetSdkVersion 25
+        versionCode 1
+        versionName "1.0"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    final SUPPORT_LIBRARY_VERSION = '25.3.0'
+    compile "com.android.support:leanback-v17:$SUPPORT_LIBRARY_VERSION"
+
+    final KANDROID_CORE_VERSION = 'V3.0.7Beta'
+    compile ("com.github.kimeeo:KAndroid_core:$KANDROID_CORE_VERSION@aar"){
+        transitive=true
+    }
+
+
+
+    final KANDROID_DATAPROVDER_VERSION = 'V3.0.7Beta'
+    compile ("com.github.kimeeo:KAndroid_DataProvider:$KANDROID_DATAPROVDER_VERSION@aar"){
+        transitive=true
+    }
+
+
+    testCompile 'junit:junit:4.12'
+}

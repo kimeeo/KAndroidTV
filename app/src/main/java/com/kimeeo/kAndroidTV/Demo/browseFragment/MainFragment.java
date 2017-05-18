@@ -34,6 +34,7 @@ import android.support.v4.app.ActivityOptionsCompat;
 import android.util.Log;
 
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
+import com.kimeeo.kAndroidTV.Demo.PageActivity;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
 import com.kimeeo.kAndroidTV.Demo.VerticalGridActivity;
@@ -68,7 +69,7 @@ public class MainFragment extends AbstractBrowseFragment {
     protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
         Movie movie = (Movie) item;
-        Intent intent = new Intent(getActivity(), VerticalGridActivity.class);
+        Intent intent = new Intent(getActivity(), PageActivity.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
         //Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),((ImageCardView) itemViewHolder.view).getMainImageView(),DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
         //getActivity().startActivity(intent, bundle);

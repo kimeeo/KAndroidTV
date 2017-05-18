@@ -91,9 +91,8 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         setupUIElements();
 
         if(getDataProvider()==null)
@@ -371,46 +370,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-
-            DataProvider dataProvider = getDataProvider();
-            if(dataProvider!=null)
-            {
-                if(dataProvider.getNextEnabled() && dataProvider.getCanLoadNext())
-                {
-                    if (dataProvider.size() > 1)
-                    {
-                        if(dataProvider.get(dataProvider.size() - 1) instanceof IHeaderItem)
-                        {
-                            IHeaderItem headerItem = (IHeaderItem)dataProvider.get(dataProvider.size() - 1);
-                            DataProvider rowDataProvider=(DataProvider)headerItem.getData();
-                            for (int i = 0; i < rowDataProvider.size(); i++) {
-                                if(rowDataProvider.get(i)==item)
-                                {
-                                    dataProvider.next();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                for (int i = 0; i < dataProvider.size(); i++) {
-                    if(dataProvider.get(i) instanceof IHeaderItem)
-                    {
-                        IHeaderItem headerItem = (IHeaderItem)dataProvider.get(i);
-                        if(headerItem.getData()!=null && headerItem.getData() instanceof DataProvider)
-                        {
-                            DataProvider rowDataProvider=(DataProvider)headerItem.getData();
-                            if(rowDataProvider.getNextEnabled() && rowDataProvider.getCanLoadNext()) {
-                                if (rowDataProvider.size() > 1 && item == rowDataProvider.get(rowDataProvider.size() - 1)) {
-                                    rowDataProvider.next();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
+            handelPaging(itemViewHolder,item,rowViewHolder,row);
             if(supportBackgroundChange())
                 backgroundImageHelper.start(item);
 
@@ -419,6 +379,47 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         }
     }
 
+    protected void handelPaging(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
+        DataProvider dataProvider = getDataProvider();
+        if(dataProvider!=null)
+        {
+            if(dataProvider.getNextEnabled() && dataProvider.getCanLoadNext())
+            {
+                if (dataProvider.size() > 1)
+                {
+                    if(dataProvider.get(dataProvider.size() - 1) instanceof IHeaderItem)
+                    {
+                        IHeaderItem headerItem = (IHeaderItem)dataProvider.get(dataProvider.size() - 1);
+                        DataProvider rowDataProvider=(DataProvider)headerItem.getData();
+                        for (int i = 0; i < rowDataProvider.size(); i++) {
+                            if(rowDataProvider.get(i)==item)
+                            {
+                                dataProvider.next();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+            for (int i = 0; i < dataProvider.size(); i++) {
+                if(dataProvider.get(i) instanceof IHeaderItem)
+                {
+                    IHeaderItem headerItem = (IHeaderItem)dataProvider.get(i);
+                    if(headerItem.getData()!=null && headerItem.getData() instanceof DataProvider)
+                    {
+                        DataProvider rowDataProvider=(DataProvider)headerItem.getData();
+                        if(rowDataProvider.getNextEnabled() && rowDataProvider.getCanLoadNext()) {
+                            if (rowDataProvider.size() > 1 && item == rowDataProvider.get(rowDataProvider.size() - 1)) {
+                                rowDataProvider.next();
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
 
     private final class SearchEventListeners implements View.OnClickListener {

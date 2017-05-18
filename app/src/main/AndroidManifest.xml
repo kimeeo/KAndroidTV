@@ -31,6 +31,8 @@
         <activity android:name=".SearchActivity" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".VerticalGridActivity" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".DetailsActivity" android:theme="@style/Theme.Leanback"/>
+        <activity android:name=".PageActivity" android:theme="@style/Theme.Leanback"/>
+
     </application>
 
 </manifest>

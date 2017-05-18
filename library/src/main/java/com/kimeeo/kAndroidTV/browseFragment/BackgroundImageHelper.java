@@ -65,6 +65,10 @@ public class BackgroundImageHelper {
         startBackgroundTimer();
     }
 
+    public void setDrawable(Drawable o) {
+        mBackgroundManager.setDrawable(o);
+    }
+
     protected class UpdateBackgroundTask extends TimerTask {
 
         @Override

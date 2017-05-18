@@ -12,67 +12,34 @@
  * the License.
  */
 
-package com.kimeeo.kAndroidTV.Demo.browseFragment;
+package com.kimeeo.kAndroidTV.Demo.searchFragment;
 
 
-import android.app.Activity;
-import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.ObjectAdapter;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowHeaderPresenter;
-import android.support.v17.leanback.widget.RowPresenter;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.util.Log;
 
-import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
-import com.kimeeo.kAndroidTV.Demo.R;
-import com.kimeeo.kAndroidTV.Demo.SearchActivity;
-import com.kimeeo.kAndroidTV.Demo.VerticalGridActivity;
-import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
-import com.kimeeo.kAndroidTV.Demo.presenter.*;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
+import com.kimeeo.kAndroidTV.Demo.SearchActivity;
+import com.kimeeo.kAndroidTV.Demo.browseFragment.MainFragment;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
-import com.kimeeo.kAndroidTV.Demo.verticalGridFragment.VerticalGridFragment;
+import com.kimeeo.kAndroidTV.Demo.presenter.Row1PresenterSelector;
+import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
 import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
 import com.kimeeo.kAndroidTV.browseFragment.IHeaderItem;
-import com.kimeeo.kAndroidTV.headers.IconHeaderItem;
-import com.kimeeo.kAndroidTV.presenter.IconHeaderPresenter;
+import com.kimeeo.kAndroidTV.searchFragment.AbstractSearchFragment;
 
-public class MainFragment extends AbstractBrowseFragment {
-
-    /*
-    protected RowHeaderPresenter createRowHeaderPresenter() {
-        return new IconHeaderPresenter();
-    }
-    protected  HeaderItem getHeaderItem(int i,IHeaderItem headerItem, String name)
-    {
-        return new IconHeaderItem(i,name, R.drawable.ic_android_black_24dp);
-    }*/
-
-
+public class SearchFragment extends AbstractSearchFragment {
     @NonNull
     @Override
     protected DataProvider createDataProvider() {
-
         return new HeaderDataProvider();
-    }
-    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-
-        Movie movie = (Movie) item;
-        Intent intent = new Intent(getActivity(), VerticalGridActivity.class);
-        intent.putExtra(DetailsActivity.MOVIE, movie);
-        //Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),((ImageCardView) itemViewHolder.view).getMainImageView(),DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-        //getActivity().startActivity(intent, bundle);
-        getActivity().startActivity(intent);
     }
 
     @Override
@@ -92,8 +59,11 @@ public class MainFragment extends AbstractBrowseFragment {
 
         }
     }
+    protected String getEmptySearchMessage() {
+        return "NO Data";
+    }
     protected PresenterSelector createListRowPresenterSelector() {
-        return new ShadowRowPresenterSelector();
+        return new SearchFragment.ShadowRowPresenterSelector();
     }
 
     public class ShadowRowPresenterSelector extends PresenterSelector {
@@ -107,7 +77,7 @@ public class MainFragment extends AbstractBrowseFragment {
         }
 
         @Override public Presenter getPresenter(Object item) {
-            if (item instanceof ShodowListRow)
+            if (item instanceof MainFragment.ShodowListRow)
                 return mShadowDisabledRowPresenter;
             else
                 return mShadowEnabledRowPresenter;

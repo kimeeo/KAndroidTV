@@ -28,6 +28,9 @@
             <category android:name="android.intent.category.LEANBACK_LAUNCHER"/>
         </intent-filter>
     </activity>
+        <activity android:name=".SearchActivity" android:theme="@style/Theme.Leanback"/>
+        <activity android:name=".VerticalGridActivity" android:theme="@style/Theme.Leanback"/>
+        <activity android:name=".DetailsActivity" android:theme="@style/Theme.Leanback"/>
     </application>
 
 </manifest>

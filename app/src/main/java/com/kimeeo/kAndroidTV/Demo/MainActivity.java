@@ -15,7 +15,11 @@
 package com.kimeeo.kAndroidTV.Demo;
 
 import android.app.Activity;
+import android.app.Fragment;
+import android.content.Intent;
 import android.os.Bundle;
+
+import com.kimeeo.kAndroidTV.Demo.browseFragment.MainFragment;
 
 /*
  * MainActivity class that loads MainFragment1
@@ -27,6 +31,16 @@ public class MainActivity extends Activity {
      */
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_fragment);
+        if (savedInstanceState == null) {
+            Fragment fragment = new MainFragment();
+            getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+        }
     }
+    @Override
+    public boolean onSearchRequested() {
+        startActivity(new Intent(this, SearchActivity.class));
+        return true;
+    }
+
 }

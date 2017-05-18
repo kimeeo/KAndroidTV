@@ -12,7 +12,6 @@ import java.util.List;
  * Created by BhavinPadhiyar on 23/05/16.
  */
 public class MovieListDataProvider extends StaticDataProvider {
-    private final int row;
     Handler h = new Handler();
     Runnable r = new Runnable() {
         @Override
@@ -20,7 +19,7 @@ public class MovieListDataProvider extends StaticDataProvider {
             List list = new ArrayList();
             for (int i = 0; i < 10; i++) {
                 Movie m = new Movie();
-                m.setTitle(" Page:"+row+" Item:"+i);
+                m.setTitle("Item:"+i);
                 m.setStudio("Youtunbe");
                 if(i>3)
                     m.setType(1);
@@ -33,10 +32,10 @@ public class MovieListDataProvider extends StaticDataProvider {
     };
     private int pageCount = 1;
 
-    public MovieListDataProvider(int index,IHeaderItem h) {
+    public MovieListDataProvider() {
         setNextEnabled(true);
         setRefreshEnabled(true);
-        this.row =index;
+
     }
 
     @Override

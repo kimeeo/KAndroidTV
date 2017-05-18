@@ -1,47 +1,51 @@
-package com.kimeeo.kAndroidTV.browseFragment;
+package com.kimeeo.kAndroidTV.searchFragment;
 
+import android.Manifest;
 import android.app.Activity;
-import android.app.Fragment;
 import android.app.ProgressDialog;
-import android.content.Context;
+import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v17.leanback.app.BackgroundManager;
-import android.support.v17.leanback.app.BrowseFragment;
-import android.support.v17.leanback.widget.*;
-import android.util.DisplayMetrics;
-import android.util.Log;
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.FrameLayout;
-import android.widget.ProgressBar;
+import android.support.v17.leanback.app.SearchFragment;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.ListRow;
+import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v17.leanback.widget.ObjectAdapter;
+import android.support.v17.leanback.widget.OnItemViewClickedListener;
+import android.support.v17.leanback.widget.OnItemViewSelectedListener;
+import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.PresenterSelector;
+import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowPresenter;
+import android.support.v17.leanback.widget.SpeechRecognitionCallback;
+import android.widget.Toast;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroid.dataProvider.MonitorList;
 import com.kimeeo.kAndroidTV.R;
+import com.kimeeo.kAndroidTV.browseFragment.AbstractArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
+import com.kimeeo.kAndroidTV.browseFragment.BackgroundImageHelper;
+import com.kimeeo.kAndroidTV.browseFragment.DefaultArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.browseFragment.IHeaderItem;
+import com.kimeeo.kAndroidTV.browseFragment.WatcherArrayObjectAdapter;
 
 import java.net.URI;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
- * Created by BhavinPadhiyar on 5/16/17.
+ * Created by BhavinPadhiyar on 5/18/17.
  */
 
-abstract public class AbstractBrowseFragment extends BrowseFragment implements BackgroundImageHelper.OnUpdate,DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
 
-
+abstract public class AbstractSearchFragment extends SearchFragment implements SearchFragment.SearchResultProvider,SpeechRecognitionCallback,BackgroundImageHelper.OnUpdate,DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
 
     protected boolean supportBackgroundChange() {
         return false;
@@ -56,12 +60,11 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     }
 
 
-
     protected BackgroundImageHelper backgroundImageHelper;
-    protected AbstractArrayObjectAdapter mRowsAdapter;
     private boolean showBusyForFirstTimeLoad=true;
 
-    abstract protected @NonNull DataProvider createDataProvider();
+    abstract protected @NonNull
+    DataProvider createDataProvider();
     protected DataProvider dataProvider;
     protected void configDataManager(DataProvider dataProvider) {}
     public DataProvider getDataProvider()
@@ -90,9 +93,36 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         }
     }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    private static final int REQUEST_SPEECH = 0x00000010;
+
+    private ArrayObjectAdapter mRowsAdapter;
+    public String getQuery() {
+        return mQuery;
+    }
+
+
+    private String mQuery;
+
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setSpeechRecognitionCallback(this);
+        setSearchResultProvider(this);
 
         setupUIElements();
 
@@ -105,18 +135,14 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         else
             mRowsAdapter = createArrayObjectAdapter(createListRowPresenter());
 
-        setAdapter(mRowsAdapter);
         setupEventListeners();
 
         if(getDataProvider().size()!=0 )
             itemsAdded(0,getDataProvider());
 
-        getDataProvider().next();
         if(supportBackgroundChange())
             backgroundImageHelper=getBackgroundImageHelper();
-
     }
-
     private BackgroundImageHelper getBackgroundImageHelper() {
         return new BackgroundImageHelper(getActivity(),this);
     }
@@ -154,7 +180,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
                         ((WatcherArrayObjectAdapter)listRowAdapter).setDataProvider(rowData);
                     rowData.next();
                 }
-                HeaderItem header = getHeaderItem(i,headerItem, headerItem.getName());
+                HeaderItem header = getHeaderItem(i, headerItem.getName());
                 int row=index+i;
                 mRowsAdapter.add(row,getListRow(headerItem,header, listRowAdapter));
             }
@@ -163,11 +189,11 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
 
 
     abstract protected PresenterSelector getPresenterSelector(IHeaderItem headerItem);
-    protected Row getListRow(IHeaderItem headerItem,HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+    protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
 
-    protected  HeaderItem getHeaderItem(int i,IHeaderItem headerItem, String name)
+    protected  HeaderItem getHeaderItem(int i, String name)
     {
         return new HeaderItem(i,name);
     }
@@ -188,7 +214,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         mRowsAdapter.notifyArrayItemRangeChanged(index,list.size());
     }
 
-    private ProgressDialog progressDialog;
+    ProgressDialog progressDialog;
     private boolean fistTime=true;
 
     @Override
@@ -213,7 +239,6 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         progressDialog.setIndeterminate(true);
         progressDialog.setCanceledOnTouchOutside(false);
         progressDialog.show();
-
     }
 
     @Override
@@ -224,14 +249,26 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     private void hideBusy() {
         if(progressDialog!=null) {
             progressDialog.hide();
-            progressDialog=null;
+            progressDialog = null;
         }
     }
 
     @Override
     public void onFetchingEnd(List<?> list, boolean b) {
-
+        if(getEmptySearchMessageRes()!=-1 && dataProvider!=null  && dataProvider.size()==0)
+            Toast.makeText(getActivity(), getString(getEmptySearchMessageRes()), Toast.LENGTH_SHORT).show();
+        else if(getEmptySearchMessage()!=null && getEmptySearchMessage().equals("")==false && dataProvider!=null && dataProvider.size()==0)
+            Toast.makeText(getActivity(), getEmptySearchMessage(), Toast.LENGTH_SHORT).show();
     }
+
+    protected String getEmptySearchMessage() {
+        return "";
+    }
+    @StringRes
+    protected int getEmptySearchMessageRes() {
+        return -1;
+    }
+
     @Override
     public void onFetchingError(Object o) {
 
@@ -248,65 +285,6 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         else if(getBadgeDrawableDrawable()!=null)
             setBadgeDrawable(getBadgeDrawableDrawable());
 
-
-        setHeadersState(defaultHeadersState());
-        setHeadersTransitionOnBackEnabled(defaultHeadersTransitionOnBackEnabled());
-
-        if(getBrandColorRes()!=-1)
-            setBrandColor(getResources().getColor(getBrandColorRes()));
-        else if(getBrandColorValue()!=-1)
-            setBrandColor(getBrandColorValue());
-
-        if(getSearchAffordanceColorRes()!=-1)
-            setSearchAffordanceColor(getResources().getColor(getSearchAffordanceColorRes()));
-        else if(getSearchAffordanceColorValue()!=-1)
-            setSearchAffordanceColor(getSearchAffordanceColorValue());
-
-        final RowHeaderPresenter rowHeaderPresenter = createRowHeaderPresenter();
-        if(rowHeaderPresenter!=null) {
-            PresenterSelector presenterSelector= new PresenterSelector() {
-                @Override
-                public Presenter getPresenter(Object o) {
-                    return rowHeaderPresenter;
-                }
-            };
-
-            setHeaderPresenterSelector(presenterSelector );
-        }
-    }
-
-
-
-    protected RowHeaderPresenter createRowHeaderPresenter() {
-        return null;
-    }
-
-    protected int getSearchAffordanceColorValue()
-    {
-        return -1;
-    }
-    @ColorRes
-    protected int getSearchAffordanceColorRes()
-    {
-        return R.color.fastlane_background;
-    }
-
-    protected int getBrandColorValue()
-    {
-        return -1;
-    }
-    @ColorRes
-    protected int getBrandColorRes()
-    {
-        return R.color.fastlane_background;
-    }
-    protected boolean defaultHeadersTransitionOnBackEnabled()
-    {
-        return false;
-    }
-    protected int defaultHeadersState()
-    {
-        return HEADERS_ENABLED;
     }
     @StringRes
     protected int getTitleRes()
@@ -327,27 +305,14 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         return null;
     }
     private void setupEventListeners() {
-        if(getSearchActivity()!=null)
-            setOnSearchClickedListener(new SearchEventListeners());
-
-        setOnItemViewClickedListener(new ItemViewClickedListener());
-        setOnItemViewSelectedListener(new ItemViewSelectedListener());
+        setOnItemViewClickedListener(new AbstractSearchFragment.ItemViewClickedListener());
+        setOnItemViewSelectedListener(new AbstractSearchFragment.ItemViewSelectedListener());
     }
-    protected Class getSearchActivity() {
-        return null;
-    }
-
-    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
+    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
     }
     protected void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-    }
-    protected void onSearch() {
-        if(getSearchActivity()!=null) {
-            Intent intent = new Intent(getActivity(), getSearchActivity());
-            startActivity(intent);
-        }
     }
 
     public boolean getShowBusyForFirstTimeLoad() {
@@ -365,7 +330,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-            AbstractBrowseFragment.this.onItemClicked(itemViewHolder,item,rowViewHolder,row);
+            AbstractSearchFragment.this.onItemClicked(itemViewHolder,item,rowViewHolder,row);
         }
     }
     private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
@@ -415,16 +380,57 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
                 backgroundImageHelper.start(item);
 
 
-            AbstractBrowseFragment.this.onItemSelected(itemViewHolder,item,rowViewHolder,row);
+            AbstractSearchFragment.this.onItemSelected(itemViewHolder,item,rowViewHolder,row);
         }
     }
 
 
 
-    private final class SearchEventListeners implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            onSearch();
+
+    @Override
+    public void recognizeSpeech() {
+        startActivityForResult(getRecognizerIntent(), REQUEST_SPEECH);
+    }
+
+    @Override
+    public ObjectAdapter getResultsAdapter() {
+        return mRowsAdapter;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        return search(query);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return search(query);
+    }
+
+    protected boolean search(String query) {
+        if(query!=null && query.length()>=threshold()) {
+            if(mQuery!=null && mQuery.equals(query))
+                return false;
+            mQuery = query;
+            getDataProvider().reset();
+            getDataProvider().next();
+            return true;
         }
+        return false;
+    }
+
+    public int threshold() {
+        return 3;
+    }
+
+    public boolean hasResults() {
+        return mRowsAdapter.size() > 0;
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_SPEECH && resultCode== Activity.RESULT_OK)
+        {
+            setSearchQuery(data, true);
+        }
+
     }
 }

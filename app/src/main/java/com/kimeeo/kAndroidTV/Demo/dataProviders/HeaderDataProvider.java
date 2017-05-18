@@ -22,7 +22,7 @@ public class HeaderDataProvider extends StaticDataProvider {
                 Header h=new Header();
                 h.setId(i+"");
                 h.setName("Category " +count);
-                h.setData(new MovieListDataProvider(i,h));
+                h.setData(new MovieListDataProvider());
                 list.add(h);
                 count++;
             }

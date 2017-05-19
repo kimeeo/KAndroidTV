@@ -26,10 +26,15 @@ public class PageRowFragmentFactory extends BrowseFragment.FragmentFactory {
         if(rowObj instanceof PageRow)
         {
             IHeaderItem headerData= ((PageRow)rowObj).getHeaderData();
-            if(headerData instanceof FragmentProvider)
-                ((FragmentProvider)rowObj).getFragmentForItem(rowObj);
+            if(headerData instanceof FragmentProvider) {
+                Fragment fragment=((FragmentProvider) rowObj).getFragmentForItem(rowObj);
+                if(fragment instanceof BrowseFragment.MainFragmentAdapterProvider )
+                    return fragment;
+            }
         }
-
-        return fragmentProvider.getFragmentForItem(rowObj);
+        Fragment fragment=fragmentProvider.getFragmentForItem(rowObj);
+        if(fragment instanceof BrowseFragment.MainFragmentAdapterProvider )
+            return fragment;
+        return null;
     }
 }

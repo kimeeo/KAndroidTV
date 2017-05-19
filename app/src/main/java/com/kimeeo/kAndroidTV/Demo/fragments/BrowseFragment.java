@@ -53,10 +53,10 @@ public class BrowseFragment extends AbstractBrowseFragment {
 
     @NonNull
     @Override
-    protected DataProvider createDataProvider() {
+    public DataProvider createDataProvider() {
         return new HeaderDataProvider();
     }
-    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
+    public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
         Movie movie = (Movie) item;
         Intent intent = new Intent(getActivity(), PageActivity.class);
@@ -65,12 +65,12 @@ public class BrowseFragment extends AbstractBrowseFragment {
     }
 
     @Override
-    protected PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
+    public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
         if(headerItem.getID().equals("0"))
             return new Row1PresenterSelector();
         return new Row2PresenterSelector();
     }
-    protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+    public Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
 
@@ -81,7 +81,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
 
         }
     }
-    protected PresenterSelector createMainRowPresenterSelector() {
+    public PresenterSelector createMainRowPresenterSelector() {
         return new ShadowRowPresenterSelector();
     }
 
@@ -110,7 +110,9 @@ public class BrowseFragment extends AbstractBrowseFragment {
             };
         }
     }
-    protected Class getSearchActivity() {
+    public Class getSearchActivity() {
         return SearchActivity.class;
     }
+
+
 }

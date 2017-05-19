@@ -41,19 +41,19 @@ public class RowsFragment extends AbstractRowsFragment {
 
     @NonNull
     @Override
-    protected DataProvider createDataProvider() {
+    public DataProvider createDataProvider() {
         return new HeaderDataProvider();
     }
-    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
+    public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
     }
 
     @Override
-    protected PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
+    public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
         if(headerItem.getID().equals("0"))
             return new Row1PresenterSelector();
         return new Row2PresenterSelector();
     }
-    protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+    public Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
 
@@ -64,7 +64,7 @@ public class RowsFragment extends AbstractRowsFragment {
 
         }
     }
-    protected PresenterSelector createMainRowPresenterSelector() {
+    public PresenterSelector createMainRowPresenterSelector() {
         return new BrowseFragment.ShadowRowPresenterSelector();
     }
 

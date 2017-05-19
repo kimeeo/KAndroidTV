@@ -41,12 +41,12 @@ public class SearchFragment extends AbstractSearchFragment {
     }
 
     @Override
-    protected PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
+    public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
         if(headerItem.getID().equals("0"))
             return new Row1PresenterSelector();
         return new Row2PresenterSelector();
     }
-    protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+    public Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
 
@@ -88,8 +88,5 @@ public class SearchFragment extends AbstractSearchFragment {
                     mShadowEnabledRowPresenter
             };
         }
-    }
-    protected Class getSearchActivity() {
-        return SearchActivity.class;
     }
 }

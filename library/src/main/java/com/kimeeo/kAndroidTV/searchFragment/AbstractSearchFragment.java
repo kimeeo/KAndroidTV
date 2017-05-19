@@ -1,10 +1,12 @@
 package com.kimeeo.kAndroidTV.searchFragment;
 
 import android.app.Activity;
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -20,6 +22,7 @@ import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowHeaderPresenter;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v17.leanback.widget.SpeechRecognitionCallback;
 import android.widget.Toast;
@@ -31,6 +34,7 @@ import com.kimeeo.kAndroidTV.core.AbstractArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
 import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
+import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
 
 import java.net.URI;
@@ -41,7 +45,61 @@ import java.util.List;
  */
 
 
-abstract public class AbstractSearchFragment extends SearchFragment implements SearchFragment.SearchResultProvider,SpeechRecognitionCallback,BackgroundImageHelper.OnUpdate,DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
+abstract public class AbstractSearchFragment extends SearchFragment implements SearchFragment.SearchResultProvider,SpeechRecognitionCallback,BackgroundImageHelper.OnUpdate,RowBasedFragmentHelper.HelperProvider{
+    private static final int REQUEST_SPEECH = 0x00000010;
+    public String getQuery() {
+        return mQuery;
+    }
+    private String mQuery;
+    @Override
+    public void recognizeSpeech() {
+        startActivityForResult(getRecognizerIntent(), REQUEST_SPEECH);
+    }
+
+    @Override
+    public ObjectAdapter getResultsAdapter() {
+        return fragmentHelper.getRowsAdapter();
+    }
+
+    @Override
+    public boolean onQueryTextChange(String query) {
+        return search(query);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        return search(query);
+    }
+
+    protected boolean search(String query) {
+        if(query!=null && query.length()>=threshold()) {
+            if(mQuery!=null && mQuery.equals(query))
+                return false;
+            mQuery = query;
+            dataProvider.reset();
+            dataProvider.next();
+            return true;
+        }
+        return false;
+    }
+
+    public int threshold() {
+        return 3;
+    }
+
+    public boolean hasResults() {
+        return fragmentHelper.getRowsAdapter().size() > 0;
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_SPEECH && resultCode== Activity.RESULT_OK)
+        {
+            setSearchQuery(data, true);
+        }
+    }
+
+
+
+
 
     protected boolean supportBackgroundChange() {
         return false;
@@ -56,30 +114,16 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
     }
 
 
-    protected BackgroundImageHelper backgroundImageHelper;
-    private boolean showBusyForFirstTimeLoad=true;
 
-    abstract protected @NonNull
-    DataProvider createDataProvider();
+    protected BackgroundImageHelper backgroundImageHelper;
+
+
+    abstract protected @NonNull DataProvider createDataProvider();
     protected DataProvider dataProvider;
     protected void configDataManager(DataProvider dataProvider) {}
     public DataProvider getDataProvider()
     {
         return dataProvider;
-    }
-    public void setDataProvider(DataProvider dataProvider){
-        if(this.dataProvider!=null)
-        {
-            this.dataProvider.removeFatchingObserve(this);
-            this.dataProvider.removeDataChangeWatcher(this);
-            this.dataProvider = null;
-        }
-        if(dataProvider!=null) {
-            this.dataProvider = dataProvider;
-            this.dataProvider.addFatchingObserve(this);
-            this.dataProvider.addDataChangeWatcher(this);
-            configDataManager(this.dataProvider);
-        }
     }
     @Override
     public void onDestroy() {
@@ -89,186 +133,86 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    private static final int REQUEST_SPEECH = 0x00000010;
-
-    private ArrayObjectAdapter mRowsAdapter;
-    public String getQuery() {
-        return mQuery;
+    public RowBasedFragmentHelper getFragmentHelper() {
+        return fragmentHelper;
     }
 
-
-    private String mQuery;
-
+    RowBasedFragmentHelper fragmentHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setSpeechRecognitionCallback(this);
-        setSearchResultProvider(this);
-
         setupUIElements();
-
-        if(getDataProvider()==null)
-            setDataProvider(createDataProvider());
-        getDataProvider().setRefreshEnabled(false);
-        PresenterSelector presenterSelector=createMainRowPresenterSelector();
-        if(presenterSelector!=null)
-            mRowsAdapter = createArrayObjectAdapter(presenterSelector);
-        else
-            mRowsAdapter = createArrayObjectAdapter(createMainRowPresenter());
-
-        setupEventListeners();
-
-        if(getDataProvider().size()!=0 )
-            itemsAdded(0,getDataProvider());
+        setSearchResultProvider(this);
+        fragmentHelper = createBrowseFragmentHelper();
+        dataProvider=createDataProvider();
+        configDataManager(dataProvider);
+        fragmentHelper.build();
 
         if(supportBackgroundChange())
             backgroundImageHelper=getBackgroundImageHelper();
     }
-    private BackgroundImageHelper getBackgroundImageHelper() {
+
+    protected RowBasedFragmentHelper createBrowseFragmentHelper() {
+        return new SearchRowBasedFragmentHelper(this,this);
+    }
+
+    protected BackgroundImageHelper getBackgroundImageHelper() {
         return new BackgroundImageHelper(getActivity(),this);
     }
 
 
-    protected PresenterSelector createMainRowPresenterSelector() {
+    public PresenterSelector createMainRowPresenterSelector() {
         return null;
     }
-    protected Presenter createMainRowPresenter() {
+    public Presenter createMainRowPresenter() {
         return new ListRowPresenter();
     }
-    protected AbstractArrayObjectAdapter createArrayObjectAdapter(Presenter presenter) {
+    public AbstractArrayObjectAdapter createMainArrayObjectAdapter(Presenter presenter) {
         return new DefaultArrayObjectAdapter(presenter);
     }
-    protected AbstractArrayObjectAdapter createArrayObjectAdapter(PresenterSelector presenter) {
+    public AbstractArrayObjectAdapter createMainArrayObjectAdapter(PresenterSelector presenter) {
         return new DefaultArrayObjectAdapter(presenter);
     }
-    @Override
-    public void itemsAdded(int index, List list) {
-        for (int i = 0; i < list.size(); i++) {
-            if(list.get(i) instanceof IHeaderItem)
-            {
-                IHeaderItem headerItem= (IHeaderItem)list.get(i);
-                PresenterSelector presenterSelector = getRowItemPresenterSelector(headerItem);
-                final ArrayObjectAdapter listRowAdapter = getRowArrayObjectAdapter(headerItem,presenterSelector);
 
-                List data = headerItem.getData();
-                for (int j = 0; j < data.size(); j++) {
-                    listRowAdapter.add(data.get(j));
-                }
-                if(data instanceof DataProvider)
-                {
-                    DataProvider rowData = (DataProvider)data;
-                    if(listRowAdapter instanceof WatcherArrayObjectAdapter)
-                        ((WatcherArrayObjectAdapter)listRowAdapter).setDataProvider(rowData);
-                    rowData.next();
-                }
-                int row=index+i;
-                HeaderItem header = getHeaderItem(row, headerItem.getName());
-                mRowsAdapter.add(getListRow(headerItem,header, listRowAdapter));
-            }
-        }
-    }
-
-
-    abstract protected PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem);
-    protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+    abstract public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem);
+    public Row getListRow(IHeaderItem headerItem,HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
 
-    protected  HeaderItem getHeaderItem(int i, String name)
+    public HeaderItem getHeaderItem(int i,IHeaderItem headerItem, String name)
     {
         return new HeaderItem(i,name);
     }
-
-    protected ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
+    public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
         return new ArrayObjectAdapter(presenter);
     }
-    protected ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,PresenterSelector presenterSelector) {
+    public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,PresenterSelector presenterSelector) {
         return new WatcherArrayObjectAdapter(presenterSelector);
     }
+    final public Class getSearchActivity() {
+        return null;
+    }
+    public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row)
+    {
+        if(supportBackgroundChange())
+            backgroundImageHelper.start(item);
+    }
+    public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {}
 
-    @Override
-    public void itemsRemoved(int index, List list) {
-        mRowsAdapter.removeItems(index,list.size());
-    }
-    @Override
-    public void itemsChanged(int index, List list) {
-        mRowsAdapter.notifyArrayItemRangeChanged(index,list.size());
-    }
 
-    ProgressDialog progressDialog;
-    private boolean fistTime=true;
 
-    @Override
-    public void onFetchingStart(boolean b) {
-        if (fistTime && getShowBusyForFirstTimeLoad()) {
-            fistTime=false;
-            showBusy(getFirstTimeLoaderMessageResID());
-        }
-    }
 
-    protected int getFirstTimeLoaderMessageResID() {
-        return R.string._busy_message;
-    }
 
-    protected void showBusy(@StringRes int messageRes) {
-        showBusy(getActivity().getString(messageRes));
-    }
-    protected void showBusy(String message) {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(message);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.show();
-    }
 
-    @Override
-    public void onFetchingFinish(boolean b) {
-        hideBusy();
-    }
 
-    private void hideBusy() {
-        if(progressDialog!=null) {
-            progressDialog.hide();
-            progressDialog = null;
-        }
-    }
 
-    @Override
-    public void onFetchingEnd(List<?> list, boolean b) {
-        if(getEmptySearchMessageRes()!=-1 && dataProvider!=null  && dataProvider.size()==0)
-            Toast.makeText(getActivity(), getString(getEmptySearchMessageRes()), Toast.LENGTH_SHORT).show();
-        else if(getEmptySearchMessage()!=null && getEmptySearchMessage().equals("")==false && dataProvider!=null && dataProvider.size()==0)
-            Toast.makeText(getActivity(), getEmptySearchMessage(), Toast.LENGTH_SHORT).show();
-    }
 
-    protected String getEmptySearchMessage() {
-        return "";
-    }
-    @StringRes
-    protected int getEmptySearchMessageRes() {
-        return -1;
-    }
 
-    @Override
-    public void onFetchingError(Object o) {
 
-    }
+
+
+    //UI Customise
+
 
     private void setupUIElements() {
         if(getTitleRes()!=-1)
@@ -280,8 +224,12 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
             setBadgeDrawable(getResources().getDrawable(getBadgeDrawableRes(), null));
         else if(getBadgeDrawableDrawable()!=null)
             setBadgeDrawable(getBadgeDrawableDrawable());
-
     }
+    @Override
+    public String getFirstTimeLoaderMessage() {
+        return null;
+    }
+
     @StringRes
     protected int getTitleRes()
     {
@@ -300,133 +248,25 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
     {
         return null;
     }
-    private void setupEventListeners() {
-        setOnItemViewClickedListener(new AbstractSearchFragment.ItemViewClickedListener());
-        setOnItemViewSelectedListener(new AbstractSearchFragment.ItemViewSelectedListener());
-    }
-    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
-    }
-    protected void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
 
+    protected String getEmptySearchMessage() {
+        return null;
     }
 
-    public boolean getShowBusyForFirstTimeLoad() {
-        return showBusyForFirstTimeLoad;
-    }
+    public class SearchRowBasedFragmentHelper extends RowBasedFragmentHelper
+    {
 
-    public boolean isShowBusyForFirstTimeLoad() {
-        return showBusyForFirstTimeLoad;
-    }
-
-    public void setShowBusyForFirstTimeLoad(boolean showBusyForFirstTimeLoad) {
-        this.showBusyForFirstTimeLoad = showBusyForFirstTimeLoad;
-    }
-
-    private final class ItemViewClickedListener implements OnItemViewClickedListener {
+        public SearchRowBasedFragmentHelper(Fragment host, HelperProvider helperProvider) {
+            super(host, helperProvider);
+        }
         @Override
-        public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-            AbstractSearchFragment.this.onItemClicked(itemViewHolder,item,rowViewHolder,row);
+        public void onFetchingEnd(List<?> list, boolean b) {
+            if(getEmptySearchMessage()!=null && getEmptySearchMessage().equals("")==false && dataProvider!=null && dataProvider.size()==0)
+                Toast.makeText(getActivity(), getEmptySearchMessage(), Toast.LENGTH_SHORT).show();
         }
-    }
-    private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
-        @Override
-        public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-
-            DataProvider dataProvider = getDataProvider();
-            if(dataProvider!=null)
-            {
-                if(dataProvider.getNextEnabled() && dataProvider.getCanLoadNext())
-                {
-                    if (dataProvider.size() > 1)
-                    {
-                        if(dataProvider.get(dataProvider.size() - 1) instanceof IHeaderItem)
-                        {
-                            IHeaderItem headerItem = (IHeaderItem)dataProvider.get(dataProvider.size() - 1);
-                            DataProvider rowDataProvider=(DataProvider)headerItem.getData();
-                            for (int i = 0; i < rowDataProvider.size(); i++) {
-                                if(rowDataProvider.get(i)==item)
-                                {
-                                    dataProvider.next();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-                for (int i = 0; i < dataProvider.size(); i++) {
-                    if(dataProvider.get(i) instanceof IHeaderItem)
-                    {
-                        IHeaderItem headerItem = (IHeaderItem)dataProvider.get(i);
-                        if(headerItem.getData()!=null && headerItem.getData() instanceof DataProvider)
-                        {
-                            DataProvider rowDataProvider=(DataProvider)headerItem.getData();
-                            if(rowDataProvider.getNextEnabled() && rowDataProvider.getCanLoadNext()) {
-                                if (rowDataProvider.size() > 1 && item == rowDataProvider.get(rowDataProvider.size() - 1)) {
-                                    rowDataProvider.next();
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-            if(supportBackgroundChange())
-                backgroundImageHelper.start(item);
-
-
-            AbstractSearchFragment.this.onItemSelected(itemViewHolder,item,rowViewHolder,row);
-        }
-    }
-
-
-
-
-    @Override
-    public void recognizeSpeech() {
-        startActivityForResult(getRecognizerIntent(), REQUEST_SPEECH);
-    }
-
-    @Override
-    public ObjectAdapter getResultsAdapter() {
-        return mRowsAdapter;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String query) {
-        return search(query);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        return search(query);
-    }
-
-    protected boolean search(String query) {
-        if(query!=null && query.length()>=threshold()) {
-            if(mQuery!=null && mQuery.equals(query))
-                return false;
-            mQuery = query;
-            getDataProvider().reset();
-            getDataProvider().next();
-            return true;
-        }
-        return false;
-    }
-
-    public int threshold() {
-        return 3;
-    }
-
-    public boolean hasResults() {
-        return mRowsAdapter.size() > 0;
-    }
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if(requestCode == REQUEST_SPEECH && resultCode== Activity.RESULT_OK)
-        {
-            setSearchQuery(data, true);
-        }
-
     }
 }
+
+
+

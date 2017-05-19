@@ -27,4 +27,6 @@ abstract public class AbstractArrayObjectAdapter extends ArrayObjectAdapter{
     public AbstractArrayObjectAdapter() {
         super();
     }
+
+
 }

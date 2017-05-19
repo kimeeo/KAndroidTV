@@ -2,7 +2,7 @@ package com.kimeeo.kAndroidTV.pageFragments;
 
 import android.support.v17.leanback.widget.HeaderItem;
 
-import com.kimeeo.kAndroidTV.browseFragment.IHeaderItem;
+import com.kimeeo.kAndroidTV.core.IHeaderItem;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.

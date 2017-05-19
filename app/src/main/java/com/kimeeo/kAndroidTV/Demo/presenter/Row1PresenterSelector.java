@@ -30,5 +30,4 @@ public class Row1PresenterSelector extends PresenterSelector {
         presenters.put(m.getType(), presenter);
         return presenter;
     }
-
 }

@@ -1,4 +1,4 @@
-package com.kimeeo.kAndroidTV.browseFragment;
+package com.kimeeo.kAndroidTV.core;
 
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
@@ -14,5 +14,8 @@ public class DefaultArrayObjectAdapter extends AbstractArrayObjectAdapter {
 
     public DefaultArrayObjectAdapter(Presenter presenter) {
         super(presenter);
+    }
+    public DefaultArrayObjectAdapter() {
+        super();
     }
 }

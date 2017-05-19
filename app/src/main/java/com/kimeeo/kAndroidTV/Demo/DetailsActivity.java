@@ -5,8 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.kimeeo.kAndroidTV.Demo.detailsFragment.DetailsFragment;
-import com.kimeeo.kAndroidTV.Demo.verticalGridFragment.VerticalGridFragment;
+import com.kimeeo.kAndroidTV.Demo.fragments.DetailsFragment;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.

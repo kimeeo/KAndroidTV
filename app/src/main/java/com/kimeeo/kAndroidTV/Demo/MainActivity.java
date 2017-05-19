@@ -19,7 +19,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.kimeeo.kAndroidTV.Demo.browseFragment.MainFragment;
+import com.kimeeo.kAndroidTV.Demo.fragments.BrowseFragment;
 
 /*
  * MainActivity class that loads MainFragment1
@@ -33,7 +33,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
         if (savedInstanceState == null) {
-            Fragment fragment = new MainFragment();
+            Fragment fragment = new BrowseFragment();
             getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
         }
     }

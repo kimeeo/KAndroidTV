@@ -1,13 +1,10 @@
 package com.kimeeo.kAndroidTV.searchFragment;
 
-import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
@@ -30,12 +27,11 @@ import android.widget.Toast;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroid.dataProvider.MonitorList;
 import com.kimeeo.kAndroidTV.R;
-import com.kimeeo.kAndroidTV.browseFragment.AbstractArrayObjectAdapter;
-import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
-import com.kimeeo.kAndroidTV.browseFragment.BackgroundImageHelper;
-import com.kimeeo.kAndroidTV.browseFragment.DefaultArrayObjectAdapter;
-import com.kimeeo.kAndroidTV.browseFragment.IHeaderItem;
-import com.kimeeo.kAndroidTV.browseFragment.WatcherArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.core.AbstractArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
+import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.core.IHeaderItem;
+import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
 
 import java.net.URI;
 import java.util.List;
@@ -129,11 +125,11 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
         if(getDataProvider()==null)
             setDataProvider(createDataProvider());
         getDataProvider().setRefreshEnabled(false);
-        PresenterSelector presenterSelector=createListRowPresenterSelector();
+        PresenterSelector presenterSelector=createMainRowPresenterSelector();
         if(presenterSelector!=null)
             mRowsAdapter = createArrayObjectAdapter(presenterSelector);
         else
-            mRowsAdapter = createArrayObjectAdapter(createListRowPresenter());
+            mRowsAdapter = createArrayObjectAdapter(createMainRowPresenter());
 
         setupEventListeners();
 
@@ -148,10 +144,10 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
     }
 
 
-    protected PresenterSelector createListRowPresenterSelector() {
+    protected PresenterSelector createMainRowPresenterSelector() {
         return null;
     }
-    protected Presenter createListRowPresenter() {
+    protected Presenter createMainRowPresenter() {
         return new ListRowPresenter();
     }
     protected AbstractArrayObjectAdapter createArrayObjectAdapter(Presenter presenter) {
@@ -166,7 +162,7 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
             if(list.get(i) instanceof IHeaderItem)
             {
                 IHeaderItem headerItem= (IHeaderItem)list.get(i);
-                PresenterSelector presenterSelector = getPresenterSelector(headerItem);
+                PresenterSelector presenterSelector = getRowItemPresenterSelector(headerItem);
                 final ArrayObjectAdapter listRowAdapter = getRowArrayObjectAdapter(headerItem,presenterSelector);
 
                 List data = headerItem.getData();
@@ -180,15 +176,15 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
                         ((WatcherArrayObjectAdapter)listRowAdapter).setDataProvider(rowData);
                     rowData.next();
                 }
-                HeaderItem header = getHeaderItem(i, headerItem.getName());
                 int row=index+i;
-                mRowsAdapter.add(row,getListRow(headerItem,header, listRowAdapter));
+                HeaderItem header = getHeaderItem(row, headerItem.getName());
+                mRowsAdapter.add(getListRow(headerItem,header, listRowAdapter));
             }
         }
     }
 
 
-    abstract protected PresenterSelector getPresenterSelector(IHeaderItem headerItem);
+    abstract protected PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem);
     protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }

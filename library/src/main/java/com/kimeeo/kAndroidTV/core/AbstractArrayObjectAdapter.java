@@ -1,4 +1,4 @@
-package com.kimeeo.kAndroidTV.browseFragment;
+package com.kimeeo.kAndroidTV.core;
 
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
@@ -23,5 +23,8 @@ abstract public class AbstractArrayObjectAdapter extends ArrayObjectAdapter{
 
     public AbstractArrayObjectAdapter(Presenter presenter) {
         super(presenter);
+    }
+    public AbstractArrayObjectAdapter() {
+        super();
     }
 }

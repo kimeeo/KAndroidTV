@@ -1,4 +1,4 @@
-package com.kimeeo.kAndroidTV.browseFragment;
+package com.kimeeo.kAndroidTV.detailsFragment;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
@@ -9,13 +9,30 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v17.leanback.app.BackgroundManager;
-import android.support.v17.leanback.app.BrowseFragment;
-import android.support.v17.leanback.widget.*;
+import android.support.v17.leanback.app.DetailsFragment;
+import android.support.v17.leanback.widget.Action;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.ClassPresenterSelector;
+import android.support.v17.leanback.widget.DetailsOverviewRow;
+import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
+import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
+import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.ListRow;
+import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v17.leanback.widget.OnItemViewClickedListener;
+import android.support.v17.leanback.widget.OnItemViewSelectedListener;
+import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.PresenterSelector;
+import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowHeaderPresenter;
+import android.support.v17.leanback.widget.RowPresenter;
 import android.view.View;
+import android.view.ViewGroup;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroid.dataProvider.MonitorList;
 import com.kimeeo.kAndroidTV.R;
+import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
 import com.kimeeo.kAndroidTV.core.AbstractArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
 import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
@@ -26,12 +43,13 @@ import java.net.URI;
 import java.util.List;
 
 /**
- * Created by BhavinPadhiyar on 5/16/17.
+ * Created by BhavinPadhiyar on 5/19/17.
  */
 
-abstract public class AbstractBrowseFragment extends BrowseFragment implements BackgroundImageHelper.OnUpdate,DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
+abstract public class AbstractDetailsFragment extends DetailsFragment implements BackgroundImageHelper.OnUpdate,DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher
+{
 
-
+    private List<Action> actionlist;
 
     protected boolean supportBackgroundChange() {
         return false;
@@ -51,7 +69,8 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     protected AbstractArrayObjectAdapter mRowsAdapter;
     private boolean showBusyForFirstTimeLoad=true;
 
-    abstract protected @NonNull DataProvider createDataProvider();
+    abstract protected @NonNull
+    DataProvider createDataProvider();
     protected DataProvider dataProvider;
     protected void configDataManager(DataProvider dataProvider) {}
     public DataProvider getDataProvider()
@@ -84,17 +103,11 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupUIElements();
-
+        setupView();
         if(getDataProvider()==null)
             setDataProvider(createDataProvider());
         getDataProvider().setRefreshEnabled(false);
-        PresenterSelector presenterSelector=createMainRowPresenterSelector();
-        if(presenterSelector!=null)
-            mRowsAdapter = createArrayObjectAdapter(presenterSelector);
-        else
-            mRowsAdapter = createArrayObjectAdapter(createMainRowPresenter());
 
-        setAdapter(mRowsAdapter);
         setupEventListeners();
 
         if(getDataProvider().size()!=0 )
@@ -104,21 +117,81 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         if(supportBackgroundChange())
             backgroundImageHelper=getBackgroundImageHelper();
 
-    }
-
-    private BackgroundImageHelper getBackgroundImageHelper() {
-        return new BackgroundImageHelper(getActivity(),this);
+        prepareEntranceTransition();
     }
 
 
-    protected PresenterSelector createMainRowPresenterSelector() {
+
+    protected  List<Action> createActionlist()
+    {
         return null;
     }
-    protected Presenter createMainRowPresenter() {
-        return new ListRowPresenter();
+
+    protected ArrayObjectAdapter createActionArrayObjectAdapter() {
+        return new DefaultArrayObjectAdapter();
     }
-    protected AbstractArrayObjectAdapter createArrayObjectAdapter(Presenter presenter) {
-        return new DefaultArrayObjectAdapter(presenter);
+    FullWidthDetailsOverviewRowPresenter detailsRowPresenter;
+    protected  void setupView()
+    {
+        ClassPresenterSelector rowPresenterSelector = new ClassPresenterSelector();
+        mRowsAdapter = createArrayObjectAdapter(rowPresenterSelector);
+
+        detailsRowPresenter = createDetailsRowPresenter(createDetailsDescriptionPresenter());
+        configDetails(detailsRowPresenter);
+        rowPresenterSelector.addClassPresenter(DetailsOverviewRow.class, detailsRowPresenter);
+
+        PresenterSelector presenterSelector = createListRowPresenterSelector();
+        rowPresenterSelector.addClassPresenterSelector(ListRow.class, presenterSelector);
+
+        setAdapter(mRowsAdapter);
+    }
+
+    protected void configDetails(FullWidthDetailsOverviewRowPresenter detailsRowPresenter) {
+        detailsRowPresenter.setInitialState(FullWidthDetailsOverviewRowPresenter.STATE_HALF);
+        FullWidthDetailsOverviewSharedElementHelper mHelper = createDtailsSharedElementHelper();
+        if(getTransitionName()!=null)
+            mHelper.setSharedElementEnterTransition(getActivity(), getTransitionName());
+        detailsRowPresenter.setListener(mHelper);
+        detailsRowPresenter.setParticipatingEntranceTransition(false);
+        DetailsOverviewRow detailsOverview = createDetailsOverviewRow();
+        actionlist=createActionlist();
+        if(actionlist!=null && actionlist.size()!=0)
+        {
+            actionAdapter = createActionArrayObjectAdapter();
+            actionAdapter.addAll(0,actionlist);
+            detailsOverview.setActionsAdapter(actionAdapter);
+        }
+        mRowsAdapter.add(detailsOverview);
+    }
+
+    abstract protected PresenterSelector createListRowPresenterSelector();
+
+
+    private ArrayObjectAdapter actionAdapter;
+
+    protected DetailsOverviewRow createDetailsOverviewRow()
+    {
+        return new DetailsOverviewRow(createDetailsData());
+    }
+
+    protected abstract Object createDetailsData();
+
+    protected FullWidthDetailsOverviewSharedElementHelper createDtailsSharedElementHelper() {
+        return new FullWidthDetailsOverviewSharedElementHelper();
+    }
+
+    abstract protected FullWidthDetailsOverviewRowPresenter createDetailsRowPresenter(Presenter detailsDescriptionPresenter);
+    protected abstract Presenter createDetailsDescriptionPresenter();
+
+    protected String getTransitionName() {
+        return null;
+    }
+
+    protected BackgroundImageHelper getBackgroundImageHelper() {
+        return new BackgroundImageHelper(getActivity(),this);
+    }
+    protected Presenter createListRowPresenter() {
+        return new ListRowPresenter();
     }
     protected AbstractArrayObjectAdapter createArrayObjectAdapter(PresenterSelector presenter) {
         return new DefaultArrayObjectAdapter(presenter);
@@ -129,7 +202,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
             if(list.get(i) instanceof IHeaderItem)
             {
                 IHeaderItem headerItem= (IHeaderItem)list.get(i);
-                PresenterSelector presenterSelector = getRowItemPresenterSelector(headerItem);
+                PresenterSelector presenterSelector = getPresenterSelector(headerItem);
                 final ArrayObjectAdapter listRowAdapter = getRowArrayObjectAdapter(headerItem,presenterSelector);
 
                 List data = headerItem.getData();
@@ -151,8 +224,8 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     }
 
 
-    abstract protected PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem);
-    protected Row getListRow(IHeaderItem headerItem,HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+    abstract protected PresenterSelector getPresenterSelector(IHeaderItem headerItem);
+    protected Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
 
@@ -238,37 +311,14 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
             setBadgeDrawable(getBadgeDrawableDrawable());
 
 
-        setHeadersState(defaultHeadersState());
-        setHeadersTransitionOnBackEnabled(defaultHeadersTransitionOnBackEnabled());
-
-        if(getBrandColorRes()!=-1)
-            setBrandColor(getResources().getColor(getBrandColorRes()));
-        else if(getBrandColorValue()!=-1)
-            setBrandColor(getBrandColorValue());
-
         if(getSearchAffordanceColorRes()!=-1)
             setSearchAffordanceColor(getResources().getColor(getSearchAffordanceColorRes()));
         else if(getSearchAffordanceColorValue()!=-1)
             setSearchAffordanceColor(getSearchAffordanceColorValue());
 
-        final RowHeaderPresenter rowHeaderPresenter = createRowHeaderPresenter();
-        if(rowHeaderPresenter!=null) {
-            PresenterSelector presenterSelector= new PresenterSelector() {
-                @Override
-                public Presenter getPresenter(Object o) {
-                    return rowHeaderPresenter;
-                }
-            };
-
-            setHeaderPresenterSelector(presenterSelector );
-        }
     }
 
 
-
-    protected RowHeaderPresenter createRowHeaderPresenter() {
-        return null;
-    }
 
     protected int getSearchAffordanceColorValue()
     {
@@ -280,23 +330,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
         return R.color.fastlane_background;
     }
 
-    protected int getBrandColorValue()
-    {
-        return -1;
-    }
-    @ColorRes
-    protected int getBrandColorRes()
-    {
-        return R.color.fastlane_background;
-    }
-    protected boolean defaultHeadersTransitionOnBackEnabled()
-    {
-        return false;
-    }
-    protected int defaultHeadersState()
-    {
-        return HEADERS_ENABLED;
-    }
+
     @StringRes
     protected int getTitleRes()
     {
@@ -317,16 +351,16 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     }
     private void setupEventListeners() {
         if(getSearchActivity()!=null)
-            setOnSearchClickedListener(new SearchEventListeners());
+            setOnSearchClickedListener(new AbstractDetailsFragment.SearchEventListeners());
 
-        setOnItemViewClickedListener(new ItemViewClickedListener());
-        setOnItemViewSelectedListener(new ItemViewSelectedListener());
+        setOnItemViewClickedListener(new AbstractDetailsFragment.ItemViewClickedListener());
+        setOnItemViewSelectedListener(new AbstractDetailsFragment.ItemViewSelectedListener());
     }
     protected Class getSearchActivity() {
         return null;
     }
 
-    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
+    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
     }
     protected void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
@@ -354,7 +388,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
     private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
         public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-            AbstractBrowseFragment.this.onItemClicked(itemViewHolder,item,rowViewHolder,row);
+            AbstractDetailsFragment.this.onItemClicked(itemViewHolder,item,rowViewHolder,row);
         }
     }
     private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
@@ -365,7 +399,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements B
                 backgroundImageHelper.start(item);
 
 
-            AbstractBrowseFragment.this.onItemSelected(itemViewHolder,item,rowViewHolder,row);
+            AbstractDetailsFragment.this.onItemSelected(itemViewHolder,item,rowViewHolder,row);
         }
     }
 

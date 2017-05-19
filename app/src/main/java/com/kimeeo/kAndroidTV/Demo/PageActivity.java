@@ -5,8 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.kimeeo.kAndroidTV.Demo.browseFragment.MainFragment;
-import com.kimeeo.kAndroidTV.Demo.pageFragment.PageFragment;
+import com.kimeeo.kAndroidTV.Demo.fragments.PageFragment;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.

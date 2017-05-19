@@ -3,7 +3,6 @@ package com.kimeeo.kAndroidTV.Demo.dataProviders;
 import android.os.Handler;
 
 import com.kimeeo.kAndroid.dataProvider.StaticDataProvider;
-import com.kimeeo.kAndroidTV.browseFragment.IHeaderItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +34,18 @@ public class MovieListDataProvider extends StaticDataProvider {
     public MovieListDataProvider() {
         setNextEnabled(true);
         setRefreshEnabled(true);
-
+        List list = new ArrayList();
+        for (int i = 0; i < 10; i++) {
+            Movie m = new Movie();
+            m.setTitle("Item:"+i);
+            m.setStudio("Youtunbe");
+            if(i>3)
+                m.setType(1);
+            else
+                m.setType(2);
+            list.add(m);
+        }
+        addData(list);
     }
 
     @Override

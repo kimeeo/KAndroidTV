@@ -12,9 +12,7 @@
  * the License.
  */
 
-package com.kimeeo.kAndroidTV.Demo.dataProviders;
-
-import android.util.Log;
+package com.kimeeo.kAndroidTV.demoModel;
 
 import java.io.Serializable;
 import java.net.URI;

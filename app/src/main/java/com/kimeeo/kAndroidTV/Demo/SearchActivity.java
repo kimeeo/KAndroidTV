@@ -5,8 +5,7 @@ import android.app.Fragment;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.kimeeo.kAndroidTV.Demo.browseFragment.MainFragment;
-import com.kimeeo.kAndroidTV.Demo.searchFragment.SearchFragment;
+import com.kimeeo.kAndroidTV.Demo.fragments.SearchFragment;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.

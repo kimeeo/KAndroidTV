@@ -1,4 +1,4 @@
-package com.kimeeo.kAndroidTV.browseFragment;
+package com.kimeeo.kAndroidTV.core;
 
 import java.util.List;
 

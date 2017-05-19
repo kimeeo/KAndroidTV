@@ -1,4 +1,4 @@
-package com.kimeeo.kAndroidTV.Demo.dataProviders;
+package com.kimeeo.kAndroidTV.demoModel;
 
 import android.os.Handler;
 
@@ -12,37 +12,22 @@ import java.util.List;
  * Created by BhavinPadhiyar on 23/05/16.
  */
 public class HeaderDataProvider extends StaticDataProvider {
-    int count = 1;
-    Handler h = new Handler();
-    Runnable r = new Runnable() {
-        @Override
-        public void run() {
-            List list = new ArrayList();
-            for (int i = 0; i < 3; i++) {
-                Header h=new Header();
-                h.setId(i+"");
-                h.setName("Category " +count);
-                h.setData(new MovieListDataProvider());
-                list.add(h);
-                count++;
-            }
-            addData(list);
-        }
-    };
-    private int pageCount = 1;
     public HeaderDataProvider() {
-        setNextEnabled(true);
+        setNextEnabled(false);
+        List list = new ArrayList();
+        for (int i = 0; i < 3; i++) {
+            Header h=new Header();
+            h.setId(i+"");
+            h.setName("Category " +i);
+            h.setData(new MovieListDataProvider());
+            list.add(h);
+        }
+        addData(list);
     }
 
     @Override
     protected void invokeLoadNext() {
-        if (pageCount != 4) {
-            h.postDelayed(r, 1000);
-            pageCount += 1;
-        } else {
-            setCanLoadNext(false);
-            dataLoadError(null);
-        }
+
     }
 
     @Override

@@ -12,43 +12,34 @@
  * the License.
  */
 
-package com.kimeeo.kAndroidTV.Demo.browseFragment;
+package com.kimeeo.kAndroidTV.Demo.fragments;
 
 
-import android.app.Activity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v17.leanback.app.RowsFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.ObjectAdapter;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowHeaderPresenter;
 import android.support.v17.leanback.widget.RowPresenter;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.util.Log;
 
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
 import com.kimeeo.kAndroidTV.Demo.PageActivity;
-import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
 import com.kimeeo.kAndroidTV.Demo.VerticalGridActivity;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.Demo.presenter.*;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
-import com.kimeeo.kAndroidTV.Demo.verticalGridFragment.VerticalGridFragment;
 import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
-import com.kimeeo.kAndroidTV.browseFragment.IHeaderItem;
-import com.kimeeo.kAndroidTV.headers.IconHeaderItem;
-import com.kimeeo.kAndroidTV.presenter.IconHeaderPresenter;
+import com.kimeeo.kAndroidTV.core.IHeaderItem;
 
-public class MainFragment extends AbstractBrowseFragment {
+public class BrowseFragment extends AbstractBrowseFragment {
 
     /*
     protected RowHeaderPresenter createRowHeaderPresenter() {
@@ -63,7 +54,6 @@ public class MainFragment extends AbstractBrowseFragment {
     @NonNull
     @Override
     protected DataProvider createDataProvider() {
-
         return new HeaderDataProvider();
     }
     protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
@@ -71,13 +61,11 @@ public class MainFragment extends AbstractBrowseFragment {
         Movie movie = (Movie) item;
         Intent intent = new Intent(getActivity(), PageActivity.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
-        //Bundle bundle = ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(),((ImageCardView) itemViewHolder.view).getMainImageView(),DetailsActivity.SHARED_ELEMENT_NAME).toBundle();
-        //getActivity().startActivity(intent, bundle);
         getActivity().startActivity(intent);
     }
 
     @Override
-    protected PresenterSelector getPresenterSelector(IHeaderItem headerItem) {
+    protected PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
         if(headerItem.getID().equals("0"))
             return new Row1PresenterSelector();
         return new Row2PresenterSelector();
@@ -93,11 +81,11 @@ public class MainFragment extends AbstractBrowseFragment {
 
         }
     }
-    protected PresenterSelector createListRowPresenterSelector() {
+    protected PresenterSelector createMainRowPresenterSelector() {
         return new ShadowRowPresenterSelector();
     }
 
-    public class ShadowRowPresenterSelector extends PresenterSelector {
+    public static class ShadowRowPresenterSelector extends PresenterSelector {
 
         private ListRowPresenter mShadowEnabledRowPresenter = new ListRowPresenter();
         private ListRowPresenter mShadowDisabledRowPresenter = new ListRowPresenter();

@@ -61,6 +61,11 @@ import java.util.Map;
 
 abstract public class AbstractDetailsFragment extends DetailsFragment implements RowBasedFragmentHelper.HelperProvider
 {
+    public boolean getSupportRowProgressBar()
+    {
+        return false;
+    }
+
     final public BackgroundImageHelper getBackgroundImageHelper(){return null;}
     final public boolean supportBackgroundChange(){return false;}
 

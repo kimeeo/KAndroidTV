@@ -34,24 +34,12 @@ public class MovieListDataProvider extends StaticDataProvider {
     public MovieListDataProvider() {
         setNextEnabled(true);
         setRefreshEnabled(true);
-        List list = new ArrayList();
-        for (int i = 0; i < 10; i++) {
-            Movie m = new Movie();
-            m.setTitle("Item:"+i);
-            m.setStudio("Youtunbe");
-            if(i>3)
-                m.setType(1);
-            else
-                m.setType(2);
-            list.add(m);
-        }
-        addData(list);
     }
 
     @Override
     protected void invokeLoadNext() {
-        if (pageCount != 4) {
-            h.postDelayed(r, 2000);
+        if (pageCount != 10) {
+            h.postDelayed(r, 5000);
             pageCount += 1;
         } else {
             setCanLoadNext(false);

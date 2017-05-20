@@ -46,7 +46,10 @@ import java.util.List;
 
 abstract public class AbstractRowsFragment extends RowsFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
 
-
+    public boolean getSupportRowProgressBar()
+    {
+        return false;
+    }
     public boolean supportBackgroundChange() {
         return false;
     }

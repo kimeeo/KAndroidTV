@@ -7,12 +7,15 @@ import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroid.dataProvider.MonitorList;
 
 import java.util.List;
+import java.util.logging.Handler;
 
 /**
  * Created by BhavinPadhiyar on 5/17/17.
  */
 
-public class WatcherArrayObjectAdapter extends AbstractArrayObjectAdapter implements MonitorList.OnChangeWatcher {
+public class WatcherArrayObjectAdapter extends AbstractArrayObjectAdapter implements MonitorList.OnChangeWatcher,DataProvider.OnFatchingObserve {
+    private boolean support=false;
+
     public WatcherArrayObjectAdapter(PresenterSelector presenterSelector) {
         super(presenterSelector);
     }
@@ -20,12 +23,17 @@ public class WatcherArrayObjectAdapter extends AbstractArrayObjectAdapter implem
     public WatcherArrayObjectAdapter(Presenter presenter) {
         super(presenter);
     }
-
+    DataProvider dataProvider;
     public void setDataProvider(DataProvider rowData) {
-        rowData.addDataChangeWatcher(this);
+        this.dataProvider=rowData;
+        dataProvider.addDataChangeWatcher(this);
+        dataProvider.addFatchingObserve(this);
+    }
+    public void setSupportRowProgressBar(boolean support) {
+        this.support=support;
     }
     @Override
-    public void itemsAdded(int i, List list) {
+    public void itemsAdded(final int i, final List list) {
         for (int j = 0; j < list.size(); j++) {
             add(list.get(j));
         }
@@ -38,5 +46,31 @@ public class WatcherArrayObjectAdapter extends AbstractArrayObjectAdapter implem
     @Override
     public void itemsChanged(int i, List list) {
         notifyArrayItemRangeChanged(i,list.size());
+    }
+
+
+
+    @Override
+    public void onFetchingStart(boolean b) {
+        if(dataProvider.size()!=0 && support)
+            dataProvider.add(new ProgressCardVO());
+    }
+
+    @Override
+    public void onFetchingFinish(boolean b) {
+        if(dataProvider.size()!=0 && support) {
+            if (dataProvider.get(dataProvider.size() - 1) instanceof ProgressCardVO)
+                dataProvider.remove(dataProvider.size() - 1);
+        }
+    }
+
+    @Override
+    public void onFetchingEnd(List<?> list, boolean b) {
+
+    }
+
+    @Override
+    public void onFetchingError(Object o) {
+
     }
 }

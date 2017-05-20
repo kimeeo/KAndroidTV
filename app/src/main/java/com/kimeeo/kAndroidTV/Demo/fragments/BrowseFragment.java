@@ -44,7 +44,10 @@ import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import java.net.URI;
 
 public class BrowseFragment extends AbstractBrowseFragment {
-
+    public boolean getSupportRowProgressBar()
+    {
+        return true;
+    }
     /*
     protected RowHeaderPresenter createRowHeaderPresenter() {
         return new IconHeaderPresenter();

@@ -55,7 +55,6 @@ public class CardPresenter extends AbstractCardPresenter {
     @Override
     public void onUnbindViewHolder(ViewHolder viewHolder) {
         ImageCardView cardView = (ImageCardView) viewHolder.view;
-
         cardView.setBadgeImage(null);
         cardView.setMainImage(null);
     }

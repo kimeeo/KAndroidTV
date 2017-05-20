@@ -36,6 +36,11 @@ import fr.bmartel.youtubetv.model.VideoQuality;
 
 abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider, MediaPlayerGlue.OnMediaFileFinishedPlayingListener
 {
+    public boolean getSupportRowProgressBar()
+    {
+        return false;
+    }
+
     @Override
     final public boolean supportBackgroundChange() {
         return false;

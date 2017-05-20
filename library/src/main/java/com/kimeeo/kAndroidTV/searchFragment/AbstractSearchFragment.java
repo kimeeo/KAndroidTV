@@ -46,6 +46,11 @@ import java.util.List;
 
 
 abstract public class AbstractSearchFragment extends SearchFragment implements SearchFragment.SearchResultProvider,SpeechRecognitionCallback,BackgroundImageHelper.OnUpdate,RowBasedFragmentHelper.HelperProvider{
+    public boolean getSupportRowProgressBar()
+    {
+        return false;
+    }
+
     private static final int REQUEST_SPEECH = 0x00000010;
     public String getQuery() {
         return mQuery;

@@ -28,6 +28,11 @@ import java.net.URI;
 abstract public class AbstractBrowseFragment extends BrowseFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
 
 
+    public boolean getSupportRowProgressBar()
+    {
+        return false;
+    }
+
     public boolean supportBackgroundChange() {
         return false;
     }

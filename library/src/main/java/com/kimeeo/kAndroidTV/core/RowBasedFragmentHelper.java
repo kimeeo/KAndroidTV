@@ -152,8 +152,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
                 if(data instanceof DataProvider)
                 {
                     DataProvider rowData = (DataProvider)data;
-                    if(listRowAdapter instanceof WatcherArrayObjectAdapter)
-                        ((WatcherArrayObjectAdapter)listRowAdapter).setDataProvider(rowData);
+                    if(listRowAdapter instanceof WatcherArrayObjectAdapter) {
+                        ((WatcherArrayObjectAdapter) listRowAdapter).setDataProvider(rowData);
+                        ((WatcherArrayObjectAdapter) listRowAdapter).setSupportRowProgressBar(helperProvider.getSupportRowProgressBar());
+                    }
                     rowData.next();
                 }
                 int row=index+i;
@@ -200,6 +202,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
             progressDialog.hide();
             progressDialog=null;
         }
+    }
+    public static ProgressPresenter getProgressPresenter()
+    {
+        return new ProgressPresenter();
     }
 
     @Override
@@ -309,5 +315,6 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
         String getFirstTimeLoaderMessage();
         void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row);
         void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row);
+        boolean getSupportRowProgressBar();
     }
 }

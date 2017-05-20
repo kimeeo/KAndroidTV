@@ -15,6 +15,8 @@
 package com.kimeeo.kAndroidTV.Demo.fragments;
 
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -25,15 +27,22 @@ import android.support.v17.leanback.widget.ObjectAdapter;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowPresenter;
+import android.support.v4.app.FragmentTransaction;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
+import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
+import com.kimeeo.kAndroidTV.Demo.YoutubeActivity;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
+import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row1PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.searchFragment.AbstractSearchFragment;
+
+import fr.bmartel.youtubetv.YoutubeTvFragment;
 
 public class SearchFragment extends AbstractSearchFragment {
     @NonNull
@@ -52,6 +61,21 @@ public class SearchFragment extends AbstractSearchFragment {
     {
         mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.background_canyon));
     }
+
+
+
+
+
+
+    public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
+        Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+        getActivity().startActivity(intent);
+    }
+
+
+
+
+
 
     @Override
     public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {

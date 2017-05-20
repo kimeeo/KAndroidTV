@@ -55,6 +55,15 @@ abstract public class AbstractVideoDetailsFragment extends AbstractDetailsFragme
         mDetailsBackground.setupVideoPlayback(mMediaPlayerGlue);
 
     }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+       if(mMediaPlayerGlue!=null)
+       {
+           mMediaPlayerGlue.reset();
+           mDetailsBackground.setupVideoPlayback(null);
+       }
+    }
 
     protected Bitmap getCoverImage() {
         return BitmapFactory.decodeResource(getResources(),getDefaultDrableRes());

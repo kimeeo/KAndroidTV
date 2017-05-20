@@ -61,7 +61,7 @@ public class BackgroundImageHelper {
     }
     WeakReference<Object> itemHolder;
     public void start(Object item) {
-        WeakReference<Object> itemHolder = new WeakReference<Object>(item);
+        itemHolder = new WeakReference<Object>(item);
         startBackgroundTimer();
     }
 
@@ -78,6 +78,7 @@ public class BackgroundImageHelper {
                 public void run() {
                     if(itemHolder.get()!=null)
                         updateBackground(itemHolder.get());
+                    mBackgroundTimer.cancel();
                 }
             });
 

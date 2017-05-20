@@ -17,6 +17,8 @@ package com.kimeeo.kAndroidTV.demoModel;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.List;
 
 /*
  * Movie class represents video entity with title, description, image thumbs and video url.
@@ -43,8 +45,25 @@ public class Movie implements Serializable {
     private String videoUrl;
     private String studio;
     private String category;
+    public List<String> characters=new ArrayList<>();
+    public List<Movie> related=new ArrayList<>();
 
     public Movie() {
+        characters.add("One");
+        characters.add("two");
+        characters.add("three");
+        characters.add("four");
+
+
+    }
+
+    public void addMovie() {
+        for (int i = 0; i < 10; i++) {
+            Movie m = new Movie();
+            m.setTitle("Item:"+i);
+            m.setStudio("Youtunbe");
+            related.add(m);
+        }
     }
 
     public static long getCount() {

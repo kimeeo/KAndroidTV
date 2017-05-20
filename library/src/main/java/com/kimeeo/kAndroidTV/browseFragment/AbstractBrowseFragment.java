@@ -31,9 +31,6 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     protected boolean supportBackgroundChange() {
         return false;
     }
-    protected URI getBackgroundImageURI(Object item) {
-        return null;
-    }
 
     public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
     {

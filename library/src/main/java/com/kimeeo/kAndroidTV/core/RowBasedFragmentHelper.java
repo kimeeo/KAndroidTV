@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v17.leanback.app.BrowseFragment;
+import android.support.v17.leanback.app.DetailsFragment;
 import android.support.v17.leanback.app.RowsFragment;
 import android.support.v17.leanback.app.SearchFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -72,7 +73,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
             RowsFragment browseFragment = (RowsFragment) host;
             browseFragment.setAdapter(mRowsAdapter);
         }
-
+        else if(host instanceof DetailsFragment) {
+            DetailsFragment browseFragment = (DetailsFragment)host;
+            browseFragment.setAdapter(mRowsAdapter);
+        }
         setupEventListeners();
 
         if(dataProvider.size()!=0 )
@@ -103,7 +107,13 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
             browseFragment.setOnItemViewClickedListener(new ItemViewClickedListener());
             browseFragment.setOnItemViewSelectedListener(new ItemViewSelectedListener());
         }
-
+        else if(host instanceof DetailsFragment) {
+            DetailsFragment browseFragment = (DetailsFragment)host;
+            if (helperProvider.getSearchActivity() != null)
+                browseFragment.setOnSearchClickedListener(new SearchEventListeners());
+            browseFragment.setOnItemViewClickedListener(new ItemViewClickedListener());
+            browseFragment.setOnItemViewSelectedListener(new ItemViewSelectedListener());
+        }
     }
 
 
@@ -114,7 +124,8 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
             {
                 IHeaderItem headerItem= (IHeaderItem)list.get(i);
                 PresenterSelector presenterSelector = helperProvider.getRowItemPresenterSelector(headerItem);
-                final ArrayObjectAdapter listRowAdapter = helperProvider.getRowArrayObjectAdapter(headerItem,presenterSelector);
+                ArrayObjectAdapter listRowAdapter= helperProvider.getRowArrayObjectAdapter(headerItem,presenterSelector);
+
 
                 List data = headerItem.getData();
                 for (int j = 0; j < data.size(); j++) {

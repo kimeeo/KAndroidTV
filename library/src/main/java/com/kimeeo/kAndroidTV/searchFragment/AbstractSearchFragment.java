@@ -104,9 +104,6 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
     protected boolean supportBackgroundChange() {
         return false;
     }
-    protected URI getBackgroundImageURI(Object item) {
-        return null;
-    }
 
     public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
     {

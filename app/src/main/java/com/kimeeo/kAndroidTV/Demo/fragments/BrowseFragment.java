@@ -17,6 +17,7 @@ package com.kimeeo.kAndroidTV.Demo.fragments;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.RowsFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
@@ -30,6 +31,7 @@ import android.support.v17.leanback.widget.RowPresenter;
 
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
 import com.kimeeo.kAndroidTV.Demo.PageActivity;
+import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
 import com.kimeeo.kAndroidTV.Demo.VerticalGridActivity;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
@@ -49,7 +51,14 @@ public class BrowseFragment extends AbstractBrowseFragment {
     {
         return new IconHeaderItem(i,name, R.drawable.ic_android_black_24dp);
     }*/
+    protected boolean supportBackgroundChange() {
+        return false;
+    }
 
+    public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
+    {
+        mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.background_canyon));
+    }
 
     @NonNull
     @Override
@@ -59,7 +68,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
         Movie movie = (Movie) item;
-        Intent intent = new Intent(getActivity(), PageActivity.class);
+        Intent intent = new Intent(getActivity(), DetailsActivity.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
         getActivity().startActivity(intent);
     }
@@ -110,6 +119,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
             };
         }
     }
+
     public Class getSearchActivity() {
         return SearchActivity.class;
     }

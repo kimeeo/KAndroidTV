@@ -1,6 +1,8 @@
 package com.kimeeo.kAndroidTV.detailsFragment;
 
 import android.app.Fragment;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -43,11 +45,23 @@ abstract public class AbstractVideoDetailsFragment extends AbstractDetailsFragme
     private MediaPlayerGlue mMediaPlayerGlue;
     protected void initializeBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data) {
         mMediaPlayerGlue = createMediaPlayerGlue();
-        mDetailsBackground.setupVideoPlayback(mMediaPlayerGlue);
-
         mMediaPlayerGlue.setTitle(getVideoTitle(data));
         mMediaPlayerGlue.setArtist(getVideoArtist(data));
         mMediaPlayerGlue.setVideoUrl(getTrailerUrl(data));
+
+        mDetailsBackground.enableParallax();
+        mDetailsBackground.setCoverBitmap(getCoverImage());
+
+        mDetailsBackground.setupVideoPlayback(mMediaPlayerGlue);
+
+    }
+
+    protected Bitmap getCoverImage() {
+        return BitmapFactory.decodeResource(getResources(),getDefaultDrableRes());
+    }
+
+    protected int getDefaultDrableRes() {
+        return R.drawable._vid_defualt_preview;
     }
 
     protected abstract String getTrailerUrl(Object data);

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.kimeeo.kAndroidTV.Demo.fragments.VerticalGridFragment;
+import com.kimeeo.kAndroidTV.dialog.DialogExampleActivity;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.

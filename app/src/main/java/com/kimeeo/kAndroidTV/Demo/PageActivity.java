@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.kimeeo.kAndroidTV.Demo.fragments.PageFragment;
+import com.kimeeo.kAndroidTV.dialog.DialogExampleActivity;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.
@@ -29,6 +30,5 @@ public class PageActivity extends Activity {
         startActivity(new Intent(this, SearchActivity.class));
         return true;
     }
-
 }
 

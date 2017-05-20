@@ -12,6 +12,7 @@ import android.support.v17.leanback.widget.RowPresenter;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.R;
 import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
+import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
 import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 
@@ -22,13 +23,18 @@ import java.util.List;
  */
 
 abstract public class AbstractPageFragment extends AbstractBrowseFragment implements FragmentProvider {
+
+    final public BackgroundImageHelper getBackgroundImageHelper(){return null;}
+    final public boolean supportBackgroundChange(){return false;}
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getMainFragmentRegistry().registerFragment(getPageRowClass(),createPageRowFragmentFactory());
     }
     protected FragmentFactory createPageRowFragmentFactory() {
-        return new PageRowFragmentFactory(backgroundImageHelper,this);
+        return new PageRowFragmentFactory(this);
     }
+
     protected RowBasedFragmentHelper createBrowseFragmentHelper() {
         return new PageBrowseFragmentHelper(this,this);
     }

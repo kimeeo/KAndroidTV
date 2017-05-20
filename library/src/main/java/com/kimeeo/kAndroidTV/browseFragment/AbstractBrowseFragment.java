@@ -28,7 +28,7 @@ import java.net.URI;
 abstract public class AbstractBrowseFragment extends BrowseFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
 
 
-    protected boolean supportBackgroundChange() {
+    public boolean supportBackgroundChange() {
         return false;
     }
 
@@ -36,8 +36,6 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     {
 
     }
-
-    protected BackgroundImageHelper backgroundImageHelper;
 
 
     abstract protected @NonNull DataProvider createDataProvider();
@@ -50,8 +48,8 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (null != backgroundImageHelper) {
-            backgroundImageHelper.cancel();
+        if (null != fragmentHelper) {
+            fragmentHelper.onDestroy();
         }
     }
 
@@ -71,15 +69,13 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
         fragmentHelper.build();
         fragmentHelper.next();
 
-        if(supportBackgroundChange())
-            backgroundImageHelper=getBackgroundImageHelper();
     }
 
     protected RowBasedFragmentHelper createBrowseFragmentHelper() {
         return new RowBasedFragmentHelper(this,this);
     }
 
-    protected BackgroundImageHelper getBackgroundImageHelper() {
+    public BackgroundImageHelper getBackgroundImageHelper() {
         return new BackgroundImageHelper(getActivity(),this);
     }
 
@@ -115,11 +111,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     public Class getSearchActivity() {
         return null;
     }
-    public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row)
-    {
-        if(supportBackgroundChange())
-            backgroundImageHelper.start(item);
-    }
+    public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row){}
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {}
 
 

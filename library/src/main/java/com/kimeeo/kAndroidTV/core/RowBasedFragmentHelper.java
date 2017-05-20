@@ -29,6 +29,8 @@ import java.util.List;
  */
 
 public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
+    private BackgroundImageHelper backgroundImageHelper;
+
     public HelperProvider getHelperProvider() {
         return helperProvider;
     }
@@ -81,6 +83,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
 
         if(dataProvider.size()!=0 )
             itemsAdded(0,dataProvider);
+
+        if(helperProvider.supportBackgroundChange())
+            backgroundImageHelper=helperProvider.getBackgroundImageHelper();
+
     }
     public void next() {
         dataProvider.next();
@@ -200,6 +206,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
         }
     }
 
+    public void onDestroy() {
+        if(backgroundImageHelper!=null)
+            backgroundImageHelper.cancel();
+    }
 
 
     private final class SearchEventListeners implements View.OnClickListener {
@@ -219,6 +229,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
             handelPaging(itemViewHolder,item,rowViewHolder,row);
+
+            if(item!=null &&  helperProvider.supportBackgroundChange() && backgroundImageHelper!=null)
+                backgroundImageHelper.start(item);
+
             helperProvider.onItemSelected(itemViewHolder,item,rowViewHolder,row);
         }
     }
@@ -267,6 +281,8 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
 
     public static interface HelperProvider
     {
+        BackgroundImageHelper getBackgroundImageHelper();
+        boolean supportBackgroundChange();
         DataProvider getDataProvider();
         PresenterSelector createMainRowPresenterSelector();
         Presenter createMainRowPresenter();

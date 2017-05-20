@@ -21,11 +21,10 @@ import java.util.TimerTask;
 public class BackgroundImageHelper {
 
     private final OnUpdate onUpdate;
-    private Timer mBackgroundTimer;
     private BackgroundManager mBackgroundManager;
     private DisplayMetrics mMetrics;
     private final Handler mHandler = new Handler();
-    private static final int BACKGROUND_UPDATE_DELAY = 300;
+    private long backgroundUpdateDelay=1000;
 
     public BackgroundImageHelper(Activity activity,OnUpdate onUpdate) {
         prepareBackgroundManager(activity);
@@ -44,23 +43,29 @@ public class BackgroundImageHelper {
         int height = mMetrics.heightPixels;
         if(onUpdate!=null)
             onUpdate.updateBackground(mBackgroundManager,item,width,height);
-        mBackgroundTimer.cancel();
     }
 
+    Runnable runnable= new Runnable() {
+        @Override
+        public void run() {
+            if(itemHolder!=null && itemHolder.get()!=null)
+                updateBackground(itemHolder.get());
+        }
+    };
 
     protected void startBackgroundTimer() {
-        if (null != mBackgroundTimer) {
-            mBackgroundTimer.cancel();
-        }
-        mBackgroundTimer = new Timer();
-        mBackgroundTimer.schedule(new UpdateBackgroundTask(), BACKGROUND_UPDATE_DELAY);
+        if (mHandler != null)
+            mHandler.removeCallbacks(runnable);
+        mHandler.postDelayed(runnable, getBackgroundUpdateDelay());
     }
 
     public void cancel() {
-        mBackgroundTimer.cancel();
+        if (mHandler != null)
+            mHandler.removeCallbacks(runnable);
     }
     WeakReference<Object> itemHolder;
     public void start(Object item) {
+
         itemHolder = new WeakReference<Object>(item);
         startBackgroundTimer();
     }
@@ -69,20 +74,12 @@ public class BackgroundImageHelper {
         mBackgroundManager.setDrawable(o);
     }
 
-    protected class UpdateBackgroundTask extends TimerTask {
+    public long getBackgroundUpdateDelay() {
+        return backgroundUpdateDelay;
+    }
 
-        @Override
-        public void run() {
-            mHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    if(itemHolder.get()!=null)
-                        updateBackground(itemHolder.get());
-                    mBackgroundTimer.cancel();
-                }
-            });
-
-        }
+    public void setBackgroundUpdateDelay(long backgroundUpdateDelay) {
+        this.backgroundUpdateDelay = backgroundUpdateDelay;
     }
     public static interface OnUpdate
     {

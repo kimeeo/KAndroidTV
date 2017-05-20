@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.DetailsFragmentBackgroundController;
+import android.support.v17.leanback.media.MediaPlayerGlue;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.DetailsOverviewLogoPresenter;
@@ -40,6 +41,7 @@ import java.util.List;
  */
 
 public class DetailsFragment extends AbstractDetailsFragment {
+
 
     @NonNull
     @Override

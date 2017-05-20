@@ -12,17 +12,13 @@ import com.kimeeo.kAndroidTV.core.IHeaderItem;
  */
 
 public class PageRowFragmentFactory extends BrowseFragment.FragmentFactory {
-    private final BackgroundImageHelper backgroundImageHelper;
     private final FragmentProvider fragmentProvider;
-    PageRowFragmentFactory(BackgroundImageHelper backgroundImageHelper, FragmentProvider fragmentProvider) {
-        this.backgroundImageHelper = backgroundImageHelper;
+    PageRowFragmentFactory(FragmentProvider fragmentProvider) {
         this.fragmentProvider = fragmentProvider;
     }
 
     @Override
     public Fragment createFragment(Object rowObj) {
-        if(backgroundImageHelper!=null)
-            backgroundImageHelper.setDrawable(null);
         if(rowObj instanceof PageRow)
         {
             IHeaderItem headerData= ((PageRow)rowObj).getHeaderData();

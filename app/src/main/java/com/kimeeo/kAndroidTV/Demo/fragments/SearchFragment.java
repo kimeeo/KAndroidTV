@@ -16,6 +16,7 @@ package com.kimeeo.kAndroidTV.Demo.fragments;
 
 
 import android.support.annotation.NonNull;
+import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
@@ -26,6 +27,7 @@ import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
+import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row1PresenterSelector;
@@ -38,6 +40,17 @@ public class SearchFragment extends AbstractSearchFragment {
     @Override
     protected DataProvider createDataProvider() {
         return new HeaderDataProvider();
+    }
+
+    @Override
+    public boolean supportBackgroundChange() {
+        return true;
+    }
+
+    @Override
+    public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
+    {
+        mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.background_canyon));
     }
 
     @Override

@@ -61,10 +61,13 @@ import java.util.Map;
 
 abstract public class AbstractDetailsFragment extends DetailsFragment implements RowBasedFragmentHelper.HelperProvider
 {
+    final public BackgroundImageHelper getBackgroundImageHelper(){return null;}
+    final public boolean supportBackgroundChange(){return false;}
+
 
     private List<Action> actionlist;
     private ArrayObjectAdapter actionAdapter;
-
+    private MediaPlayerGlue mMediaPlayerGlue;
     public Object getData() {
         return data;
     }
@@ -78,8 +81,14 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
     {
         return null;
     }
-
-    private final DetailsFragmentBackgroundController mDetailsBackground = new DetailsFragmentBackgroundController(this);
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (null != fragmentHelper) {
+            fragmentHelper.onDestroy();
+        }
+    }
+    protected final DetailsFragmentBackgroundController mDetailsBackground = new DetailsFragmentBackgroundController(this);
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

@@ -41,6 +41,8 @@ import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
 import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 
+import java.net.URI;
+
 public class BrowseFragment extends AbstractBrowseFragment {
 
     /*
@@ -51,13 +53,22 @@ public class BrowseFragment extends AbstractBrowseFragment {
     {
         return new IconHeaderItem(i,name, R.drawable.ic_android_black_24dp);
     }*/
-    protected boolean supportBackgroundChange() {
-        return false;
+    @Override
+    public boolean supportBackgroundChange() {
+        return true;
     }
-
+    int count=1;
+    @Override
     public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
     {
-        mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.background_canyon));
+        if(count==1) {
+            count=0;
+            mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.background_canyon));
+        }
+        else {
+            count=1;
+            mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.image));
+        }
     }
 
     @NonNull

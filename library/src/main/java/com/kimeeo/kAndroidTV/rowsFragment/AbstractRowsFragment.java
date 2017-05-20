@@ -47,9 +47,10 @@ import java.util.List;
 abstract public class AbstractRowsFragment extends RowsFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
 
 
-    protected boolean supportBackgroundChange() {
+    public boolean supportBackgroundChange() {
         return false;
     }
+
     protected URI getBackgroundImageURI(Object item) {
         return null;
     }
@@ -72,8 +73,8 @@ abstract public class AbstractRowsFragment extends RowsFragment implements RowBa
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (null != backgroundImageHelper) {
-            backgroundImageHelper.cancel();
+        if (null != fragmentHelper) {
+            fragmentHelper.onDestroy();
         }
     }
 
@@ -100,7 +101,7 @@ abstract public class AbstractRowsFragment extends RowsFragment implements RowBa
         return new RowBasedFragmentHelper(this,this);
     }
 
-    protected BackgroundImageHelper getBackgroundImageHelper() {
+    public BackgroundImageHelper getBackgroundImageHelper() {
         return new BackgroundImageHelper(getActivity(),this);
     }
 

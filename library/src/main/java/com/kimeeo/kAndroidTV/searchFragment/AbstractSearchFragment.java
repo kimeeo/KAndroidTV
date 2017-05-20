@@ -99,9 +99,15 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
 
 
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if (null != fragmentHelper) {
+            fragmentHelper.onDestroy();
+        }
+    }
 
-
-    protected boolean supportBackgroundChange() {
+    public boolean supportBackgroundChange() {
         return false;
     }
 
@@ -122,13 +128,7 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
     {
         return dataProvider;
     }
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (null != backgroundImageHelper) {
-            backgroundImageHelper.cancel();
-        }
-    }
+
 
     public RowBasedFragmentHelper getFragmentHelper() {
         return fragmentHelper;
@@ -153,7 +153,7 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
         return new SearchRowBasedFragmentHelper(this,this);
     }
 
-    protected BackgroundImageHelper getBackgroundImageHelper() {
+    public BackgroundImageHelper getBackgroundImageHelper() {
         return new BackgroundImageHelper(getActivity(),this);
     }
 

@@ -24,8 +24,6 @@ import android.support.v17.leanback.widget.GuidedAction;
 import java.util.List;
 public class DialogExampleFragment extends GuidedStepFragment {
 
-    private static final int ACTION_ID_POSITIVE = 1;
-    private static final int ACTION_ID_NEGATIVE = ACTION_ID_POSITIVE + 1;
     private String title;
     private int iconRes;
     private int[] actionsIDs;
@@ -40,8 +38,12 @@ public class DialogExampleFragment extends GuidedStepFragment {
         if(getIconRes()!=-1)
         {
             try {
-                Drawable icon = getActivity().getDrawable(getIconRes());
-                guidance = new Guidance(getTitle(),getDescription(),"",icon);
+                if(getIconRes()!=DialogExampleActivity.NO_ICON) {
+                    Drawable icon = getActivity().getDrawable(getIconRes());
+                    guidance = new Guidance(getTitle(), getDescription(), "", icon);
+                }
+                else
+                    guidance = new Guidance(getTitle(),getDescription(),"",null);
             }catch (Exception e)
             {
                 guidance = new Guidance(getTitle(),getDescription(),"",null);

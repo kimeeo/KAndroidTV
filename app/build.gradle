@@ -23,7 +23,4 @@ dependencies {
     final SUPPORT_LIBRARY_VERSION = '25.3.0'
     compile "com.android.support:leanback-v17:$SUPPORT_LIBRARY_VERSION"
     compile project(':library')
-
-    //https://github.com/bertrandmartel/youtubetv
-    compile 'fr.bmartel:youtubetv:1.2'
 }

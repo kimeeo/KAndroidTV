@@ -36,6 +36,7 @@ public class DialogExampleActivity extends Activity implements DialogExampleFrag
         if (savedInstanceState == null)
         {
             DialogExampleFragment fragment = new DialogExampleFragment();
+
             String title=getIntent().getExtras().getString(TITLE);
             String description=getIntent().getExtras().getString(DESCRIPTION);
             int icon=getIntent().getExtras().getInt(ICON);
@@ -47,6 +48,15 @@ public class DialogExampleActivity extends Activity implements DialogExampleFrag
             fragment.setActionsIDs(actionsIDs);
             fragment.setActionsLabels(actionsLabels);
             fragment.setOnDone(this);
+            try {
+                int backgroundDrawable=getIntent().getExtras().getInt(BACKGROUND_DRAWABLE);
+                if(backgroundDrawable!=-1)
+                    getWindow().setBackgroundDrawableResource(backgroundDrawable);
+            }catch (Exception e)
+            {
+
+            }
+
 
             GuidedStepFragment.addAsRoot(this, fragment, android.R.id.content);
         }
@@ -64,13 +74,17 @@ public class DialogExampleActivity extends Activity implements DialogExampleFrag
     }
 
     static final public String CHOICE ="choice";
+
+    static final public String BACKGROUND_DRAWABLE ="backgroundDrawable";
     static final public String TITLE ="title";
     static final public String ICON ="icon";
     static final public String DESCRIPTION ="description";
     static final public String ACTIONS_ID ="actionsID";
     static final public String ACTIONS_LABEL ="actionsLabel";
     static final public int REQUEST_CODE =1222;
-    static public void openDialog(Activity activity, int[] actionsIDs, String[] actionsLabels,String title, String description,@DrawableRes int icon)
+    static final public int NO_BACKGROUND_DRAWABLE =-1;
+    static final public int NO_ICON =-1;
+    static public void openDialog(Activity activity, int[] actionsIDs, String[] actionsLabels,String title, String description,@DrawableRes int icon,@DrawableRes int background)
     {
         Intent intent=new Intent(activity,DialogExampleActivity.class);
         intent.putExtra(TITLE,title);
@@ -78,6 +92,7 @@ public class DialogExampleActivity extends Activity implements DialogExampleFrag
         intent.putExtra(ICON,icon);
         intent.putExtra(ACTIONS_ID,actionsIDs);
         intent.putExtra(ACTIONS_LABEL,actionsLabels);
+        intent.putExtra(BACKGROUND_DRAWABLE,actionsLabels);
 
         activity.startActivityForResult(intent, REQUEST_CODE);
 

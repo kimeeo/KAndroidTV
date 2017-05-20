@@ -43,4 +43,7 @@ dependencies {
 
 
     testCompile 'junit:junit:4.12'
+
+    //https://github.com/bertrandmartel/youtubetv
+    compile 'fr.bmartel:youtubetv:1.2'
 }

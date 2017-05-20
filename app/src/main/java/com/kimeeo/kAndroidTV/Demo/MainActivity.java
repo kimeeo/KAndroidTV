@@ -36,6 +36,8 @@ public class MainActivity extends Activity {
             Fragment fragment = new BrowseFragment();
             getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
         }
+
+       // startActivity(new Intent(this, OnBoardActivity.class));
     }
     @Override
     public boolean onSearchRequested() {

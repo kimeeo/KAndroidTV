@@ -15,41 +15,33 @@
 package com.kimeeo.kAndroidTV.Demo.presenter;
 
 import android.content.Context;
-import android.support.v17.leanback.widget.BaseCardView;
-import android.support.v17.leanback.widget.ImageCardView;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
-import com.kimeeo.kAndroidTV.cards.AbstractCardPresenter;
-import com.kimeeo.kAndroidTV.cards.KimeeoBaseCardView;
+import com.kimeeo.kAndroidTV.cards.AbstractViewPresenter;
+import com.kimeeo.kAndroidTV.cards.CustomViewCardPresenter;
 
 
 /*
  * A CardPresenter is used to generate Views and bind Objects to them on demand.
  * It contains an Image CardView
  */
-public class ProgressPresenter extends AbstractCardPresenter {
+public class ProgressCardPresenter extends CustomViewCardPresenter {
+
     @Override
-    protected BaseCardView onCreateView(ViewGroup parent) {
-        return new ProgressPresenter.TextCardView(parent.getContext());
-    }
-
-    public class TextCardView extends KimeeoBaseCardView {
-
-        public TextCardView(Context context) {
-            super(context);
-            LayoutInflater.from(getContext()).inflate(R.layout.text_line_progress_card, this);
-            setFocusable(false);
-        }
-
-        public void updateItemView(Object data) {
-
-        }
+    public void updateItemView(View view, Object data) {
 
     }
+
+    @Override
+    public int getLayoutRes() {
+        return R.layout.text_line_progress_card;
+    }
+    @Override
+    final public boolean getFocusable() {return false;}
 }

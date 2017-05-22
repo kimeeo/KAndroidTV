@@ -48,6 +48,9 @@ public class BrowseFragment extends AbstractBrowseFragment {
     {
         return true;
     }
+
+
+
     /*
     protected RowHeaderPresenter createRowHeaderPresenter() {
         return new IconHeaderPresenter();

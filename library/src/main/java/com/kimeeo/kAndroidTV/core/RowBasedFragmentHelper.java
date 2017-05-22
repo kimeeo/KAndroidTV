@@ -8,6 +8,7 @@ import android.support.v17.leanback.app.DetailsFragment;
 import android.support.v17.leanback.app.PlaybackOverlayFragment;
 import android.support.v17.leanback.app.RowsFragment;
 import android.support.v17.leanback.app.SearchFragment;
+import android.support.v17.leanback.app.VerticalGridFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRowPresenter;
@@ -84,6 +85,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
             DetailsFragment browseFragment = (DetailsFragment)host;
             browseFragment.setAdapter(mRowsAdapter);
         }
+        else if(host instanceof VerticalGridFragment) {
+            VerticalGridFragment browseFragment = (VerticalGridFragment)host;
+            browseFragment.setAdapter(mRowsAdapter);
+        }
         setupEventListeners();
 
         if(dataProvider.size()!=0 )
@@ -127,6 +132,13 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
         }
         else if(host instanceof DetailsFragment) {
             DetailsFragment browseFragment = (DetailsFragment)host;
+            if (helperProvider.getSearchActivity() != null)
+                browseFragment.setOnSearchClickedListener(new SearchEventListeners());
+            browseFragment.setOnItemViewClickedListener(new ItemViewClickedListener());
+            browseFragment.setOnItemViewSelectedListener(new ItemViewSelectedListener());
+        }
+        else if(host instanceof VerticalGridFragment) {
+            VerticalGridFragment browseFragment = (VerticalGridFragment)host;
             if (helperProvider.getSearchActivity() != null)
                 browseFragment.setOnSearchClickedListener(new SearchEventListeners());
             browseFragment.setOnItemViewClickedListener(new ItemViewClickedListener());
@@ -246,7 +258,8 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
     private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
         public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-            handelPaging(itemViewHolder,item,rowViewHolder,row);
+            if(helperProvider.supportAutoPageLoader())
+                handelPaging(itemViewHolder,item,rowViewHolder,row);
 
             if(item!=null &&  helperProvider.supportBackgroundChange() && backgroundImageHelper!=null)
                 backgroundImageHelper.start(item);
@@ -316,5 +329,6 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
         void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row);
         void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row);
         boolean getSupportRowProgressBar();
+        boolean supportAutoPageLoader();
     }
 }

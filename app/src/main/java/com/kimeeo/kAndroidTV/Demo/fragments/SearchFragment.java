@@ -45,6 +45,7 @@ import com.kimeeo.kAndroidTV.searchFragment.AbstractSearchFragment;
 import fr.bmartel.youtubetv.YoutubeTvFragment;
 
 public class SearchFragment extends AbstractSearchFragment {
+
     @NonNull
     @Override
     protected DataProvider createDataProvider() {

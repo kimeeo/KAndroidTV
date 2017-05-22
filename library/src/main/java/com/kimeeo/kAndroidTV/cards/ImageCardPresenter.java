@@ -22,31 +22,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-public abstract class ImageCardPresenter extends AbstractCardPresenter {
+public abstract class ImageCardPresenter extends AbstractCardPresenter<ImageCardView> {
 
     private static final int ANIMATION_DURATION = 200;
 
-    private void animateIconBackground(Drawable drawable, boolean hasFocus) {
+    @Override
+    protected void animateOnFocus(ImageCardView drawable, boolean hasFocus) {
         if (hasFocus) {
-            ObjectAnimator.ofInt(drawable, "alpha", 0, 255).setDuration(ANIMATION_DURATION).start();
+            ObjectAnimator.ofInt(drawable.getMainImageView(), "alpha", 0, 255).setDuration(ANIMATION_DURATION).start();
         } else {
-            ObjectAnimator.ofInt(drawable, "alpha", 255, 0).setDuration(ANIMATION_DURATION).start();
+            ObjectAnimator.ofInt(drawable.getMainImageView(), "alpha", 255, 0).setDuration(ANIMATION_DURATION).start();
         }
     }
+    protected boolean supportFocusChange() {
+        return true;
+    }
+
     protected ImageCardView onCreateView(ViewGroup parent)
     {
         ImageCardView cardView = new ImageCardView(parent.getContext());
         final ImageView image = cardView.getMainImageView();
         image.getBackground().setAlpha(0);
-        cardView.setOnFocusChangeListener(new View.OnFocusChangeListener() {
-            @Override
-            public void onFocusChange(View v, boolean hasFocus) {
-                animateIconBackground(image.getBackground(), hasFocus);
-            }
-        });
-
         return cardView;
     }
+
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, Object item) {
         ImageCardView cardView = (ImageCardView)viewHolder.view;
@@ -57,11 +56,9 @@ public abstract class ImageCardPresenter extends AbstractCardPresenter {
     }
 
 
-
     protected CharSequence getDescription(Object item) {
         return "";
     }
-
     protected CharSequence getTitle(Object item) {
         return "";
     }

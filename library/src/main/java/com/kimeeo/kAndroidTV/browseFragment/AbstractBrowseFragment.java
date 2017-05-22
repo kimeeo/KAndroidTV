@@ -27,7 +27,8 @@ import java.net.URI;
 
 abstract public class AbstractBrowseFragment extends BrowseFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
 
-
+    @Override
+    public boolean supportAutoPageLoader() {return true;}
     public boolean getSupportRowProgressBar()
     {
         return false;

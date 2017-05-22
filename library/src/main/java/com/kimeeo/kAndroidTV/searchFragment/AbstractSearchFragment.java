@@ -50,6 +50,8 @@ abstract public class AbstractSearchFragment extends SearchFragment implements S
     {
         return false;
     }
+    @Override
+    public boolean supportAutoPageLoader() {return true;}
 
     private static final int REQUEST_SPEECH = 0x00000010;
     public String getQuery() {

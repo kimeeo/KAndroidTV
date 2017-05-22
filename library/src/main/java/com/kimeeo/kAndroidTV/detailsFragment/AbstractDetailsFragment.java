@@ -61,6 +61,9 @@ import java.util.Map;
 
 abstract public class AbstractDetailsFragment extends DetailsFragment implements RowBasedFragmentHelper.HelperProvider
 {
+
+    @Override
+    public boolean supportAutoPageLoader() {return true;}
     public boolean getSupportRowProgressBar()
     {
         return false;

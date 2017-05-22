@@ -25,11 +25,9 @@ public class Row2PresenterSelector extends PresenterSelector {
 
             presenter = presenters.get(5000);
             if (presenter == null) {
-                presenter = RowBasedFragmentHelper.getProgressPresenter();
+                presenter = new ProgressViewPresenter();
             }
             presenters.put(5000, presenter);
-
-            presenter =new ProgressPresenter();
         }
         else {
             Movie m = (Movie) item;

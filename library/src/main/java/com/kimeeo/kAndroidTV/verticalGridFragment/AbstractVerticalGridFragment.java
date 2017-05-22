@@ -1,5 +1,6 @@
 package com.kimeeo.kAndroidTV.verticalGridFragment;
 
+import android.app.Fragment;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
@@ -9,13 +10,19 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v17.leanback.app.BackgroundManager;
+import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.app.VerticalGridFragment;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.FocusHighlight;
+import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.ListRow;
+import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
+import android.support.v17.leanback.widget.RowHeaderPresenter;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.support.v17.leanback.widget.VerticalGridPresenter;
 import android.view.View;
@@ -26,18 +33,26 @@ import com.kimeeo.kAndroidTV.R;
 import com.kimeeo.kAndroidTV.core.AbstractArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
 import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.core.IHeaderItem;
+import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
+import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
 
-import java.net.URI;
 import java.util.List;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.
  */
 
-abstract public class AbstractVerticalGridFragment extends VerticalGridFragment implements BackgroundImageHelper.OnUpdate,DataProvider.OnFatchingObserve,MonitorList.OnChangeWatcher {
+abstract public class AbstractVerticalGridFragment extends VerticalGridFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
 
+    @Override
+    public boolean supportAutoPageLoader() {return true;}
+    public boolean getSupportRowProgressBar()
+    {
+        return false;
+    }
 
-    protected boolean supportBackgroundChange() {
+    public boolean supportBackgroundChange() {
         return false;
     }
 
@@ -45,69 +60,46 @@ abstract public class AbstractVerticalGridFragment extends VerticalGridFragment 
     {
 
     }
-    protected BackgroundImageHelper backgroundImageHelper;
-    protected AbstractArrayObjectAdapter mRowsAdapter;
-    private boolean showBusyForFirstTimeLoad=true;
+    @Override
+    final public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
+        return null;
+    }
 
-    abstract protected @NonNull
-    DataProvider createDataProvider();
+
+    abstract protected @NonNull DataProvider createDataProvider();
     protected DataProvider dataProvider;
     protected void configDataManager(DataProvider dataProvider) {}
     public DataProvider getDataProvider()
     {
         return dataProvider;
     }
-    public void setDataProvider(DataProvider dataProvider){
-        if(this.dataProvider!=null)
-        {
-            this.dataProvider.removeFatchingObserve(this);
-            this.dataProvider.removeDataChangeWatcher(this);
-            this.dataProvider = null;
-        }
-        if(dataProvider!=null) {
-            this.dataProvider = dataProvider;
-            this.dataProvider.addFatchingObserve(this);
-            this.dataProvider.addDataChangeWatcher(this);
-            configDataManager(this.dataProvider);
-        }
-    }
     @Override
     public void onDestroy() {
         super.onDestroy();
-        if (null != backgroundImageHelper) {
-            backgroundImageHelper.cancel();
+        if (null != fragmentHelper) {
+            fragmentHelper.onDestroy();
         }
     }
 
+    public RowBasedFragmentHelper getFragmentHelper() {
+        return fragmentHelper;
+    }
+
+    RowBasedFragmentHelper fragmentHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setupUIElements();
-
         VerticalGridPresenter gridPresenter = createVerticalGridPresenter(getZoomFactor(),getNumberOfColumns());
         setGridPresenter(gridPresenter);
 
-        if(getDataProvider()==null)
-            setDataProvider(createDataProvider());
-        getDataProvider().setRefreshEnabled(false);
-
-        PresenterSelector presenterSelector = getRowItemPresenterSelector();
-        mRowsAdapter = getRowArrayObjectAdapter(presenterSelector);
-
-        setAdapter(mRowsAdapter);
-        setupEventListeners();
-
-        if(getDataProvider().size()!=0 )
-            itemsAdded(0,getDataProvider());
-
-        getDataProvider().next();
-        if(supportBackgroundChange())
-            backgroundImageHelper=getBackgroundImageHelper();
+        fragmentHelper = createBrowseFragmentHelper();
+        dataProvider=createDataProvider();
+        configDataManager(dataProvider);
+        fragmentHelper.build();
+        fragmentHelper.next();
 
     }
-    abstract protected PresenterSelector getRowItemPresenterSelector();
-
 
     protected int getNumberOfColumns() {
         return 4;
@@ -123,182 +115,20 @@ abstract public class AbstractVerticalGridFragment extends VerticalGridFragment 
         return verticalGridPresenter;
     }
 
-    protected BackgroundImageHelper getBackgroundImageHelper() {
-        return new BackgroundImageHelper(getActivity(),this);
+    protected RowBasedFragmentHelper createBrowseFragmentHelper() {
+        return new VerticalGridRowBasedFragmentHelper(this,this);
     }
-
-
-
-    protected AbstractArrayObjectAdapter createArrayObjectAdapter(Presenter presenter) {
-        return new DefaultArrayObjectAdapter(presenter);
-    }
-    protected AbstractArrayObjectAdapter createArrayObjectAdapter(PresenterSelector presenter) {
-        return new DefaultArrayObjectAdapter(presenter);
-    }
-    @Override
-    public void itemsAdded(int index, List list) {
-        mRowsAdapter.addAll(index,list);
-    }
-
-    protected AbstractArrayObjectAdapter getRowArrayObjectAdapter(Presenter presenter) {
-        return new DefaultArrayObjectAdapter(presenter);
-    }
-    protected AbstractArrayObjectAdapter getRowArrayObjectAdapter(PresenterSelector presenterSelector) {
-        return new DefaultArrayObjectAdapter(presenterSelector);
-    }
-
-    @Override
-    public void itemsRemoved(int index, List list) {
-        mRowsAdapter.removeItems(index,list.size());
-    }
-    @Override
-    public void itemsChanged(int index, List list) {
-        mRowsAdapter.notifyArrayItemRangeChanged(index,list.size());
-    }
-
-    private ProgressDialog progressDialog;
-    private boolean fistTime=true;
-
-    @Override
-    public void onFetchingStart(boolean b) {
-        if (fistTime && getShowBusyForFirstTimeLoad()) {
-            fistTime=false;
-            showBusy(getFirstTimeLoaderMessageResID());
+    public  class VerticalGridRowBasedFragmentHelper extends com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper
+    {
+        public VerticalGridRowBasedFragmentHelper(Fragment host, HelperProvider helperProvider) {
+            super(host, helperProvider);
         }
-    }
-
-    protected int getFirstTimeLoaderMessageResID() {
-        return R.string._busy_message;
-    }
-
-    protected void showBusy(@StringRes int messageRes) {
-        showBusy(getActivity().getString(messageRes));
-    }
-    protected void showBusy(String message) {
-        progressDialog = new ProgressDialog(getActivity());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(message);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.show();
-
-    }
-
-    @Override
-    public void onFetchingFinish(boolean b) {
-        hideBusy();
-    }
-
-    private void hideBusy() {
-        if(progressDialog!=null) {
-            progressDialog.hide();
-            progressDialog=null;
-        }
-    }
-
-    @Override
-    public void onFetchingEnd(List<?> list, boolean b) {
-
-    }
-    @Override
-    public void onFetchingError(Object o) {
-
-    }
-
-    private void setupUIElements() {
-        if(getTitleRes()!=-1)
-            setTitle(getString(getTitleRes()));
-        else if(getTitleValue()!=null)
-            setTitle(getTitleValue());
-
-        if(getBadgeDrawableRes()!=-1)
-            setBadgeDrawable(getResources().getDrawable(getBadgeDrawableRes(), null));
-        else if(getBadgeDrawableDrawable()!=null)
-            setBadgeDrawable(getBadgeDrawableDrawable());
-
-        if(getSearchAffordanceColorRes()!=-1)
-            setSearchAffordanceColor(getResources().getColor(getSearchAffordanceColorRes()));
-        else if(getSearchAffordanceColorValue()!=-1)
-            setSearchAffordanceColor(getSearchAffordanceColorValue());
-    }
-
-
-
-
-    protected int getSearchAffordanceColorValue()
-    {
-        return -1;
-    }
-    @ColorRes
-    protected int getSearchAffordanceColorRes()
-    {
-        return R.color.fastlane_background;
-    }
-
-    @StringRes
-    protected int getTitleRes()
-    {
-        return R.string.app_name;
-    }
-    protected String getTitleValue()
-    {
-        return null;
-    }
-    @DrawableRes
-    protected int getBadgeDrawableRes()
-    {
-        return -1;
-    }
-    protected Drawable getBadgeDrawableDrawable()
-    {
-        return null;
-    }
-    private void setupEventListeners() {
-        if(getSearchActivity()!=null)
-            setOnSearchClickedListener(new AbstractVerticalGridFragment.SearchEventListeners());
-
-        setOnItemViewClickedListener(new AbstractVerticalGridFragment.ItemViewClickedListener());
-        setOnItemViewSelectedListener(new AbstractVerticalGridFragment.ItemViewSelectedListener());
-    }
-    protected Class getSearchActivity() {
-        return null;
-    }
-
-    protected void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-
-    }
-    protected void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-
-    }
-    protected void onSearch() {
-        if(getSearchActivity()!=null) {
-            Intent intent = new Intent(getActivity(), getSearchActivity());
-            startActivity(intent);
-        }
-    }
-
-    public boolean getShowBusyForFirstTimeLoad() {
-        return showBusyForFirstTimeLoad;
-    }
-
-    public boolean isShowBusyForFirstTimeLoad() {
-        return showBusyForFirstTimeLoad;
-    }
-
-    public void setShowBusyForFirstTimeLoad(boolean showBusyForFirstTimeLoad) {
-        this.showBusyForFirstTimeLoad = showBusyForFirstTimeLoad;
-    }
-
-    private final class ItemViewClickedListener implements OnItemViewClickedListener {
         @Override
-        public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-            AbstractVerticalGridFragment.this.onItemClicked(itemViewHolder,item,rowViewHolder,row);
+        public void itemsAdded(int index, List list) {
+            getRowsAdapter().addAll(index,list);
         }
-    }
-    private final class ItemViewSelectedListener implements OnItemViewSelectedListener {
         @Override
-        public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
-
+        protected void handelPaging(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {
             DataProvider dataProvider = getDataProvider();
             if(dataProvider!=null)
             {
@@ -320,18 +150,106 @@ abstract public class AbstractVerticalGridFragment extends VerticalGridFragment 
                     }
                 }
             }
-
-            if(supportBackgroundChange())
-                backgroundImageHelper.start(item);
-
-
-            AbstractVerticalGridFragment.this.onItemSelected(itemViewHolder,item,rowViewHolder,row);
         }
     }
-    private final class SearchEventListeners implements View.OnClickListener {
-        @Override
-        public void onClick(View view) {
-            onSearch();
-        }
+    public BackgroundImageHelper getBackgroundImageHelper() {
+        return new BackgroundImageHelper(getActivity(),this);
+    }
+
+
+    public PresenterSelector createMainRowPresenterSelector() {
+        return null;
+    }
+    public Presenter createMainRowPresenter() {
+        return new ListRowPresenter();
+    }
+    public AbstractArrayObjectAdapter createMainArrayObjectAdapter(Presenter presenter) {
+        return new DefaultArrayObjectAdapter(presenter);
+    }
+    public AbstractArrayObjectAdapter createMainArrayObjectAdapter(PresenterSelector presenter) {
+        return new DefaultArrayObjectAdapter(presenter);
+    }
+
+    public Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+        return new ListRow(header, listRowAdapter);
+    }
+
+    public HeaderItem getHeaderItem(int i,IHeaderItem headerItem, String name)
+    {
+        return new HeaderItem(i,name);
+    }
+    public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
+        return new ArrayObjectAdapter(presenter);
+    }
+    public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,PresenterSelector presenterSelector) {
+        return new WatcherArrayObjectAdapter(presenterSelector);
+    }
+    public Class getSearchActivity() {
+        return null;
+    }
+    public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row){}
+    public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {}
+
+
+
+
+
+
+    //UI Customise
+
+
+    private void setupUIElements() {
+        if(getTitleRes()!=-1)
+            setTitle(getString(getTitleRes()));
+        else if(getTitleValue()!=null)
+            setTitle(getTitleValue());
+
+        if(getBadgeDrawableRes()!=-1)
+            setBadgeDrawable(getResources().getDrawable(getBadgeDrawableRes(), null));
+        else if(getBadgeDrawableDrawable()!=null)
+            setBadgeDrawable(getBadgeDrawableDrawable());
+
+        if(getSearchAffordanceColorRes()!=-1)
+            setSearchAffordanceColor(getResources().getColor(getSearchAffordanceColorRes()));
+        else if(getSearchAffordanceColorValue()!=-1)
+            setSearchAffordanceColor(getSearchAffordanceColorValue());
+
+    }
+    @Override
+    public String getFirstTimeLoaderMessage() {
+        return getActivity().getString(R.string._busy_message);
+    }
+
+
+
+    protected int getSearchAffordanceColorValue()
+    {
+        return -1;
+    }
+    @ColorRes
+    protected int getSearchAffordanceColorRes()
+    {
+        return R.color.fastlane_background;
+    }
+
+
+
+    @StringRes
+    protected int getTitleRes()
+    {
+        return R.string.app_name;
+    }
+    protected String getTitleValue()
+    {
+        return null;
+    }
+    @DrawableRes
+    protected int getBadgeDrawableRes()
+    {
+        return -1;
+    }
+    protected Drawable getBadgeDrawableDrawable()
+    {
+        return null;
     }
 }

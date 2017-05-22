@@ -3,7 +3,6 @@ package com.kimeeo.kAndroidTV.Demo.presenter;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 
-import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.core.ProgressCardVO;
 
@@ -23,7 +22,7 @@ public class Row1PresenterSelector extends PresenterSelector {
         {
             presenter = presenters.get(500000);
             if (presenter == null) {
-                presenter = new ProgressPresenter();
+                presenter = new ProgressViewPresenter();
             }
             presenters.put(500000, presenter);
         }

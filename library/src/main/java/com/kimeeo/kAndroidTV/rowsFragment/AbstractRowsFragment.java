@@ -45,7 +45,8 @@ import java.util.List;
  */
 
 abstract public class AbstractRowsFragment extends RowsFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
-
+    @Override
+    public boolean supportAutoPageLoader() {return true;}
     public boolean getSupportRowProgressBar()
     {
         return false;

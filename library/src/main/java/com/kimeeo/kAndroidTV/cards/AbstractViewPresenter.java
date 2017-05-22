@@ -14,19 +14,18 @@
 package com.kimeeo.kAndroidTV.cards;
 
 import android.content.Context;
-import android.support.v17.leanback.widget.BaseCardView;
 import android.support.v17.leanback.widget.Presenter;
 import android.view.View;
 import android.view.ViewGroup;
 
-public abstract class AbstractCardPresenter<T extends BaseCardView> extends Presenter {
+public abstract class AbstractViewPresenter<T extends View> extends Presenter {
 
     private Context mContext;
-    public AbstractCardPresenter(Context context) {
+    public AbstractViewPresenter(Context context) {
         super();
         mContext = context;
     }
-    public AbstractCardPresenter() {
+    public AbstractViewPresenter() {
         super();
     }
 
@@ -51,10 +50,9 @@ public abstract class AbstractCardPresenter<T extends BaseCardView> extends Pres
         return new ViewHolder(cardView);
     }
 
-    public boolean getFocusable() {
-        return true;
+    protected boolean getFocusable() {
+        return false;
     }
-
 
     protected boolean supportFocusChange() {
         return false;

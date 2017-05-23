@@ -23,6 +23,11 @@ public class WatcherArrayObjectAdapter extends AbstractArrayObjectAdapter implem
     public WatcherArrayObjectAdapter(Presenter presenter) {
         super(presenter);
     }
+
+    public DataProvider getDataProvider() {
+        return dataProvider;
+    }
+
     DataProvider dataProvider;
     public void setDataProvider(DataProvider rowData) {
         this.dataProvider=rowData;
@@ -31,6 +36,8 @@ public class WatcherArrayObjectAdapter extends AbstractArrayObjectAdapter implem
     }
     public void setSupportRowProgressBar(boolean support) {
         this.support=support;
+        //if(this.support)
+
     }
     @Override
     public void itemsAdded(final int i, final List list) {

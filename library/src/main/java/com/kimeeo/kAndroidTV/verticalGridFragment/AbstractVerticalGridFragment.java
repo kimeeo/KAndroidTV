@@ -34,6 +34,7 @@ import com.kimeeo.kAndroidTV.core.AbstractArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
 import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
+import com.kimeeo.kAndroidTV.core.ProgressCardVO;
 import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
 
@@ -122,6 +123,30 @@ abstract public class AbstractVerticalGridFragment extends VerticalGridFragment 
     {
         public VerticalGridRowBasedFragmentHelper(Fragment host, HelperProvider helperProvider) {
             super(host, helperProvider);
+
+        }
+        /*
+        public void build() {
+            super.build();
+
+            if(getHelperProvider().getSupportRowProgressBar() && mRowsAdapter instanceof WatcherArrayObjectAdapter)
+            {
+                //((WatcherArrayObjectAdapter)mRowsAdapter).getDataProvider().addFatchingObserve((WatcherArrayObjectAdapter)mRowsAdapter);
+                ((WatcherArrayObjectAdapter)mRowsAdapter).setSupportRowProgressBar(getHelperProvider().getSupportRowProgressBar());
+            }
+        }
+        */
+        public void onFetchingStart(boolean b) {
+            super.onFetchingStart(b);
+            if(dataProvider.size()!=0 && getHelperProvider().getSupportRowProgressBar())
+                dataProvider.add(new ProgressCardVO());
+        }
+        public void onFetchingFinish(boolean b) {
+            super.onFetchingFinish(b);
+            if(dataProvider.size()!=0 && getHelperProvider().getSupportRowProgressBar()) {
+                if (dataProvider.get(dataProvider.size() - 1) instanceof ProgressCardVO)
+                    dataProvider.remove(dataProvider.size() - 1);
+            }
         }
         @Override
         public void itemsAdded(int index, List list) {
@@ -179,7 +204,7 @@ abstract public class AbstractVerticalGridFragment extends VerticalGridFragment 
         return new HeaderItem(i,name);
     }
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
-        return new ArrayObjectAdapter(presenter);
+        return new WatcherArrayObjectAdapter(presenter);
     }
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,PresenterSelector presenterSelector) {
         return new WatcherArrayObjectAdapter(presenterSelector);

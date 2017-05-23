@@ -61,6 +61,7 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
 
         dataProvider = helperProvider.getDataProvider();
         dataProvider.setRefreshEnabled(false);
+
         dataProvider.addFatchingObserve(this);
         dataProvider.addDataChangeWatcher(this);
         PresenterSelector presenterSelector=helperProvider.createMainRowPresenterSelector();

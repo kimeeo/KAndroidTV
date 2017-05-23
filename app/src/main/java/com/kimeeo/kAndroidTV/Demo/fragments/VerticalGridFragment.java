@@ -18,6 +18,10 @@ import com.kimeeo.kAndroidTV.verticalGridFragment.AbstractVerticalGridFragment;
 
 public class VerticalGridFragment extends AbstractVerticalGridFragment {
 
+    public boolean getSupportRowProgressBar()
+    {
+        return true;
+    }
     @NonNull
     @Override
     protected DataProvider createDataProvider() {

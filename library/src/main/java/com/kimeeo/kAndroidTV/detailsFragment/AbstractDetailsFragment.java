@@ -12,7 +12,6 @@ import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
-import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.DetailsFragment;
 import android.support.v17.leanback.app.DetailsFragmentBackgroundController;
 import android.support.v17.leanback.media.MediaPlayerGlue;
@@ -25,6 +24,7 @@ import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElement
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v17.leanback.widget.OnActionClickedListener;
 import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.OnItemViewSelectedListener;
 import android.support.v17.leanback.widget.Presenter;
@@ -59,7 +59,7 @@ import java.util.Map;
  * Created by BhavinPadhiyar on 5/19/17.
  */
 
-abstract public class AbstractDetailsFragment extends DetailsFragment implements RowBasedFragmentHelper.HelperProvider
+abstract public class AbstractDetailsFragment extends DetailsFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener
 {
 
     @Override
@@ -69,13 +69,12 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
         return false;
     }
 
-    final public BackgroundImageHelper getBackgroundImageHelper(){return null;}
-    final public boolean supportBackgroundChange(){return false;}
+    public BackgroundImageHelper getBackgroundImageHelper(){return null;}
+    public boolean supportBackgroundChange(){return false;}
 
 
     private List<Action> actionlist;
     private ArrayObjectAdapter actionAdapter;
-    private MediaPlayerGlue mMediaPlayerGlue;
     public Object getData() {
         return data;
     }
@@ -115,7 +114,6 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
         @Override
         public void itemsAdded(int index, List list) {
             super.itemsAdded(index,list);
-            initializeBackground(mDetailsBackground,data);
         }
     }
     abstract protected @NonNull DataProvider createDataProvider();
@@ -158,11 +156,11 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
         return new HeaderItem(i,name);
     }
 
-    public FullWidthDetailsOverviewRowPresenter getRowPresenter() {
+    public RowPresenter getRowPresenter() {
         return rowPresenter;
     }
 
-    FullWidthDetailsOverviewRowPresenter rowPresenter;
+    RowPresenter rowPresenter;
 
     private void setupUi() {
 
@@ -178,6 +176,9 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
             actionAdapter = createActionArrayObjectAdapter();
             actionAdapter.addAll(0,actionlist);
             detailsOverview.setActionsAdapter(actionAdapter);
+
+            if(rowPresenter instanceof FullWidthDetailsOverviewRowPresenter)
+                ((FullWidthDetailsOverviewRowPresenter)rowPresenter).setOnActionClickedListener(this);
         }
 
 
@@ -194,7 +195,7 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
                 startEntranceTransition();
             }
         }, 500);
-        initializeBackground(mDetailsBackground,data);
+        updateBackground(mDetailsBackground,data);
     }
 
     protected void setImage(DetailsOverviewRow detailsOverview, Object data) {
@@ -211,7 +212,7 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
     }
 
 
-    protected FullWidthDetailsOverviewRowPresenter createActionDetailedViewPresenter() {
+    protected RowPresenter createActionDetailedViewPresenter() {
         FullWidthDetailsOverviewRowPresenter detailsRowPresenter = createDetailsRowPresenter(createDetailsDescriptionPresenter());
         FullWidthDetailsOverviewSharedElementHelper mHelper = createDtailsSharedElementHelper();
         if(getTransitionName()!=null)
@@ -245,9 +246,7 @@ abstract public class AbstractDetailsFragment extends DetailsFragment implements
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
         return new ArrayObjectAdapter(presenter);
     }
-    protected void initializeBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data) {
-
-    }
+    protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data) {}
     public Class getSearchActivity() {
         return null;
     }

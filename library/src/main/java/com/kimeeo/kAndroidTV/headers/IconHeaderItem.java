@@ -8,7 +8,6 @@ import android.support.v17.leanback.widget.HeaderItem;
 
 public class IconHeaderItem extends HeaderItem {
 
-    private static final String TAG = IconHeaderItem.class.getSimpleName();
     public static final int ICON_NONE = -1;
     private int mIconResId = ICON_NONE;
 

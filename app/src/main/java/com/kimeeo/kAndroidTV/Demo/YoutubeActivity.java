@@ -41,18 +41,6 @@ public class YoutubeActivity extends Activity {
 
 
     }
-
-    /*
-        //DialogExampleActivity.openDialog(this,new int[]{1,2,3},new String[]{"YES","NO","MAY BE"},"Would you like to try","OK", R.drawable.ic_android_black_24dp,DialogExampleActivity.NO_BACKGROUND_DRAWABLE);
-   @Override
-   protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-       super.onActivityResult(requestCode, resultCode, data);
-       if (requestCode == DialogExampleActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-           int what=data.getIntExtra(DialogExampleActivity.CHOICE,-1);
-
-       }
-   }*/
-
     public static boolean supportsPictureInPicture(Context context) {
         return BuildCompat.isAtLeastN() && context.getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
     }

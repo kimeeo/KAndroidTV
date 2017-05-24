@@ -46,4 +46,7 @@ dependencies {
 
     //https://github.com/bertrandmartel/youtubetv
     compile 'fr.bmartel:youtubetv:1.2'
+//
+//    https://github.com/hitherejoe/LeanbackCards
+    //compile 'com.hitherejoe.leanback:leanbackcards:0.1.0'
 }

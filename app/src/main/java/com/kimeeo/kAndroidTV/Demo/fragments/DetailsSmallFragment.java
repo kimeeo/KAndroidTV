@@ -3,7 +3,9 @@ package com.kimeeo.kAndroidTV.Demo.fragments;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.DetailsFragmentBackgroundController;
+import android.support.v17.leanback.media.MediaPlayerGlue;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.DetailsOverviewLogoPresenter;
@@ -30,7 +32,7 @@ import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.presenter.TextCardPresenter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.detailsFragment.AbstractDetailsFragment;
-import com.kimeeo.kAndroidTV.detailsFragment.AbstractVideoDetailsFragment;
+import com.kimeeo.kAndroidTV.detailsFragment.AbstractSmallDetailsFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,30 +42,8 @@ import java.util.List;
  * Created by BhavinPadhiyar on 5/18/17.
  */
 
-public class VideoDetailsFragment extends AbstractVideoDetailsFragment{
+public class DetailsSmallFragment extends AbstractSmallDetailsFragment {
 
-
-
-
-    @Override
-    protected String getTrailerUrl(Object data) {
-        return "https://storage.googleapis.com/android-tv/Sample videos/Google+/Google+_ Sharing but like real life.mp4";
-    }
-
-    @Override
-    protected String getVideoUrl(Object data) {
-        return "https://storage.googleapis.com/android-tv/Sample videos/April Fool's 2013/Explore Treasure Mode with Google Maps.mp4";
-    }
-
-    @Override
-    protected String getVideoArtist(Object data) {
-        return "Amir Khan";
-    }
-
-    @Override
-    protected String getVideoTitle(Object data) {
-        return "Dangal";
-    }
 
     @NonNull
     @Override
@@ -103,8 +83,19 @@ public class VideoDetailsFragment extends AbstractVideoDetailsFragment{
         return map;
     }
 
-
-
+    int count=1;
+    @Override
+    public void updateDetailsBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
+    {
+        if(count==1) {
+            count=0;
+            mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.background_canyon));
+        }
+        else {
+            count=1;
+            mBackgroundManager.setDrawable(getResources().getDrawable(R.drawable.image));
+        }
+    }
 
     protected void setImage(DetailsOverviewRow detailsOverview, Object data) {
         detailsOverview.setImageDrawable(getActivity().getDrawable(R.drawable.image));

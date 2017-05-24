@@ -81,6 +81,11 @@ public class BackgroundImageHelper {
     public void setBackgroundUpdateDelay(long backgroundUpdateDelay) {
         this.backgroundUpdateDelay = backgroundUpdateDelay;
     }
+
+    public BackgroundManager getBackgroundManager() {
+        return mBackgroundManager;
+    }
+
     public static interface OnUpdate
     {
         void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height);

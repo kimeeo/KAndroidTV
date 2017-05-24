@@ -43,7 +43,7 @@ abstract public class AbstractVideoDetailsFragment extends AbstractDetailsFragme
 {
 
     private MediaPlayerGlue mMediaPlayerGlue;
-    protected void initializeBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data) {
+    protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data) {
         mMediaPlayerGlue = createMediaPlayerGlue();
         mMediaPlayerGlue.setTitle(getVideoTitle(data));
         mMediaPlayerGlue.setArtist(getVideoArtist(data));

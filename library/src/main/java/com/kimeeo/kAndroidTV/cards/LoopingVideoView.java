@@ -1,4 +1,4 @@
-package com.kimeeo.kAndroidTV.widget;
+package com.kimeeo.kAndroidTV.cards;
 
 import android.content.Context;
 import android.media.MediaPlayer;

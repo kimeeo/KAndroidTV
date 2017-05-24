@@ -22,14 +22,18 @@ import android.support.v17.leanback.widget.GuidanceStylist.Guidance;
 import android.support.v17.leanback.widget.GuidedAction;
 
 import java.util.List;
-public class DialogExampleFragment extends GuidedStepFragment {
+public class DialogFragment extends GuidedStepFragment {
 
     private String title;
     private int iconRes;
     private int[] actionsIDs;
     private String[] actionsLabels;
+    private int[] actionsIcons;
+    private String[] actionsDescriptions;
+
     private String description;
-    private DialogExampleFragment.OnActionClicked onDone;
+    private DialogFragment.OnActionClicked onDone;
+    private int backgroundRes=-1;
 
     @NonNull
     @Override
@@ -38,7 +42,7 @@ public class DialogExampleFragment extends GuidedStepFragment {
         if(getIconRes()!=-1)
         {
             try {
-                if(getIconRes()!=DialogExampleActivity.NO_ICON) {
+                if(getIconRes()!= -1) {
                     Drawable icon = getActivity().getDrawable(getIconRes());
                     guidance = new Guidance(getTitle(), getDescription(), "", icon);
                 }
@@ -52,6 +56,8 @@ public class DialogExampleFragment extends GuidedStepFragment {
         else
             guidance = new Guidance(getTitle(),getDescription(),"",null);
 
+        if(backgroundRes!=-1)
+            setBackgroundRes(backgroundRes);
         return guidance;
     }
 
@@ -59,7 +65,22 @@ public class DialogExampleFragment extends GuidedStepFragment {
     public void onCreateActions(@NonNull List<GuidedAction> actions, Bundle savedInstanceState)
     {
         for (int i = 0; i < getActionsIDs().length; i++) {
-            GuidedAction action = new GuidedAction.Builder().id(getActionsIDs()[i]).title(getActionsLabels()[i]).build();
+            GuidedAction action = new GuidedAction.Builder().title(getActionsLabels()[i]).build();
+            action.setId(getActionsIDs()[i]);
+
+            if(getActionsDescriptions()!=null)
+                action.setDescription(getActionsDescriptions()[i]);
+
+            if(getActionsIcons()!=null)
+            {
+
+                try {
+                    int iconID= getActionsIcons()[i];
+                    action.setIcon(getResources().getDrawable(iconID));
+                }catch (Exception e){}
+            }
+
+
             actions.add(action);
         }
 
@@ -89,6 +110,8 @@ public class DialogExampleFragment extends GuidedStepFragment {
         return iconRes;
     }
 
+
+
     public void setActionsIDs(int[] actionsIDs) {
         this.actionsIDs = actionsIDs;
     }
@@ -105,6 +128,15 @@ public class DialogExampleFragment extends GuidedStepFragment {
         return actionsLabels;
     }
 
+    public String[] getActionsDescriptions() {
+        return actionsDescriptions;
+    }
+    public int[] getActionsIcons() {
+        return actionsIcons;
+    }
+
+
+
     public void setDescription(String description) {
         this.description = description;
     }
@@ -113,13 +145,30 @@ public class DialogExampleFragment extends GuidedStepFragment {
         return description;
     }
 
-    public void setOnDone(DialogExampleFragment.OnActionClicked onDone) {
+    public void setOnDone(DialogFragment.OnActionClicked onDone) {
         this.onDone = onDone;
     }
 
-    public DialogExampleFragment.OnActionClicked getOnDone() {
+    public DialogFragment.OnActionClicked getOnDone() {
         return onDone;
     }
+
+    public void setActionsIcons(int[] actionsIcons) {
+        this.actionsIcons = actionsIcons;
+    }
+
+    public void setActionsDescriptions(String[] actionsDescriptions) {
+        this.actionsDescriptions = actionsDescriptions;
+    }
+
+    public void setBackgroundRes(int backgroundRes) {
+        this.backgroundRes = backgroundRes;
+    }
+
+    public int getBackgroundRes() {
+        return backgroundRes;
+    }
+
 
     public static interface OnActionClicked
     {

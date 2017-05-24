@@ -3,8 +3,8 @@ package com.kimeeo.kAndroidTV.Demo.fragments;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
+import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.DetailsFragmentBackgroundController;
-import android.support.v17.leanback.media.MediaPlayerGlue;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.DetailsOverviewLogoPresenter;
@@ -31,6 +31,7 @@ import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.presenter.TextCardPresenter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.detailsFragment.AbstractDetailsFragment;
+import com.kimeeo.kAndroidTV.detailsFragment.AbstractSmallDetailsFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -40,7 +41,7 @@ import java.util.List;
  * Created by BhavinPadhiyar on 5/18/17.
  */
 
-public class DetailsFragment extends AbstractDetailsFragment {
+public class DetailsFullFragment extends AbstractDetailsFragment {
 
 
     @NonNull
@@ -80,10 +81,12 @@ public class DetailsFragment extends AbstractDetailsFragment {
         map.put(ListRow.class, new ListRowPresenter());
         return map;
     }
-    protected void initializeBackground(DetailsFragmentBackgroundController mDetailsBackground, Object data) {
+    @Override
+    protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground, Object data) {
         mDetailsBackground.enableParallax();
         mDetailsBackground.setCoverBitmap(BitmapFactory.decodeResource(getResources(),R.drawable.background_canyon));
     }
+
     protected void setImage(DetailsOverviewRow detailsOverview, Object data) {
         detailsOverview.setImageDrawable(getActivity().getDrawable(R.drawable.image));
     }
@@ -103,6 +106,11 @@ public class DetailsFragment extends AbstractDetailsFragment {
     @Override
     protected Presenter createDetailsDescriptionPresenter() {
         return new DetailsDescriptionPresenter(getActivity());
+    }
+
+    @Override
+    public void onActionClicked(Action action) {
+
     }
 
 

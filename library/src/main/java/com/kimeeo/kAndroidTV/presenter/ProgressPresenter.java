@@ -4,7 +4,7 @@ import android.support.v17.leanback.widget.BaseCardView;
 import android.view.ViewGroup;
 
 import com.kimeeo.kAndroidTV.cards.AbstractCardPresenter;
-import com.kimeeo.kAndroidTV.widget.LoadingCardView;
+import com.kimeeo.kAndroidTV.cards.LoadingCardView;
 
 /**
  * Created by BhavinPadhiyar on 5/21/17.

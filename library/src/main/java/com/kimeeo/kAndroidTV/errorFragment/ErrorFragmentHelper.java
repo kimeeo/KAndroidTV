@@ -1,5 +1,6 @@
 package com.kimeeo.kAndroidTV.errorFragment;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
@@ -23,6 +24,10 @@ public class ErrorFragmentHelper {
     private View.OnClickListener onClickListener;
 
     public ErrorFragmentHelper(Context context)
+    {
+        this.context=context;
+    }
+    public ErrorFragmentHelper(Activity context)
     {
         this.context=context;
     }
@@ -167,11 +172,14 @@ public class ErrorFragmentHelper {
             errorFragment.setImageDrawable(imageDrawable);
 
 
-        if(buttonText!=null)
-            errorFragment.setButtonText(buttonText);
 
-        if(onClickListener!=null)
+
+        if(onClickListener!=null) {
             errorFragment.setButtonClickListener(onClickListener);
+            if(buttonText==null)
+                buttonText="Close";
+            errorFragment.setButtonText(buttonText);
+        }
 
         return errorFragment;
     }

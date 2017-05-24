@@ -24,7 +24,7 @@ public class IconHeaderPresenter extends android.support.v17.leanback.widget.Row
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup) {
         mUnselectedAlpha = viewGroup.getResources().getFraction(R.fraction.lb_browse_header_unselect_alpha, 1, 1);
         LayoutInflater inflater = (LayoutInflater) viewGroup.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.icon_header_item, null);
+        View view = inflater.inflate(R.layout._icon_header_item, null);
         return new ViewHolder(view);
     }
 
@@ -49,8 +49,6 @@ public class IconHeaderPresenter extends android.support.v17.leanback.widget.Row
     }
     @Override
     protected void onSelectLevelChanged(IconHeaderPresenter.ViewHolder holder) {
-        // this is a temporary fix
         holder.view.setAlpha(mUnselectedAlpha + holder.getSelectLevel() * (1.0f - mUnselectedAlpha));
     }
-
 }

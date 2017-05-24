@@ -23,6 +23,7 @@ import android.view.View;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroid.dataProvider.MonitorList;
 import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
+import com.kimeeo.kAndroidTV.presenter.ProgressPresenter;
 
 import java.util.List;
 

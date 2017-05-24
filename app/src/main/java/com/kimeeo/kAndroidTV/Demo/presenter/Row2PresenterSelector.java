@@ -6,8 +6,6 @@ import android.support.v17.leanback.widget.PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.core.ProgressCardVO;
-import com.kimeeo.kAndroidTV.core.ProgressPresenter;
-import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 
 import java.util.HashMap;
 

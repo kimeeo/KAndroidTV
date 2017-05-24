@@ -34,6 +34,7 @@ import com.kimeeo.kAndroidTV.Demo.PageActivity;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
 import com.kimeeo.kAndroidTV.Demo.VerticalGridActivity;
+import com.kimeeo.kAndroidTV.Demo.YoutubeActivity;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.Demo.presenter.*;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
@@ -85,7 +86,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
         Movie movie = (Movie) item;
-        Intent intent = new Intent(getActivity(), DetailsActivity.class);
+        Intent intent = new Intent(getActivity(), YoutubeActivity.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
         getActivity().startActivity(intent);
     }

@@ -17,6 +17,7 @@ package com.kimeeo.kAndroidTV.youtube;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.session.MediaSession;
 import android.media.session.PlaybackState;
 import android.os.Bundle;
@@ -96,6 +97,7 @@ abstract public class AbstractYoutubeActivity extends Activity{
         for (int i = 0; i < availableQualityLevels.size(); i++) {
             builder.addAction(i,availableQualityLevels.get(i).name());
         }
+        builder.backgroundColor(Color.TRANSPARENT);
         builder.open();
     }
 

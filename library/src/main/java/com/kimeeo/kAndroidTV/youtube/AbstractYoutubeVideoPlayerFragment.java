@@ -30,7 +30,6 @@ import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
-import com.kimeeo.kAndroidTV.dialog.DialogActivity;
 
 import java.util.HashMap;
 import java.util.List;

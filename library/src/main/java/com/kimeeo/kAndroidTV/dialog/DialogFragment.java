@@ -33,7 +33,6 @@ public class DialogFragment extends GuidedStepFragment {
 
     private String description;
     private DialogFragment.OnActionClicked onDone;
-    private int backgroundRes=-1;
 
     @NonNull
     @Override
@@ -55,9 +54,6 @@ public class DialogFragment extends GuidedStepFragment {
         }
         else
             guidance = new Guidance(getTitle(),getDescription(),"",null);
-
-        if(backgroundRes!=-1)
-            setBackgroundRes(backgroundRes);
         return guidance;
     }
 
@@ -161,13 +157,6 @@ public class DialogFragment extends GuidedStepFragment {
         this.actionsDescriptions = actionsDescriptions;
     }
 
-    public void setBackgroundRes(int backgroundRes) {
-        this.backgroundRes = backgroundRes;
-    }
-
-    public int getBackgroundRes() {
-        return backgroundRes;
-    }
 
 
     public static interface OnActionClicked

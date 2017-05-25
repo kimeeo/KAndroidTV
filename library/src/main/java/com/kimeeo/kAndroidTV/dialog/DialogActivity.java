@@ -16,6 +16,8 @@ package com.kimeeo.kAndroidTV.dialog;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.StringRes;
@@ -36,7 +38,6 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
             String title=getIntent().getExtras().getString(TITLE);
             String description=getIntent().getExtras().getString(DESCRIPTION);
             int icon=getIntent().getExtras().getInt(ICON);
-
             int[] actionsIDs=getIntent().getExtras().getIntArray(ACTIONS_ID);
             String[] actionsLabels=getIntent().getExtras().getStringArray(ACTIONS_LABEL);
             String[] actionsDescription=getIntent().getExtras().getStringArray(ACTIONS_DESCRIPTION);
@@ -53,11 +54,13 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
 
             fragment.setOnDone(this);
             try {
-                int backgroundDrawable=getIntent().getExtras().getInt(BACKGROUND_DRAWABLE);
+                int backgroundDrawable=getIntent().getExtras().getInt(BACKGROUND_DRAWABLE,-1);
+                int backgroundColor=getIntent().getExtras().getInt(BACKGROUND_COLOR,-1);
                 if(backgroundDrawable!=-1)
                     getWindow().setBackgroundDrawableResource(backgroundDrawable);
-                else
-                    getWindow().setBackgroundDrawable(null);
+                else if(backgroundColor!=-1)
+                    getWindow().setBackgroundDrawable(new ColorDrawable(backgroundColor));
+
 
             }catch (Exception e)
             {
@@ -88,6 +91,7 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
     static final public String CHOICE ="choice";
 
     static final public String BACKGROUND_DRAWABLE ="backgroundDrawable";
+    static final public String BACKGROUND_COLOR ="backgroundColor";
     static final public String TITLE ="title";
     static final public String ICON ="icon";
     static final public String DESCRIPTION ="description";
@@ -97,7 +101,7 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
     static final public String ACTIONS_DESCRIPTION ="actionsDescription";
 
     static final public int REQUEST_CODE =1222;
-    static public void openDialog(Activity activity, int[] actionsIDs, String[] actionsLabels,int[] actionsIcons,String[] actionsDescriptions,String title, String description,@DrawableRes int icon,@DrawableRes int background)
+    static public void openDialog(Activity activity, int[] actionsIDs, String[] actionsLabels,int[] actionsIcons,String[] actionsDescriptions,String title, String description,@DrawableRes int icon,@DrawableRes int background,int backgroundColor)
     {
         Intent intent=new Intent(activity,DialogActivity.class);
         intent.putExtra(TITLE,title);
@@ -109,6 +113,8 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
         intent.putExtra(ACTIONS_ICON,actionsIcons);
 
         intent.putExtra(BACKGROUND_DRAWABLE,background);
+        intent.putExtra(BACKGROUND_COLOR,backgroundColor);
+
         activity.startActivityForResult(intent, REQUEST_CODE);
     }
     public static class Builder
@@ -117,7 +123,9 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
         private String title;
         private String description;
         private int icon;
-        private int background;
+        private int background=-1;
+        private int backgroundColor=-1;
+
 
 
         private List<Action> actions;
@@ -131,6 +139,11 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
             this.title =title;
             return this;
         }
+        public Builder titleRes(int title)
+        {
+            this.title =activity.getString(title);
+            return this;
+        }
         public Builder icon(int icon)
         {
             this.icon =icon;
@@ -141,9 +154,22 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
             this.background =background;
             return this;
         }
+
+        public Builder backgroundColor(int color)
+        {
+            this.backgroundColor =color;
+            return this;
+        }
+
+
         public Builder description(String description)
         {
             this.description =description;
+            return this;
+        }
+        public Builder descriptionRes(int description)
+        {
+            this.description =activity.getString(description);
             return this;
         }
         public Builder actions(List<Action> actions)
@@ -208,7 +234,7 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
                 actionsIcons[i]=actions.get(i).getIcon();
                 actionsDescriptions[i]=actions.get(i).getDescription();
             }
-            openDialog(activity,actionsIDs,actionsLabels,actionsIcons,actionsDescriptions,title,description,icon,background);
+            openDialog(activity,actionsIDs,actionsLabels,actionsIcons,actionsDescriptions,title,description,icon,background,backgroundColor);
 
             return this;
         }

@@ -1,33 +1,26 @@
 package com.kimeeo.kAndroidTV.youtube;
 
-import android.app.Fragment;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.NonNull;
-import android.support.v17.leanback.app.DetailsFragment;
-import android.support.v17.leanback.app.DetailsFragmentBackgroundController;
 import android.support.v17.leanback.app.PlaybackOverlayFragment;
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.ControlButtonPresenterSelector;
-import android.support.v17.leanback.widget.DetailsOverviewRow;
-import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
-import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
-import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.OnActionClickedListener;
-import android.support.v17.leanback.widget.OnItemViewClickedListener;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
 import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
-import android.widget.Toast;
+import android.support.v7.app.AlertDialog;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.R;
@@ -37,8 +30,10 @@ import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.dialog.DialogActivity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import fr.bmartel.youtubetv.YoutubeTvView;
@@ -53,29 +48,38 @@ import fr.bmartel.youtubetv.model.VideoState;
  * Created by BhavinPadhiyar on 5/20/17.
  */
 
-abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener,IPlayerListener,IProgressUpdateListener,IBufferStateListener
+abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener,IPlayerListener,IProgressUpdateListener,IBufferStateListener
 {
+    final private YoutubeTvView youtubePlayer;
+    private List<Action> secondaryActionsList;
+
+
+    public AbstractYoutubeVideoPlayerFragment(YoutubeTvView view)
+    {
+        this.youtubePlayer=view;
+    }
+    public AbstractYoutubeVideoPlayerFragment()
+    {
+        youtubePlayer=null;
+    }
+
     public static final String TAG = "VideoPlayerFragment";
 
-    private static final int PRIMARY_CONTROLS = 5;
     private static final int BACKGROUND_TYPE = PlaybackOverlayFragment.BG_LIGHT;
 
-    private static final int DEFAULT_UPDATE_PERIOD = 1000;
-    private static final int UPDATE_PERIOD = 16;
 
     private ArrayObjectAdapter mPrimaryActionsAdapter;
     private ArrayObjectAdapter mSecondaryActionsAdapter;
 
+
     private PlaybackControlsRow.PlayPauseAction mPlayPauseAction;
-    private PlaybackControlsRow.RepeatAction mRepeatAction;
-    private PlaybackControlsRow.ThumbsUpAction mThumbsUpAction;
-    private PlaybackControlsRow.ThumbsDownAction mThumbsDownAction;
-    private PlaybackControlsRow.ShuffleAction mShuffleAction;
     private PlaybackControlsRow.FastForwardAction mFastForwardAction;
     private PlaybackControlsRow.RewindAction mRewindAction;
-    private PlaybackControlsRow.SkipNextAction mSkipNextAction;
-    private PlaybackControlsRow.SkipPreviousAction mSkipPreviousAction;
+
+
+
     private PlaybackControlsRow mPlaybackControlsRow;
+
 
 
     @Override
@@ -88,6 +92,13 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
     final public BackgroundImageHelper getBackgroundImageHelper(){return null;}
     final public boolean supportBackgroundChange(){return false;}
 
+    public void setPlaybackQuality(int what) {
+        setPlaybackQuality(youtubePlayer.getAvailableQualityLevels().get(what));
+    }
+
+    public void setPlaybackQuality(VideoQuality suggestedQuality) {
+        youtubePlayer.setPlaybackQuality(suggestedQuality);
+    }
 
     public void onActionClicked(Action action)
     {
@@ -95,22 +106,37 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
             togglePlayback();
         }
         else if (action.getId() == mFastForwardAction.getId()) {
-            youtubeTvView.seekTo(seekSize());
+            youtubePlayer.seekTo((int)youtubePlayer.getCurrentPosition()+seekSize());
         }
         else if (action.getId() == mRewindAction.getId()) {
-            youtubeTvView.seekTo((int)youtubeTvView.getCurrentPosition()-seekSize());
+            youtubePlayer.seekTo((int)youtubePlayer.getCurrentPosition()-seekSize());
+        }
+        else if (action instanceof PlaybackControlsRow.HighQualityAction) {
+            List<VideoQuality> list=youtubePlayer.getAvailableQualityLevels();
+             if(list!=null && list.size()>=2)
+                ((AbstractYoutubeActivity)getActivity()).openQualitySelector(youtubePlayer.getAvailableQualityLevels());
+        }
+        else
+        {
+
+            onAction(action);
         }
     }
 
+    public void onAction(Action action)
+    {
+
+    }
+
     protected int seekSize() {
-        return 20;
+        return 10;
     }
 
     public Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
         return new ListRow(header, listRowAdapter);
     }
     public void togglePlayback() {
-        youtubeTvView.playPause();
+        youtubePlayer.playPause();
     }
 
     private void notifyChanged(Action action) {
@@ -119,6 +145,7 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
             adapter.notifyArrayItemRangeChanged(adapter.indexOf(action), 1);
             return;
         }
+
         adapter = mSecondaryActionsAdapter;
         if (adapter.indexOf(action) >= 0) {
             adapter.notifyArrayItemRangeChanged(adapter.indexOf(action), 1);
@@ -134,9 +161,7 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
     }
     @Override
     public void onStop() {
-        stopProgressAutomation();
-        youtubeTvView.stopVideo();
-
+        youtubePlayer.stopVideo();
         super.onStop();
     }
 
@@ -172,7 +197,6 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
     }
     protected void configDataManager(DataProvider dataProvider) {}
     RowBasedFragmentHelper fragmentHelper;
-    private YoutubeTvView youtubeTvView;
 
     final public PresenterSelector createMainRowPresenterSelector()
     {
@@ -205,13 +229,6 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
     {
         return new HeaderItem(i,name);
     }
-    public void setPlaybackQuality(VideoQuality videoQuality) {
-        youtubeTvView.setPlaybackQuality(videoQuality);
-    }
-
-    public void closePlayer() {
-        youtubeTvView.closePlayer();
-    }
 
     public PlaybackControlsRowPresenter getPlaybackControlsRowPresenter() {
         return playbackControlsRowPresenter;
@@ -222,43 +239,29 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
     private void setupUi() {
 
         data =createDetailsData();
-        playbackControlsRowPresenter = createActionDetailedViewPresenter();
+        playbackControlsRowPresenter = createPlaybackControlsRowPresenter();
+        youtubePlayer.addPlayerListener(this);
 
-        youtubeTvView = (YoutubeTvView) getActivity().findViewById(fr.bmartel.youtubetv.R.id.youtubetv_view);
-        youtubeTvView.addPlayerListener(this);
-        youtubeTvView.playVideo(getVideoID());
         fragmentHelper = createBrowseFragmentHelper();
         dataProvider=createDataProvider();
         configDataManager(dataProvider);
-        fragmentHelper.build();
-        fragmentHelper.next();
-        addPlaybackControlsRow();
-    }
-
-    protected String getVideoID() {
-        return getArguments().getString("videoId", "");
     }
 
     public void updateView(Bundle bundle) {
-        youtubeTvView.updateView(bundle);
+        youtubePlayer.updateView(bundle);
     }
 
-    @Override
-    public void onPlayerReady(VideoInfo videoInfo) {
 
-    }
 
     VideoState videoState;
     @Override
     public void onPlayerStateChange(VideoState state, long position, float speed, float duration, VideoInfo videoInfo) {
         if (videoState!=state && VideoState.getPlayerState(state.getIndex()) == VideoState.PAUSED) {
             videoState=state;
-            //stopProgressAutomation();
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PLAY));
             notifyChanged(mPlayPauseAction);
         } else if (videoState!=state && VideoState.getPlayerState(state.getIndex()) == VideoState.PLAYING) {
             videoState=state;
-            //startProgressAutomation();
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PAUSE));
             notifyChanged(mPlayPauseAction);
         }
@@ -266,49 +269,30 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
 
         }
     }
-    private Handler mHandler;
-    private Runnable mRunnable= new Runnable() {
-        @Override
-        public void run() {
 
-            float currentTime = youtubeTvView.getCurrentPosition();
-            float totalTime = youtubeTvView.getDuration();
-            mPlaybackControlsRow.setCurrentTime((int)currentTime);
-            mPlaybackControlsRow.setTotalTime((int)totalTime);
-            mHandler.postDelayed(mRunnable, getUpdatePeriod());
-        }
-    };
-    private void startProgressAutomation() {
-        if(mHandler==null)
-            mHandler = new Handler();
-        mHandler.postDelayed(mRunnable, getUpdatePeriod());
+
+    int totalTime=0;
+    @Override
+    public void onPlayerReady(VideoInfo videoInfo) {
+        youtubePlayer.setOnBufferingUpdateListener(this);
+        youtubePlayer.setOnProgressUpdateListener(this);
     }
-
-    private int getUpdatePeriod() {
-        if (getView() == null || youtubeTvView.getDuration() <= 0) {
-            return DEFAULT_UPDATE_PERIOD;
-        }
-        return Math.max(UPDATE_PERIOD, (int)youtubeTvView.getDuration() / getView().getWidth());
-    }
-
-
-    private void stopProgressAutomation() {
-        if (mHandler != null && mRunnable != null) {
-            mHandler.removeCallbacks(mRunnable);
-        }
-    }
-
     @Override
     public void onProgressUpdate(float currentTime)
     {
-        //mPlaybackControlsRow.setCurrentTime((int)currentTime);
-        //mPlaybackControlsRow.setTotalTime((int)youtubeTvView.getDuration());
+        mPlaybackControlsRow.setCurrentTimeLong((long)currentTime*1000);
     }
+
     @Override
     public void onBufferUpdate(float videoDuration, float loadedFraction)
     {
-        //mPlaybackControlsRow.setBufferedProgress((int)videoDuration);
-        //mPlaybackControlsRow.setTotalTime((int)youtubeTvView.getDuration());
+        if(totalTime==0) {
+            totalTime =(int)videoDuration;
+            fragmentHelper.build();
+            fragmentHelper.next();
+            addPlaybackControlsRow();
+            youtubePlayer.setOnBufferingUpdateListener(null);
+        }
     }
 
     private void addPlaybackControlsRow() {
@@ -318,52 +302,37 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
             mPlaybackControlsRow = new PlaybackControlsRow();
         }
         fragmentHelper.getRowsAdapter().add(mPlaybackControlsRow);
+        loadCoverImage(mPlaybackControlsRow,getData());
+        mPlaybackControlsRow.setTotalTimeLong(totalTime*1000);
 
         ControlButtonPresenterSelector presenterSelector = new ControlButtonPresenterSelector();
         mPrimaryActionsAdapter = new ArrayObjectAdapter(presenterSelector);
-        mSecondaryActionsAdapter = new ArrayObjectAdapter(presenterSelector);
-
         mPlaybackControlsRow.setPrimaryActionsAdapter(mPrimaryActionsAdapter);
-        mPlaybackControlsRow.setSecondaryActionsAdapter(mSecondaryActionsAdapter);
 
         mPlayPauseAction = new PlaybackControlsRow.PlayPauseAction(getActivity());
-        mRepeatAction = new PlaybackControlsRow.RepeatAction(getActivity());
-        mThumbsUpAction = new PlaybackControlsRow.ThumbsUpAction(getActivity());
-        mThumbsDownAction = new PlaybackControlsRow.ThumbsDownAction(getActivity());
-        mShuffleAction = new PlaybackControlsRow.ShuffleAction(getActivity());
-        mSkipNextAction = new PlaybackControlsRow.SkipNextAction(getActivity());
-        mSkipPreviousAction = new PlaybackControlsRow.SkipPreviousAction(getActivity());
         mFastForwardAction = new PlaybackControlsRow.FastForwardAction(getActivity());
         mRewindAction = new PlaybackControlsRow.RewindAction(getActivity());
-
-        if (PRIMARY_CONTROLS > 5) {
-            mPrimaryActionsAdapter.add(mThumbsUpAction);
-        } else {
-            mSecondaryActionsAdapter.add(mThumbsUpAction);
-        }
-        mPrimaryActionsAdapter.add(mSkipPreviousAction);
-        if (PRIMARY_CONTROLS > 3) {
-            mPrimaryActionsAdapter.add(new PlaybackControlsRow.RewindAction(getActivity()));
-        }
+        mPrimaryActionsAdapter.add(mRewindAction);
         mPrimaryActionsAdapter.add(mPlayPauseAction);
-        if (PRIMARY_CONTROLS > 3) {
-            mPrimaryActionsAdapter.add(new PlaybackControlsRow.FastForwardAction(getActivity()));
-        }
-        mPrimaryActionsAdapter.add(mSkipNextAction);
+        mPrimaryActionsAdapter.add(mFastForwardAction);
 
-        mSecondaryActionsAdapter.add(mRepeatAction);
-        mSecondaryActionsAdapter.add(mShuffleAction);
-        if (PRIMARY_CONTROLS > 5) {
-            mPrimaryActionsAdapter.add(mThumbsDownAction);
-        } else {
-            mSecondaryActionsAdapter.add(mThumbsDownAction);
+        List<Action> list = getSecondaryActionsList();
+        if(list!=null && list.size()!=0)
+        {
+            mSecondaryActionsAdapter = new ArrayObjectAdapter(presenterSelector);
+            mPlaybackControlsRow.setSecondaryActionsAdapter(mSecondaryActionsAdapter);
+            for (int i = 0; i < list.size(); i++) {
+                mSecondaryActionsAdapter.add(list.get(i));
+            }
         }
-        mSecondaryActionsAdapter.add(new PlaybackControlsRow.HighQualityAction(getActivity()));
-        mSecondaryActionsAdapter.add(new PlaybackControlsRow.ClosedCaptioningAction(getActivity()));
+    }
+
+    protected void loadCoverImage(PlaybackControlsRow mPlaybackControlsRow,Object data) {
+
     }
 
     protected boolean getShowDetail() {
-        return false;
+        return true;
     }
 
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,PresenterSelector presenterSelector) {
@@ -376,7 +345,7 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
     }
 
 
-    protected PlaybackControlsRowPresenter createActionDetailedViewPresenter() {
+    protected PlaybackControlsRowPresenter createPlaybackControlsRowPresenter() {
         PlaybackControlsRowPresenter playbackControlsRowPresenter;
         if (getShowDetail()) {
             playbackControlsRowPresenter = new PlaybackControlsRowPresenter(createDetailsDescriptionPresenter());
@@ -437,4 +406,29 @@ abstract public class AbstractVideoPlayerFragment extends PlaybackOverlayFragmen
     {
         return R.color.fastlane_background;
     }
+
+    public void play(String videoId) {
+        youtubePlayer.playVideo(videoId);
+    }
+
+
+    public List<Action> getSecondaryActionsList() {
+        return secondaryActionsList;
+    }
+
+    public void setSecondaryActionsList(List<Action> secondaryActionsList) {
+        this.secondaryActionsList = secondaryActionsList;
+    }
+
+    public void closePlayer() {
+        youtubePlayer.closePlayer();
+    }
+    public boolean isPlaying() {
+        return youtubePlayer.isPlaying();
+    }
+    public void stopVideo() {
+        youtubePlayer.stopVideo();
+    }
+
+
 }

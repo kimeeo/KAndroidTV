@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Intent;
 import android.support.v17.leanback.app.BrowseFragment;
 import android.support.v17.leanback.app.DetailsFragment;
+import android.support.v17.leanback.app.PlaybackFragment;
 import android.support.v17.leanback.app.PlaybackOverlayFragment;
 import android.support.v17.leanback.app.RowsFragment;
 import android.support.v17.leanback.app.SearchFragment;
@@ -83,6 +84,10 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
             PlaybackOverlayFragment browseFragment = (PlaybackOverlayFragment)host;
             browseFragment.setAdapter(mRowsAdapter);
         }
+        else if(host instanceof PlaybackFragment) {
+            PlaybackFragment browseFragment = (PlaybackFragment)host;
+            browseFragment.setAdapter(mRowsAdapter);
+        }
         else if(host instanceof DetailsFragment) {
             DetailsFragment browseFragment = (DetailsFragment)host;
             browseFragment.setAdapter(mRowsAdapter);
@@ -129,6 +134,11 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
             PlaybackOverlayFragment browseFragment = (PlaybackOverlayFragment)host;
             if (helperProvider.getSearchActivity() != null)
                 browseFragment.setOnSearchClickedListener(new SearchEventListeners());
+            browseFragment.setOnItemViewClickedListener(new ItemViewClickedListener());
+            browseFragment.setOnItemViewSelectedListener(new ItemViewSelectedListener());
+        }
+        else if(host instanceof PlaybackFragment) {
+            PlaybackFragment browseFragment = (PlaybackFragment)host;
             browseFragment.setOnItemViewClickedListener(new ItemViewClickedListener());
             browseFragment.setOnItemViewSelectedListener(new ItemViewSelectedListener());
         }

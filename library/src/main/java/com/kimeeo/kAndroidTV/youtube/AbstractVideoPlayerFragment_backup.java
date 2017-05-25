@@ -5,9 +5,9 @@ import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.PlaybackOverlayFragment;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
+import android.support.v17.leanback.widget.ClassPresenterSelector;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
-import android.support.v17.leanback.widget.PlaybackControlsRowPresenter;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
@@ -21,6 +21,9 @@ import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import fr.bmartel.youtubetv.YoutubeTvView;
 import fr.bmartel.youtubetv.media.MediaPlayerGlue;
 import fr.bmartel.youtubetv.media.VideoMediaPlayerGlue;
@@ -30,7 +33,7 @@ import fr.bmartel.youtubetv.model.VideoQuality;
  * Created by BhavinPadhiyar on 5/20/17.
  */
 
-abstract public class AbstractVideoPlayerFragmentBkup extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider, MediaPlayerGlue.OnMediaFileFinishedPlayingListener
+abstract public class AbstractVideoPlayerFragment_backup extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider, MediaPlayerGlue.OnMediaFileFinishedPlayingListener
 {
     @Override
     public boolean supportAutoPageLoader() {return true;}
@@ -94,12 +97,11 @@ abstract public class AbstractVideoPlayerFragmentBkup extends PlaybackOverlayFra
         };
         mGlue.setOnMediaFileFinishedPlayingListener(this);
         mGlue.prepareMediaForPlaying();
-
         fragmentHelper = createBrowseFragmentHelper();
         dataProvider=createDataProvider();
         configDataManager(dataProvider);
         fragmentHelper.build();
-        getFragmentHelper().getRowsAdapter().add(0,mGlue.getControlsRow());
+        dataProvider.add(0,mGlue.getControlsRow());
         fragmentHelper.next();
     }
     protected RowBasedFragmentHelper createBrowseFragmentHelper() {
@@ -133,17 +135,39 @@ abstract public class AbstractVideoPlayerFragmentBkup extends PlaybackOverlayFra
         youtubeTvView.closePlayer();
     }
 
-    final public PresenterSelector createMainRowPresenterSelector() {
+    //final public PresenterSelector createMainRowPresenterSelector() {
+    //    return null;
+    //}
+    final public Presenter createMainRowPresenter() {
+        //final PlaybackControlsRowPresenter controlsPresenter = mGlue.createControlsRowAndPresenter();
+        //return controlsPresenter;
         return null;
     }
-    final public Presenter createMainRowPresenter() {
-        final PlaybackControlsRowPresenter controlsPresenter = mGlue.createControlsRowAndPresenter();
-        return controlsPresenter;
+    protected abstract HashMap<Class<?>,Object> getClassPresenterMap();
+
+    final public PresenterSelector createMainRowPresenterSelector()
+    {
+        ClassPresenterSelector rowPresenterSelector = new ClassPresenterSelector();
+        rowPresenterSelector.addClassPresenter(PlaybackControlsRow.class, mGlue.createControlsRowAndPresenter());
+
+        HashMap<Class<?>, Object> mClassMap = getClassPresenterMap();
+        if(mClassMap!=null) {
+            for (Map.Entry<Class<?>, Object> entry : mClassMap.entrySet()) {
+                Class key = entry.getKey();
+                Object value = entry.getValue();
+                if(value instanceof Presenter)
+                    rowPresenterSelector.addClassPresenter(key,(Presenter)value);
+                else if(value instanceof PresenterSelector)
+                    rowPresenterSelector.addClassPresenterSelector(key,(PresenterSelector)value);
+            }
+        }
+        return rowPresenterSelector;
     }
-    public AbstractArrayObjectAdapter createMainArrayObjectAdapter(Presenter presenter) {
-        return new DefaultArrayObjectAdapter(presenter);
+
+    final public AbstractArrayObjectAdapter createMainArrayObjectAdapter(Presenter presenter) {
+        return null;
     }
-    final public AbstractArrayObjectAdapter createMainArrayObjectAdapter(PresenterSelector presenter) {return null;}
+    public AbstractArrayObjectAdapter createMainArrayObjectAdapter(PresenterSelector presenter) {return new DefaultArrayObjectAdapter(presenter);}
 
     abstract public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem);
     final public Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
@@ -154,9 +178,8 @@ abstract public class AbstractVideoPlayerFragmentBkup extends PlaybackOverlayFra
     {
         return new HeaderItem(i,name);
     }
-    public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
-        return new ArrayObjectAdapter(presenter);
-    }
+    final public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {return null;}
+
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,PresenterSelector presenterSelector) {
         return new WatcherArrayObjectAdapter(presenterSelector);
     }

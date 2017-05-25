@@ -56,6 +56,9 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
                 int backgroundDrawable=getIntent().getExtras().getInt(BACKGROUND_DRAWABLE);
                 if(backgroundDrawable!=-1)
                     getWindow().setBackgroundDrawableResource(backgroundDrawable);
+                else
+                    getWindow().setBackgroundDrawable(null);
+
             }catch (Exception e)
             {
 

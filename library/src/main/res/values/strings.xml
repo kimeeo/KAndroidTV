@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">KAndroidTV</string>
     <string name="_busy_message">Loading. Please wait...</string>
+    <string name="_select_quality">Select Quality</string>
 </resources>

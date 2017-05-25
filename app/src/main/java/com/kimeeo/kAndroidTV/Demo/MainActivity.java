@@ -17,12 +17,17 @@ package com.kimeeo.kAndroidTV.Demo;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 
 import com.kimeeo.kAndroidTV.Demo.fragments.BrowseFragment;
 
 import java.util.Locale;
+
+import me.angrybyte.goose.Article;
+import me.angrybyte.goose.Configuration;
+import me.angrybyte.goose.ContentExtractor;
 
 /*
  * MainActivity class that loads MainFragment1
@@ -39,7 +44,10 @@ public class MainActivity extends Activity {
             Fragment fragment = new BrowseFragment();
             getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
         }
-
+        /*
+        DownloadWebPageTask task = new DownloadWebPageTask();
+        task.execute(new String[]{"http://gujaratsamachar.com/index.php/articles/display_article/gandhinagar/while-the-prime-minister-stayed-in-gandhinagar-the-congressmen-were-kept-in-captivity"});
+         */
        // startActivity(new Intent(this, OnBoardActivity.class));
         /*
         tts = new TextToSpeech(this.getBaseContext(),new TextToSpeech.OnInitListener(){
@@ -68,6 +76,29 @@ public class MainActivity extends Activity {
             }
         });*/
     }
+
+    private class DownloadWebPageTask extends AsyncTask<String, Void, Article> {
+        @Override
+        protected Article doInBackground(String... urls) {
+
+            Configuration config = new Configuration(getCacheDir().getAbsolutePath());
+            ContentExtractor extractor = new ContentExtractor(config);
+
+            Article article = extractor.extractContent(urls[0]);
+            if (article == null) {
+                return null;
+            }
+
+            return article;
+        }
+
+
+    @Override
+    protected void onPostExecute(Article result) {
+        System.out.println(result);
+    }
+};
+
     private TextToSpeech tts;
     @Override
     public boolean onSearchRequested() {

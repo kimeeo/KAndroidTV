@@ -18,7 +18,6 @@ package com.kimeeo.kAndroidTV.Demo.fragments;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.BackgroundManager;
-import android.support.v17.leanback.app.RowsFragment;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
@@ -30,19 +29,16 @@ import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
-import com.kimeeo.kAndroidTV.Demo.PageActivity;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
-import com.kimeeo.kAndroidTV.Demo.VerticalGridActivity;
-import com.kimeeo.kAndroidTV.Demo.YoutubeActivity;
+import com.kimeeo.kAndroidTV.Demo.YoutubeActivityNew;
+import com.kimeeo.kAndroidTV.Demo.YoutubeActivityOld;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.Demo.presenter.*;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
 import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
-
-import java.net.URI;
 
 public class BrowseFragment extends AbstractBrowseFragment {
     public boolean getSupportRowProgressBar()
@@ -86,7 +82,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
         Movie movie = (Movie) item;
-        Intent intent = new Intent(getActivity(), YoutubeActivity.class);
+        Intent intent = new Intent(getActivity(), YoutubeActivityNew.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
         getActivity().startActivity(intent);
     }

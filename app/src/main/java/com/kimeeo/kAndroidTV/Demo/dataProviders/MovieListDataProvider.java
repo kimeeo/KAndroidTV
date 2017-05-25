@@ -39,7 +39,7 @@ public class MovieListDataProvider extends StaticDataProvider {
     @Override
     protected void invokeLoadNext() {
         if (pageCount != 10) {
-            h.postDelayed(r, 5000);
+            h.postDelayed(r, 1000);
             pageCount += 1;
         } else {
             setCanLoadNext(false);

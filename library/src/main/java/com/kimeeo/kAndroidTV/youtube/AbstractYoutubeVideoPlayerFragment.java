@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.media.session.MediaSession;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
@@ -57,14 +58,23 @@ import fr.bmartel.youtubetv.model.VideoState;
 
 abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener,IPlayerListener,IProgressUpdateListener,IBufferStateListener
 {
-    final private YoutubeTvView youtubePlayer;
+    private YoutubeTvView youtubePlayer;
     private List<Action> secondaryActionsList;
     private String videoId;
+    private MediaSession mSession;
 
+    private class MediaSessionCallback extends MediaSession.Callback {
 
+    }
     public AbstractYoutubeVideoPlayerFragment(YoutubeTvView view)
     {
         this.youtubePlayer=view;
+        /*
+        mSession=youtubePlayer.getMediaSession();
+        mSession.setCallback(new MediaSessionCallback());
+        mSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mSession.setActive(true);
+        */
     }
     public AbstractYoutubeVideoPlayerFragment()
     {
@@ -73,7 +83,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
 
     public static final String TAG = "VideoPlayerFragment";
 
-    private static final int BACKGROUND_TYPE = PlaybackOverlayFragment.BG_LIGHT;
+    private static final int BACKGROUND_TYPE = PlaybackOverlayFragment.BG_DARK;
 
 
     private ArrayObjectAdapter mPrimaryActionsAdapter;
@@ -248,6 +258,10 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
 
         data =createDetailsData();
         playbackControlsRowPresenter = createPlaybackControlsRowPresenter();
+
+        if(youtubePlayer==null)
+            youtubePlayer = (YoutubeTvView) getActivity().findViewById(R.id.youtubetv_view);
+
         youtubePlayer.addPlayerListener(this);
 
         fragmentHelper = createBrowseFragmentHelper();
@@ -268,10 +282,12 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             videoState=state;
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PLAY));
             notifyChanged(mPlayPauseAction);
+            setFadingEnabled(false);
         } else if (videoState!=state && VideoState.getPlayerState(state.getIndex()) == VideoState.PLAYING) {
             videoState=state;
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PAUSE));
             notifyChanged(mPlayPauseAction);
+            setFadingEnabled(true);
         }
         else if (VideoState.getPlayerState(state.getIndex()) == VideoState.BUFFERING) {
 
@@ -325,12 +341,13 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
         mPrimaryActionsAdapter.add(mRewindAction);
         mPrimaryActionsAdapter.add(mPlayPauseAction);
         mPrimaryActionsAdapter.add(mFastForwardAction);
-
+        setFadingEnabled(false);
         List<Action> list = getSecondaryActionsList();
         if(list!=null && list.size()!=0)
         {
             mSecondaryActionsAdapter = new ArrayObjectAdapter(presenterSelector);
             mPlaybackControlsRow.setSecondaryActionsAdapter(mSecondaryActionsAdapter);
+            playbackControlsRowPresenter.setSecondaryActionsHidden(false);
             for (int i = 0; i < list.size(); i++) {
                 mSecondaryActionsAdapter.add(list.get(i));
             }
@@ -371,13 +388,15 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
         }
 
         playbackControlsRowPresenter.setOnActionClickedListener(this);
-        playbackControlsRowPresenter.setSecondaryActionsHidden(getHideMoreActions());
+        if(getProgressColor()!=-1)
+            playbackControlsRowPresenter.setProgressColor(getProgressColor());
         return playbackControlsRowPresenter;
     }
 
-    protected boolean getHideMoreActions() {
-        return false;
+    protected int getProgressColor() {
+        return -1;
     }
+
 
     abstract protected AbstractDetailsDescriptionPresenter createDetailsDescriptionPresenter();
     protected abstract Object createDetailsData();
@@ -411,8 +430,6 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             setSearchAffordanceColor(getSearchAffordanceColorValue());
 
         setBackgroundType(BACKGROUND_TYPE);
-        setFadingEnabled(false);
-
     }
     protected int getSearchAffordanceColorValue()
     {

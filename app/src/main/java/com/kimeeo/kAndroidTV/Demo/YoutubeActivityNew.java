@@ -1,6 +1,7 @@
 package com.kimeeo.kAndroidTV.Demo;
 
 import android.os.Bundle;
+import android.os.Handler;
 
 import com.kimeeo.kAndroidTV.Demo.fragments.YoutubeVideoFragment;
 import com.kimeeo.kAndroidTV.youtube.AbstractYoutubeActivity;
@@ -21,7 +22,14 @@ public class YoutubeActivityNew extends AbstractYoutubeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        play("om_SW2jgq-s");
+        Handler h = new Handler();
+        h.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                play("om_SW2jgq-s");
+            }
+        },2000);
+
     }
 }
 

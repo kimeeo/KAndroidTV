@@ -45,6 +45,7 @@ abstract public class AbstractYoutubeActivity extends Activity{
         YoutubeTvView youtubeTvView = getYoutubeTvView();
         youtubeVideoPlayerFragment=createAbstractYoutubeVideoPlayerFragment(youtubeTvView);
 
+
         android.app.FragmentTransaction ft1 = getFragmentManager().beginTransaction();
         ft1.replace(R.id.playbackControlsFragmentHolder,youtubeVideoPlayerFragment, AbstractYoutubeVideoPlayerFragment.TAG);
         ft1.commit();

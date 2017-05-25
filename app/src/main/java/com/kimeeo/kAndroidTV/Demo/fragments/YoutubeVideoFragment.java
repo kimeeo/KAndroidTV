@@ -60,10 +60,11 @@ public class YoutubeVideoFragment extends AbstractYoutubeVideoPlayerFragment {
         setSecondaryActionsList(list);
         return list;
     }
+    /*
     @Override
     protected void loadCoverImage(PlaybackControlsRow mPlaybackControlsRow,Object data) {
         mPlaybackControlsRow.setImageDrawable(getActivity().getDrawable(R.drawable.image));
-    }
+    }*/
 
     public YoutubeVideoFragment() {
 

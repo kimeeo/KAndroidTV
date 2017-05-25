@@ -1,6 +1,11 @@
 package com.kimeeo.kAndroidTV.youtube;
 
 import android.content.DialogInterface;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.ColorRes;
@@ -31,6 +36,9 @@ import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
 
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +59,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
 {
     final private YoutubeTvView youtubePlayer;
     private List<Action> secondaryActionsList;
+    private String videoId;
 
 
     public AbstractYoutubeVideoPlayerFragment(YoutubeTvView view)
@@ -273,6 +282,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     int totalTime=0;
     @Override
     public void onPlayerReady(VideoInfo videoInfo) {
+        videoId = videoInfo.getVideoId();
         youtubePlayer.setOnBufferingUpdateListener(this);
         youtubePlayer.setOnProgressUpdateListener(this);
     }
@@ -291,6 +301,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             fragmentHelper.next();
             addPlaybackControlsRow();
             youtubePlayer.setOnBufferingUpdateListener(null);
+            loadCoverImage(mPlaybackControlsRow);
         }
     }
 
@@ -327,8 +338,15 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     }
 
     protected void loadCoverImage(PlaybackControlsRow mPlaybackControlsRow,Object data) {
-
+        mPlaybackControlsRow.setImageDrawable(getActivity().getDrawable(R.drawable._you_tube_image));
     }
+
+    protected void loadCoverImage(PlaybackControlsRow mPlaybackControlsRow) {
+        mPlaybackControlsRow.setImageDrawable(getActivity().getDrawable(R.drawable._you_tube_image));
+        DownloadImagesTask task = new DownloadImagesTask(mPlaybackControlsRow);
+        task.execute(videoId);
+    }
+
 
     protected boolean getShowDetail() {
         return true;
@@ -407,6 +425,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     }
 
     public void play(String videoId) {
+        this.videoId=videoId;
         youtubePlayer.playVideo(videoId);
     }
 
@@ -427,6 +446,44 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     }
     public void stopVideo() {
         youtubePlayer.stopVideo();
+    }
+
+
+
+    public class DownloadImagesTask extends AsyncTask<String, Void, Bitmap> {
+
+        PlaybackControlsRow mPlaybackControlsRow;
+        public DownloadImagesTask(PlaybackControlsRow mPlaybackControlsRow)
+        {
+            this.mPlaybackControlsRow=mPlaybackControlsRow;
+        }
+        @Override
+        protected Bitmap doInBackground(String... urls) {
+            String url="https://img.youtube.com/vi/"+urls[0]+"/mqdefault.jpg";
+            return downloadImage(url);
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            Drawable d = new BitmapDrawable(getResources(), bitmap);
+            mPlaybackControlsRow.setImageDrawable(d);
+            fragmentHelper.getRowsAdapter().notifyItemRangeChanged(0,1);
+        }
+
+        private Bitmap downloadImage(String url) {
+
+            Bitmap bmp =null;
+            try{
+                URL ulrn = new URL(url);
+                HttpURLConnection con = (HttpURLConnection)ulrn.openConnection();
+                InputStream is = con.getInputStream();
+                bmp = BitmapFactory.decodeStream(is);
+                if (null != bmp)
+                    return bmp;
+
+            }catch(Exception e){}
+            return bmp;
+        }
     }
 
 

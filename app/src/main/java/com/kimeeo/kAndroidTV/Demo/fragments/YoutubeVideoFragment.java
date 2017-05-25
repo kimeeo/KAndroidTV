@@ -1,37 +1,20 @@
 package com.kimeeo.kAndroidTV.Demo.fragments;
 
-import android.content.Context;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.widget.AbstractDetailsDescriptionPresenter;
 import android.support.v17.leanback.widget.Action;
-import android.support.v17.leanback.widget.ArrayObjectAdapter;
-import android.support.v17.leanback.widget.DetailsOverviewLogoPresenter;
-import android.support.v17.leanback.widget.DetailsOverviewRow;
-import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
-import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
 import android.support.v17.leanback.widget.PlaybackControlsRow;
-import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
-import android.support.v17.leanback.widget.Row;
-import android.support.v17.leanback.widget.RowPresenter;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
-import com.kimeeo.kAndroidTV.Demo.R;
-import com.kimeeo.kAndroidTV.Demo.SearchActivity;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row1PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
-import com.kimeeo.kAndroidTV.Demo.presenter.TextCardPresenter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
-import com.kimeeo.kAndroidTV.detailsFragment.AbstractSmallDetailsFragment;
-import com.kimeeo.kAndroidTV.youtube.AbstractVideoPlayerFragment;
 import com.kimeeo.kAndroidTV.youtube.AbstractYoutubeVideoPlayerFragment;
 
 import java.util.ArrayList;
@@ -46,6 +29,12 @@ import fr.bmartel.youtubetv.YoutubeTvView;
 
 public class YoutubeVideoFragment extends AbstractYoutubeVideoPlayerFragment {
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        //play("om_SW2jgq-s");
+
+    }
     public YoutubeVideoFragment(YoutubeTvView view) {
         super(view);
 

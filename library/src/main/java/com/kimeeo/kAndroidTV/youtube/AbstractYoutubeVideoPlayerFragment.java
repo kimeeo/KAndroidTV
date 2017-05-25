@@ -244,7 +244,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
 
     PlaybackControlsRowPresenter playbackControlsRowPresenter;
 
-    private void setupUi() {
+    protected void setupUi() {
 
         data =createDetailsData();
         playbackControlsRowPresenter = createPlaybackControlsRowPresenter();

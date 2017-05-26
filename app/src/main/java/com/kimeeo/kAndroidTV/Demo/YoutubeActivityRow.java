@@ -13,7 +13,7 @@ import fr.bmartel.youtubetv.YoutubeTvView;
  * Created by BhavinPadhiyar on 5/18/17.
  */
 
-public class YoutubeActivityNew extends AbstractYoutubeActivity {
+public class YoutubeActivityRow extends AbstractYoutubeActivity {
 
     protected AbstractYoutubeVideoPlayerFragment createAbstractYoutubeVideoPlayerFragment(YoutubeTvView youtubeTvView)
     {
@@ -22,14 +22,7 @@ public class YoutubeActivityNew extends AbstractYoutubeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                play("om_SW2jgq-s");
-            }
-        },2000);
-
+        play("om_SW2jgq-s");
     }
 }
 

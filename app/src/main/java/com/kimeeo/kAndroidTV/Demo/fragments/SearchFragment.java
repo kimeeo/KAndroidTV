@@ -30,7 +30,7 @@ import android.support.v17.leanback.widget.RowPresenter;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.Demo.R;
-import com.kimeeo.kAndroidTV.Demo.YoutubeActivityOld;
+import com.kimeeo.kAndroidTV.Demo.YoutubeActivityDefault;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row1PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
@@ -62,7 +62,7 @@ public class SearchFragment extends AbstractSearchFragment {
 
 
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
-        Intent intent = new Intent(getActivity(), YoutubeActivityOld.class);
+        Intent intent = new Intent(getActivity(), YoutubeActivityDefault.class);
         getActivity().startActivity(intent);
     }
 

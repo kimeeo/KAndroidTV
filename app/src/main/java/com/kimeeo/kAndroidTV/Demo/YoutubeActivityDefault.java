@@ -18,7 +18,7 @@ import fr.bmartel.youtubetv.media.VideoSurfaceFragment;
  * Created by BhavinPadhiyar on 5/18/17.
  */
 
-public class YoutubeActivityOld extends Activity {
+public class YoutubeActivityDefault extends Activity {
     protected Bundle args;
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,20 +28,12 @@ public class YoutubeActivityOld extends Activity {
             args = new Bundle();
             args.putString("videoId", "qkt7C0NIuUA");
 
-            YoutubeTvFragment mYtFragment = createNewYoutubeTvFragment(args);
+            YoutubeTvFragment mYtFragment = YoutubeTvFragment.newInstance(args);
             mYtFragment.setArguments(args);
 
             fTransaction.replace(R.id.fragmentContainer, mYtFragment);
             fTransaction.commit();
         }
-
-
-    }
-
-    protected YoutubeTvFragment createNewYoutubeTvFragment(Bundle args) {
-        YoutubeTvFragment mYtFragment =new YoutubeTvFragment();
-        mYtFragment.setArguments(args);
-        return mYtFragment;
     }
 }
 

@@ -299,6 +299,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     @Override
     public void onPlayerReady(VideoInfo videoInfo) {
         videoId = videoInfo.getVideoId();
+        float duration =youtubePlayer.getDuration();
         youtubePlayer.setOnBufferingUpdateListener(this);
         youtubePlayer.setOnProgressUpdateListener(this);
     }
@@ -316,9 +317,9 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             fragmentHelper.build();
             fragmentHelper.next();
             addPlaybackControlsRow();
-            youtubePlayer.setOnBufferingUpdateListener(null);
             loadCoverImage(mPlaybackControlsRow);
         }
+        mPlaybackControlsRow.setBufferedProgressLong((long)loadedFraction*1000);
     }
 
     private void addPlaybackControlsRow() {

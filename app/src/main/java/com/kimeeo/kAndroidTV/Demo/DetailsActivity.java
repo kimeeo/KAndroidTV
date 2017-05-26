@@ -24,7 +24,7 @@ public class DetailsActivity extends Activity {
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fragment);
-        DialogActivity.Builder builder=new DialogActivity.Builder(this).title("What screen").description("Check").icon(R.drawable.image).background(R.drawable.image);
+        DialogActivity.Builder builder=new DialogActivity.Builder(this).title("What screen").description("Check").icon(R.drawable.image).background(R.drawable.background_canyon);
         builder.addAction(1,"Full Width","Open Full Screen",R.drawable.ic_android_black_24dp);
         builder.addAction(2,"Small","Open Small Screen",R.drawable.ic_android_black_24dp);
         builder.addAction(3,"Video","Open Video Screen",R.drawable.ic_android_black_24dp);
@@ -65,6 +65,7 @@ public class DetailsActivity extends Activity {
            }
            getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
        }
+
    }
 
     @Override

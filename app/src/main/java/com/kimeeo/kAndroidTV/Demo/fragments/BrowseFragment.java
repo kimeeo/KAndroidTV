@@ -81,7 +81,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
         Movie movie = (Movie) item;
-        Intent intent = new Intent(getActivity(), YoutubeActivityRow.class);
+        Intent intent = new Intent(getActivity(), DetailsActivity.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
         getActivity().startActivity(intent);
     }

@@ -85,7 +85,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
         intent.putExtra(DetailsActivity.MOVIE, movie);
         getActivity().startActivity(intent);
 
-
+        /*
         OnBoardActivity.Builder builder=new OnBoardActivity.Builder(getActivity());
         builder.addPage("My Title 1","My descriptions 1",R.drawable.image);
         builder.addPage("My Title 2","My descriptions 2",R.drawable.image);
@@ -97,6 +97,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
         builder.backgroundColorRes(R.color.fastlane_background);
         builder.show();
         builder.forceShow();
+        */
     }
 
     @Override

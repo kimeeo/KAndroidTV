@@ -2,12 +2,14 @@ package com.kimeeo.kAndroidTV.browseFragment;
 
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.StringRes;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.BrowseFragment;
+import android.support.v17.leanback.app.HeadersFragment;
 import android.support.v17.leanback.widget.*;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
@@ -26,24 +28,18 @@ import java.net.URI;
  */
 
 abstract public class AbstractBrowseFragment extends BrowseFragment implements RowBasedFragmentHelper.HelperProvider, BackgroundImageHelper.OnUpdate{
-
     @Override
     public boolean supportAutoPageLoader() {return true;}
     public boolean getSupportRowProgressBar()
     {
         return false;
     }
-
     public boolean supportBackgroundChange() {
         return false;
     }
-
-    public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
-    {
+    public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height) {
 
     }
-
-
     abstract protected @NonNull DataProvider createDataProvider();
     protected DataProvider dataProvider;
     protected void configDataManager(DataProvider dataProvider) {}
@@ -58,11 +54,9 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
             fragmentHelper.onDestroy();
         }
     }
-
     public RowBasedFragmentHelper getFragmentHelper() {
         return fragmentHelper;
     }
-
     RowBasedFragmentHelper fragmentHelper;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -74,18 +68,13 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
         configDataManager(dataProvider);
         fragmentHelper.build();
         fragmentHelper.next();
-
     }
-
     protected RowBasedFragmentHelper createBrowseFragmentHelper() {
         return new RowBasedFragmentHelper(this,this);
     }
-
     public BackgroundImageHelper getBackgroundImageHelper() {
         return new BackgroundImageHelper(getActivity(),this);
     }
-
-
     public PresenterSelector createMainRowPresenterSelector() {
         return null;
     }
@@ -98,14 +87,12 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     public AbstractArrayObjectAdapter createMainArrayObjectAdapter(PresenterSelector presenter) {
         return new DefaultArrayObjectAdapter(presenter);
     }
-
     abstract public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem);
     public Row getListRow(IHeaderItem headerItem,HeaderItem header, ArrayObjectAdapter listRowAdapter) {
-        return new ListRow(header, listRowAdapter);
+        ListRow listRow=new ListRow(header, listRowAdapter);
+        return listRow;
     }
-
-    public HeaderItem getHeaderItem(int i,IHeaderItem headerItem, String name)
-    {
+    public HeaderItem getHeaderItem(int i,IHeaderItem headerItem, String name) {
         return new HeaderItem(i,name);
     }
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
@@ -119,15 +106,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     }
     public void onItemSelected(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row){}
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item,RowPresenter.ViewHolder rowViewHolder, Row row) {}
-
-
-
-
-
-
     //UI Customise
-
-
     private void setupUIElements() {
         if(getTitleRes()!=-1)
             setTitle(getString(getTitleRes()));
@@ -142,6 +121,8 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
 
         setHeadersState(defaultHeadersState());
         setHeadersTransitionOnBackEnabled(defaultHeadersTransitionOnBackEnabled());
+
+
 
         if(getBrandColorRes()!=-1)
             setBrandColor(getResources().getColor(getBrandColorRes()));
@@ -164,17 +145,17 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
 
             setHeaderPresenterSelector(presenterSelector );
         }
+
+
+
     }
     @Override
     public String getFirstTimeLoaderMessage() {
         return getActivity().getString(R.string._busy_message);
     }
-
-
     protected RowHeaderPresenter createRowHeaderPresenter() {
         return null;
     }
-
     protected int getSearchAffordanceColorValue()
     {
         return -1;
@@ -184,7 +165,6 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     {
         return R.color.fastlane_background;
     }
-
     protected int getBrandColorValue()
     {
         return -1;
@@ -194,6 +174,7 @@ abstract public class AbstractBrowseFragment extends BrowseFragment implements R
     {
         return R.color.fastlane_background;
     }
+
     protected boolean defaultHeadersTransitionOnBackEnabled()
     {
         return false;

@@ -16,17 +16,24 @@ package com.kimeeo.kAndroidTV.Demo.fragments;
 
 
 import android.content.Intent;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.HeaderItem;
+import android.support.v17.leanback.widget.HorizontalGridView;
 import android.support.v17.leanback.widget.ListRow;
 import android.support.v17.leanback.widget.ListRowPresenter;
+import android.support.v17.leanback.widget.ListRowView;
 import android.support.v17.leanback.widget.ObjectAdapter;
 import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.view.View;
+import android.view.ViewGroup;
 
 import com.kimeeo.kAndroidTV.Demo.DailymotionActivityRow;
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
@@ -49,7 +56,11 @@ public class BrowseFragment extends AbstractBrowseFragment {
     }
 
 
-
+    @DrawableRes
+    protected int getBrandRes()
+    {
+        return R.drawable.background_canyon;
+    }
     /*
     protected RowHeaderPresenter createRowHeaderPresenter() {
         return new IconHeaderPresenter();
@@ -154,5 +165,24 @@ public class BrowseFragment extends AbstractBrowseFragment {
         return SearchActivity.class;
     }
 
+    public static class ListRowPresenter1 extends ListRowPresenter
+    {
+        @Override
+        protected RowPresenter.ViewHolder createRowViewHolder(ViewGroup parent) {
+            RowPresenter.ViewHolder viewHolder=super.createRowViewHolder(parent);
+            viewHolder.view.setBackgroundResource(R.color.background);
+            HorizontalGridView rowView =((ListRowView)viewHolder.view).getGridView();
+            GridLayoutManager lm = (GridLayoutManager)rowView.getLayoutManager();
+            //rowView.setClipChildren(false);
+            //rowView.setPadding(600,0,0,0);
+            return viewHolder;
+        }
+
+        @Override
+        protected void onBindRowViewHolder(RowPresenter.ViewHolder holder, Object item) {
+            super.onBindRowViewHolder(holder, item);
+            ViewHolder vh = (ViewHolder) holder;
+        }
+    }
 
 }

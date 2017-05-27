@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.drawable.AnimationDrawable;
@@ -15,12 +16,15 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 
 import com.kimeeo.kAndroidTV.R;
@@ -32,36 +36,53 @@ abstract public class AbstractOnboardingFragment extends android.support.v17.lea
     public static final String COMPLETED_ONBOARDING = "completed_onboarding";
 
 
-    private List<Integer> pageTitles;
-    private List<Integer> pageDescriptions;
-    private List<Integer> pageImages;
-    private static final long ANIMATION_DURATION = 500;
+    private List<String> pageTitlesData;
+    private List<String> pageDescriptionsData;
+    private List<Integer> pageImagesData;
     private Animator mContentAnimator;
     private ImageView mContentView;
+    private String startButtonLabel;
+    private int logoRes=-1;
+    private int backgroundColor=-1;
+    private int backgroundDrawablerRes=-1;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view =super.onCreateView(inflater, container, savedInstanceState);
-        if (setLogoRes() != -1)
-            setLogoResourceId(setLogoRes());
+        if (getLogoRes() != -1)
+            setLogoResourceId(getLogoRes());
 
-        pageTitles = createPageTitles();
-        pageDescriptions = createPageDescriptions();
-        pageImages = createPageImages();
+        pageTitlesData = createPageTitles();
+        pageDescriptionsData = createPageDescriptions();
+        pageImagesData = createPageImages();
+
+        Button buttonStart = (Button) view.findViewById(R.id.button_start);
+        if(getStartButtonLabel()!=null && getStartButtonLabel().equals("")==false)
+            buttonStart.setText(getStartButtonLabel());
         return view;
     }
 
-    abstract protected List<Integer> createPageTitles();
+    protected String getStartButtonLabel() {
+        return startButtonLabel;
+    }
+    protected void setStartButtonLabel(String value) {
+        startButtonLabel=value;
+    }
+    abstract protected List<String> createPageTitles();
 
-    abstract protected List<Integer> createPageDescriptions();
+    abstract protected List<String> createPageDescriptions();
 
     abstract protected List<Integer> createPageImages();
 
 
-    @DrawableRes
-    protected int setLogoRes() {
-        return -1;
+    public int getLogoRes() {
+        return logoRes;
+    }
+
+
+    public void setLogoRes(@DrawableRes int value) {
+        logoRes=value;
     }
 
     @Override
@@ -70,43 +91,67 @@ abstract public class AbstractOnboardingFragment extends android.support.v17.lea
         SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(getActivity()).edit();
         sharedPreferencesEditor.putBoolean(COMPLETED_ONBOARDING, true);
         sharedPreferencesEditor.apply();
-        getActivity().finish();
+        finish();
     }
+
+    public static boolean isCompleted(Context context) {
+        SharedPreferences sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(context);
+        return sharedPreferencesEditor.getBoolean(COMPLETED_ONBOARDING, false);
+    }
+    public static void resetCompleted(Context context) {
+        SharedPreferences.Editor sharedPreferencesEditor = PreferenceManager.getDefaultSharedPreferences(context).edit();
+        sharedPreferencesEditor.putBoolean(COMPLETED_ONBOARDING, false);
+        sharedPreferencesEditor.apply();
+    }
+
+    protected abstract void finish();
 
     @Override
     protected int getPageCount() {
-        return getTotalCount();
+        return pageTitlesData.size();
     }
 
-    abstract protected int getTotalCount();
 
     @Override
     protected String getPageTitle(int pageIndex) {
-        return getString(pageTitles.get(pageIndex));
+        return pageTitlesData.get(pageIndex);
     }
 
     @Override
     protected String getPageDescription(int pageIndex) {
-        return getString(pageDescriptions.get(pageIndex));
+        return pageDescriptionsData.get(pageIndex);
     }
 
     @Nullable
     @Override
     protected View onCreateBackgroundView(LayoutInflater inflater, ViewGroup container) {
         View bgView = new View(getActivity());
-        if (getBackgroundColorRes() != -1)
-            bgView.setBackgroundColor(getResources().getColor(getBackgroundColorRes()));
+        if (getBackgroundDrawablerRes() != -1)
+            bgView.setBackgroundResource(getBackgroundDrawablerRes());
         else if (getBackgroundColor() != -1)
             bgView.setBackgroundColor(getBackgroundColor());
         return bgView;
     }
 
-    protected int getBackgroundColor() {
-        return -1;
+    public int getBackgroundColor() {
+        return backgroundColor;
+    }
+    public void setBackgroundColor(int value) {
+        backgroundColor=value;
     }
 
-    protected int getBackgroundColorRes() {
-        return -1;
+
+
+    protected Drawable getBackgroundDrawable() {
+        return null;
+    }
+
+    protected int getBackgroundDrawablerRes() {
+        return backgroundDrawablerRes;
+    }
+
+    protected void setBackgroundDrawablerRes(@DrawableRes int value) {
+        backgroundDrawablerRes=value;
     }
 
     @Nullable
@@ -129,14 +174,14 @@ abstract public class AbstractOnboardingFragment extends android.support.v17.lea
         if (mContentAnimator != null) {
             mContentAnimator.end();
         }
+
         ArrayList<Animator> animators = new ArrayList<>();
         Animator fadeOut = createFadeOutAnimator(mContentView);
 
         fadeOut.addListener(new AnimatorListenerAdapter() {
             @Override
             public void onAnimationEnd(Animator animation) {
-                mContentView.setImageDrawable(getResources().getDrawable(pageImages.get(newPage)));
-                ((AnimationDrawable) mContentView.getDrawable()).start();
+                mContentView.setImageDrawable(getResources().getDrawable(pageImagesData.get(newPage)));
             }
         });
         animators.add(fadeOut);
@@ -150,17 +195,20 @@ abstract public class AbstractOnboardingFragment extends android.support.v17.lea
     @Override
     protected Animator onCreateEnterAnimation()
     {
-        mContentView.setImageDrawable(getResources().getDrawable(pageImages.get(0)));
-        ((AnimationDrawable) mContentView.getDrawable()).start();
+        mContentView.setImageDrawable(getResources().getDrawable(pageImagesData.get(0)));
         mContentAnimator = createFadeInAnimator(mContentView);
         return mContentAnimator;
     }
 
     protected Animator createFadeInAnimator(View view) {
-        return ObjectAnimator.ofFloat(view, View.ALPHA, 0.0f, 1.0f).setDuration(ANIMATION_DURATION);
+        return ObjectAnimator.ofFloat(view, View.ALPHA, 0.0f, 1.0f).setDuration(getAnimationDuration());
     }
 
     protected Animator createFadeOutAnimator(View view) {
-        return ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f, 0.0f).setDuration(ANIMATION_DURATION);
+        return ObjectAnimator.ofFloat(view, View.ALPHA, 1.0f, 0.0f).setDuration(getAnimationDuration());
+    }
+
+    protected long getAnimationDuration() {
+        return 500;
     }
 }

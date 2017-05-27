@@ -9,6 +9,8 @@
     <application android:allowBackup="true" android:label="@string/app_name"
         android:supportsRtl="true">
         <activity android:name=".dialog.DialogActivity" android:theme="@style/Theme.Leanback"/>
+        <activity android:name=".onboardingFragment.OnBoardActivity" android:theme="@style/Theme.Leanback"/>
+
     </application>
 
 </manifest>

@@ -54,11 +54,11 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
 
             fragment.setOnDone(this);
             try {
-                int backgroundDrawable=getIntent().getExtras().getInt(BACKGROUND_DRAWABLE,-1);
-                int backgroundColor=getIntent().getExtras().getInt(BACKGROUND_COLOR,-1);
-                if(backgroundDrawable!=-1)
+                int backgroundDrawable=getIntent().getExtras().getInt(BACKGROUND_DRAWABLE);
+                int backgroundColor=getIntent().getExtras().getInt(BACKGROUND_COLOR);
+                if(backgroundDrawable>0)
                     getWindow().setBackgroundDrawableResource(backgroundDrawable);
-                else if(backgroundColor!=-1)
+                else
                     getWindow().setBackgroundDrawable(new ColorDrawable(backgroundColor));
 
 

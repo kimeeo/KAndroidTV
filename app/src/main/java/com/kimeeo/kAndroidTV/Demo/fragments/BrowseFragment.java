@@ -31,13 +31,13 @@ import android.support.v17.leanback.widget.RowPresenter;
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
-import com.kimeeo.kAndroidTV.Demo.YoutubeActivityRow;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.Demo.presenter.*;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.HeaderDataProvider;
 import com.kimeeo.kAndroidTV.browseFragment.AbstractBrowseFragment;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
+import com.kimeeo.kAndroidTV.onboardingFragment.OnBoardActivity;
 
 public class BrowseFragment extends AbstractBrowseFragment {
     public boolean getSupportRowProgressBar()
@@ -84,6 +84,19 @@ public class BrowseFragment extends AbstractBrowseFragment {
         Intent intent = new Intent(getActivity(), DetailsActivity.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
         getActivity().startActivity(intent);
+
+
+        OnBoardActivity.Builder builder=new OnBoardActivity.Builder(getActivity());
+        builder.addPage("My Title 1","My descriptions 1",R.drawable.image);
+        builder.addPage("My Title 2","My descriptions 2",R.drawable.image);
+        builder.addPage("My Title 3","My descriptions 3",R.drawable.image);
+        builder.addPage("My Title 4","My descriptions 4",R.drawable.image);
+        builder.addPage("My Title 5","My descriptions 5",R.drawable.image);
+        builder.setLogoRes(R.drawable.background_canyon);
+        builder.startButtonLabel("Open APP");
+        builder.backgroundColorRes(R.color.fastlane_background);
+        builder.show();
+        builder.forceShow();
     }
 
     @Override

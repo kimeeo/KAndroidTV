@@ -35,8 +35,6 @@
         <activity android:name=".YoutubeActivityRow" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".YoutubeActivityDefault" android:theme="@style/Theme.Leanback"/>
 
-        <activity android:name=".OnBoardActivity" android:theme="@style/Theme.Leanback"/>
-
 
     </application>
 

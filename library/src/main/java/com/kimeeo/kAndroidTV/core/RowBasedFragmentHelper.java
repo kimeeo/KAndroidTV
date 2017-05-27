@@ -208,12 +208,17 @@ public class RowBasedFragmentHelper implements DataProvider.OnFatchingObserve,Mo
         }
     }
     protected void showBusy(String message) {
-        progressDialog = new ProgressDialog(host.getActivity());
-        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-        progressDialog.setMessage(message);
-        progressDialog.setIndeterminate(true);
-        progressDialog.setCanceledOnTouchOutside(false);
-        progressDialog.show();
+        try {
+            progressDialog = new ProgressDialog(host.getActivity());
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+            progressDialog.setMessage(message);
+            progressDialog.setIndeterminate(true);
+            progressDialog.setCanceledOnTouchOutside(false);
+            progressDialog.show();
+        }catch (Exception e)
+        {
+
+        }
     }
 
     @Override

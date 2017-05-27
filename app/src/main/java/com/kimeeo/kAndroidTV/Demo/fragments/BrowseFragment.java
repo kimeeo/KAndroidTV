@@ -32,6 +32,8 @@ import com.kimeeo.kAndroidTV.Demo.DailymotionActivityRow;
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
+import com.kimeeo.kAndroidTV.Demo.YoutubeActivityDefault;
+import com.kimeeo.kAndroidTV.Demo.YoutubeActivityRow;
 import com.kimeeo.kAndroidTV.Demo.dataProviders.Movie;
 import com.kimeeo.kAndroidTV.Demo.presenter.*;
 import com.kimeeo.kAndroid.dataProvider.DataProvider;

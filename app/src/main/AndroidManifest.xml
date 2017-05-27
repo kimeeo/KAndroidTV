@@ -34,6 +34,7 @@
         <activity android:name=".PageActivity" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".YoutubeActivityRow" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".YoutubeActivityDefault" android:theme="@style/Theme.Leanback"/>
+        <activity android:name=".DailymotionActivityRow" android:theme="@style/Theme.Leanback"/>
 
 
     </application>

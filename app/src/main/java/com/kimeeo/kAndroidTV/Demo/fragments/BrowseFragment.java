@@ -28,6 +28,7 @@ import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 
+import com.kimeeo.kAndroidTV.Demo.DailymotionActivityRow;
 import com.kimeeo.kAndroidTV.Demo.DetailsActivity;
 import com.kimeeo.kAndroidTV.Demo.R;
 import com.kimeeo.kAndroidTV.Demo.SearchActivity;
@@ -81,7 +82,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
     public void onItemClicked(Presenter.ViewHolder itemViewHolder, Object item, RowPresenter.ViewHolder rowViewHolder, Row row) {
 
         Movie movie = (Movie) item;
-        Intent intent = new Intent(getActivity(), DetailsActivity.class);
+        Intent intent = new Intent(getActivity(), DailymotionActivityRow.class);
         intent.putExtra(DetailsActivity.MOVIE, movie);
         getActivity().startActivity(intent);
 

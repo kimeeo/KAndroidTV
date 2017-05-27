@@ -1,6 +1,5 @@
-package com.kimeeo.kAndroidTV.youtube;
+package com.kimeeo.kAndroidTV.dailymotion;
 
-import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -26,7 +25,6 @@ import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
-import android.support.v7.app.AlertDialog;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.R;
@@ -44,41 +42,23 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import fr.bmartel.youtubetv.YoutubeTvView;
-import fr.bmartel.youtubetv.listener.IBufferStateListener;
-import fr.bmartel.youtubetv.listener.IPlayerListener;
-import fr.bmartel.youtubetv.listener.IProgressUpdateListener;
-import fr.bmartel.youtubetv.model.VideoInfo;
-import fr.bmartel.youtubetv.model.VideoQuality;
-import fr.bmartel.youtubetv.model.VideoState;
 
 /**
  * Created by BhavinPadhiyar on 5/20/17.
  */
 
-abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener,IPlayerListener,IProgressUpdateListener,IBufferStateListener
+abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener,DMWebVideoView.Listener
 {
-    private YoutubeTvView youtubePlayer;
+    private DMWebVideoView dmWebVideoView;
     private List<Action> secondaryActionsList;
     private String videoId;
-    private MediaSession mSession;
-
-    private class MediaSessionCallback extends MediaSession.Callback {
-
-    }
-    public AbstractYoutubeVideoPlayerFragment(YoutubeTvView view)
+    public AbstractDailymotionVideoPlayerFragment(DMWebVideoView dmWebVideoView)
     {
-        this.youtubePlayer=view;
-        /*
-        mSession=youtubePlayer.getMediaSession();
-        mSession.setCallback(new MediaSessionCallback());
-        mSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
-        mSession.setActive(true);
-        */
+        this.dmWebVideoView=dmWebVideoView;
     }
-    public AbstractYoutubeVideoPlayerFragment()
+    public AbstractDailymotionVideoPlayerFragment()
     {
-        youtubePlayer=null;
+        dmWebVideoView=null;
     }
 
     public static final String TAG = "VideoPlayerFragment";
@@ -111,11 +91,11 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     final public boolean supportBackgroundChange(){return false;}
 
     public void setPlaybackQuality(int what) {
-        setPlaybackQuality(youtubePlayer.getAvailableQualityLevels().get(what));
+        //setPlaybackQuality(dmWebVideoView.qualities.get(what));
     }
 
-    public void setPlaybackQuality(VideoQuality suggestedQuality) {
-        youtubePlayer.setPlaybackQuality(suggestedQuality);
+    public void setPlaybackQuality(String suggestedQuality) {
+        //dmWebVideoView.setPlaybackQuality(suggestedQuality);
     }
 
     public void onActionClicked(Action action)
@@ -124,15 +104,18 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             togglePlayback();
         }
         else if (action.getId() == mFastForwardAction.getId()) {
-            youtubePlayer.seekTo((int)youtubePlayer.getCurrentPosition()+seekSize());
+            dmWebVideoView.seek((int)dmWebVideoView.currentTime+seekSize());
         }
         else if (action.getId() == mRewindAction.getId()) {
-            youtubePlayer.seekTo((int)youtubePlayer.getCurrentPosition()-seekSize());
+            dmWebVideoView.seek((int)dmWebVideoView.currentTime-seekSize());
         }
         else if (action instanceof PlaybackControlsRow.HighQualityAction) {
-            List<VideoQuality> list=youtubePlayer.getAvailableQualityLevels();
-             if(list!=null && list.size()>=2)
+            String qualities = dmWebVideoView.qualities;
+            /*
+            List<VideoQuality> list=dmWebVideoView.qualities;
+            if(list!=null && list.size()>=2)
                 ((AbstractYoutubeActivity)getActivity()).openQualitySelector(youtubePlayer.getAvailableQualityLevels());
+                */
         }
         else
         {
@@ -154,7 +137,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
         return new ListRow(header, listRowAdapter);
     }
     public void togglePlayback() {
-        youtubePlayer.playPause();
+        dmWebVideoView.togglePlay();
     }
 
     private void notifyChanged(Action action) {
@@ -179,7 +162,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     }
     @Override
     public void onStop() {
-        youtubePlayer.stopVideo();
+        dmWebVideoView.pause();
         super.onStop();
     }
 
@@ -259,66 +242,53 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
         data =createDetailsData();
         playbackControlsRowPresenter = createPlaybackControlsRowPresenter();
 
-        if(youtubePlayer==null)
-            youtubePlayer = (YoutubeTvView) getActivity().findViewById(R.id.youtubetv_view);
+        if(dmWebVideoView==null)
+            dmWebVideoView = (DMWebVideoView) getActivity().findViewById(R.id.dmWebVideoView);
 
-        youtubePlayer.addPlayerListener(this);
+        dmWebVideoView.setEventListener(this);
 
         fragmentHelper = createBrowseFragmentHelper();
         dataProvider=createDataProvider();
         configDataManager(dataProvider);
     }
 
-    public void updateView(Bundle bundle) {
-        youtubePlayer.updateView(bundle);
-    }
 
 
-
-    VideoState videoState;
-    @Override
-    public void onPlayerStateChange(VideoState state, long position, float speed, float duration, VideoInfo videoInfo) {
-        if (videoState!=state && VideoState.getPlayerState(state.getIndex()) == VideoState.PAUSED) {
-            videoState=state;
+    int totalTime=0;
+    public void onEvent(String event)
+    {
+        if(event.equals("start"))
+        {
+            start();
+        }
+        else if(event.equals("progress"))
+        {
+            start();
+            mPlaybackControlsRow.setCurrentTimeLong((long)dmWebVideoView.currentTime*1000);
+        }
+        else if(event.equals("pause"))
+        {
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PLAY));
             notifyChanged(mPlayPauseAction);
             setFadingEnabled(false);
-        } else if (videoState!=state && VideoState.getPlayerState(state.getIndex()) == VideoState.PLAYING) {
-            videoState=state;
+        }
+        else if(event.equals("play") || event.equals("playing"))
+        {
+            start();
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PAUSE));
             notifyChanged(mPlayPauseAction);
             setFadingEnabled(true);
         }
-        else if (VideoState.getPlayerState(state.getIndex()) == VideoState.BUFFERING) {
-
-        }
     }
 
-
-    int totalTime=0;
-    @Override
-    public void onPlayerReady(VideoInfo videoInfo) {
-        videoId = videoInfo.getVideoId();
-        youtubePlayer.setOnBufferingUpdateListener(this);
-        youtubePlayer.setOnProgressUpdateListener(this);
-    }
-    @Override
-    public void onProgressUpdate(float currentTime)
-    {
-        mPlaybackControlsRow.setCurrentTimeLong((long)currentTime*1000);
-    }
-
-    @Override
-    public void onBufferUpdate(float videoDuration, float loadedFraction)
-    {
+    protected void start() {
         if(totalTime==0) {
-            totalTime =(int)videoDuration;
+            totalTime =(int)dmWebVideoView.duration;
             fragmentHelper.build();
             fragmentHelper.next();
             addPlaybackControlsRow();
             loadCoverImage(mPlaybackControlsRow);
         }
-        mPlaybackControlsRow.setBufferedProgressLong((long)loadedFraction*1000);
     }
 
     private void addPlaybackControlsRow() {
@@ -360,7 +330,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
 
     protected void loadCoverImage(PlaybackControlsRow mPlaybackControlsRow) {
         mPlaybackControlsRow.setImageDrawable(getActivity().getDrawable(R.drawable._you_tube_image));
-        DownloadImagesTask task = new DownloadImagesTask(mPlaybackControlsRow);
+        AbstractDailymotionVideoPlayerFragment.DownloadImagesTask task = new AbstractDailymotionVideoPlayerFragment.DownloadImagesTask(mPlaybackControlsRow);
         task.execute(videoId);
     }
 
@@ -441,9 +411,18 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
         return R.color.fastlane_background;
     }
 
-    public void play(String videoId) {
+    public void play(final String videoId) {
         this.videoId=videoId;
-        youtubePlayer.playVideo(videoId);
+        Handler h =new Handler();
+        Runnable r = new Runnable() {
+            @Override
+            public void run() {
+                dmWebVideoView.setVideoId(videoId);
+                dmWebVideoView.toggleControls();
+                dmWebVideoView.play();
+            }
+        };
+        h.postDelayed(r,3000);
     }
 
 
@@ -456,13 +435,13 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     }
 
     public void closePlayer() {
-        youtubePlayer.closePlayer();
+        dmWebVideoView.pause();
     }
     public boolean isPlaying() {
-        return youtubePlayer.isPlaying();
+        return !dmWebVideoView.paused;
     }
     public void stopVideo() {
-        youtubePlayer.stopVideo();
+        dmWebVideoView.pause();
     }
 
 
@@ -476,7 +455,7 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
         }
         @Override
         protected Bitmap doInBackground(String... urls) {
-            String url="https://img.youtube.com/vi/"+urls[0]+"/mqdefault.jpg";
+            String url="http://www.dailymotion.com/thumbnail/video/"+urls[0];
             return downloadImage(url);
         }
 
@@ -502,6 +481,4 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             return bmp;
         }
     }
-
-
 }

@@ -12,7 +12,7 @@
  * the License.
  */
 
-package com.kimeeo.kAndroidTV.youtube;
+package com.kimeeo.kAndroidTV.dailymotion;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -24,50 +24,45 @@ import com.kimeeo.kAndroidTV.dialog.DialogActivity;
 
 import java.util.List;
 
-import fr.bmartel.youtubetv.YoutubeTvView;
-import fr.bmartel.youtubetv.model.VideoQuality;
-
-abstract public class AbstractYoutubeActivity extends Activity{
-    private static final String TAG = "PlaybackOverlayActivity";
-    AbstractYoutubeVideoPlayerFragment youtubeVideoPlayerFragment;
+abstract public class AbstractDailymotionActivity extends Activity{
+    private static final String TAG = "AbstractDailymotionActivity";
+    AbstractDailymotionVideoPlayerFragment dailymotionVideoPlayerFragment;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout._youtube_playback_controls);
+        setContentView(R.layout._dailymotion_playback_controls);
 
-        YoutubeTvView youtubeTvView = getYoutubeTvView();
-        youtubeVideoPlayerFragment=createAbstractYoutubeVideoPlayerFragment(youtubeTvView);
+        DMWebVideoView webVideoView = getDMWebVideoView();
+        dailymotionVideoPlayerFragment=createAbstractDailymotionVideoPlayerFragment(webVideoView);
 
 
         android.app.FragmentTransaction ft1 = getFragmentManager().beginTransaction();
-        ft1.replace(R.id.playbackControlsFragmentHolder,youtubeVideoPlayerFragment, AbstractYoutubeVideoPlayerFragment.TAG);
+        ft1.replace(R.id.playbackControlsFragmentHolder,dailymotionVideoPlayerFragment, AbstractDailymotionVideoPlayerFragment.TAG);
         ft1.commit();
     }
 
     protected void play(String videoId) {
-        youtubeVideoPlayerFragment.play(videoId);
+        dailymotionVideoPlayerFragment.play(videoId);
     }
 
-    protected abstract AbstractYoutubeVideoPlayerFragment createAbstractYoutubeVideoPlayerFragment(YoutubeTvView youtubeTvView);
+    protected abstract AbstractDailymotionVideoPlayerFragment createAbstractDailymotionVideoPlayerFragment(DMWebVideoView youtubeTvView);
 
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-        youtubeVideoPlayerFragment.closePlayer();
+        dailymotionVideoPlayerFragment.closePlayer();
     }
-    protected YoutubeTvView getYoutubeTvView() {
-        YoutubeTvView youtubeTvView = (YoutubeTvView) findViewById(R.id.youtubeTvView);
-        youtubeTvView.setFocusable(false);
-        youtubeTvView.setFocusableInTouchMode(false);
+    protected DMWebVideoView getDMWebVideoView() {
+        DMWebVideoView youtubeTvView = (DMWebVideoView) findViewById(R.id.dmWebVideoView);
         return youtubeTvView;
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (youtubeVideoPlayerFragment.isPlaying()) {
+        if (dailymotionVideoPlayerFragment.isPlaying()) {
             if (!requestVisibleBehind(true)) {
                 stopPlayback();
             }
@@ -79,18 +74,18 @@ abstract public class AbstractYoutubeActivity extends Activity{
     @Override
     protected void onStop() {
         super.onStop();
-        youtubeVideoPlayerFragment.closePlayer();
+        dailymotionVideoPlayerFragment.closePlayer();
     }
     private void stopPlayback() {
-        if (youtubeVideoPlayerFragment != null) {
-            youtubeVideoPlayerFragment.stopVideo();
+        if (dailymotionVideoPlayerFragment != null) {
+            dailymotionVideoPlayerFragment.stopVideo();
         }
     }
 
-    public void openQualitySelector(List<VideoQuality> availableQualityLevels) {
+    public void openQualitySelector(List<String> availableQualityLevels) {
         DialogActivity.Builder builder=new DialogActivity.Builder(this).title(getSelectQualityTitle());
         for (int i = 0; i < availableQualityLevels.size(); i++) {
-            builder.addAction(i,availableQualityLevels.get(i).name());
+            builder.addAction(i,availableQualityLevels.get(i));
         }
         builder.backgroundColor(Color.TRANSPARENT);
         builder.open();
@@ -102,7 +97,7 @@ abstract public class AbstractYoutubeActivity extends Activity{
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == DialogActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             int what=data.getIntExtra(DialogActivity.CHOICE,-1);
-            youtubeVideoPlayerFragment.setPlaybackQuality(what);
+            dailymotionVideoPlayerFragment.setPlaybackQuality(what);
         }
     }
     public String getSelectQualityTitle() {

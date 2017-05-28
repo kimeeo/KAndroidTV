@@ -20,8 +20,11 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
+import android.support.v4.app.NotificationCompat;
 
 import com.kimeeo.kAndroidTV.Demo.fragments.BrowseFragment;
+import com.kimeeo.kAndroidTV.recommendationBuilder.IRecommendation;
+import com.kimeeo.kAndroidTV.recommendationBuilder.RecommendationFactory;
 
 import java.util.Locale;
 
@@ -43,6 +46,10 @@ public class MainActivity extends Activity {
         if (savedInstanceState == null) {
             Fragment fragment = new BrowseFragment();
             getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
+
+
+            recommendationDemo();
+
         }
         /*
         DownloadWebPageTask task = new DownloadWebPageTask();
@@ -75,6 +82,58 @@ public class MainActivity extends Activity {
                 }
             }
         });*/
+    }
+
+    private void recommendationDemo() {
+        RecommendationFactory recommendationFactory = new RecommendationFactory(getApplicationContext(),RecommendationActivity.class);
+        IRecommendation recommendation = new IRecommendation(){
+
+            @Override
+            public String getImageUrl() {
+                return "https://i.ytimg.com/vi/ijOlFh0PT7Y/hqdefault.jpg";
+            }
+
+            @Override
+            public String getTitle() {
+                return "Recommendation";
+            }
+
+            @Override
+            public String getDescription() {
+                return "Recommendation Description";
+            }
+
+            @Override
+            public long getId() {
+                return 10;
+            }
+        };
+        recommendationFactory.recommend(1, recommendation, NotificationCompat.PRIORITY_HIGH,R.drawable.ic_android_black_24dp);
+
+
+        recommendation = new IRecommendation(){
+
+            @Override
+            public String getImageUrl() {
+                return "https://i.ytimg.com/vi/ot9p29R2TG8/hqdefault.jpg";
+            }
+
+            @Override
+            public String getTitle() {
+                return "Recommendation 2";
+            }
+
+            @Override
+            public String getDescription() {
+                return "Recommendation Description 2";
+            }
+
+            @Override
+            public long getId() {
+                return 10;
+            }
+        };
+        recommendationFactory.recommend(2, recommendation, NotificationCompat.PRIORITY_HIGH,R.drawable.ic_android_black_24dp);
     }
 
     private class DownloadWebPageTask extends AsyncTask<String, Void, Article> {

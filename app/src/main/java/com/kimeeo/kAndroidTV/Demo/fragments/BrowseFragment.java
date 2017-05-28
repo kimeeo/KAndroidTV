@@ -137,7 +137,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
 
     public static class ShadowRowPresenterSelector extends PresenterSelector {
 
-        private ListRowPresenter mShadowEnabledRowPresenter = new ListRowPresenter();
+        private ListRowPresenter mShadowEnabledRowPresenter = new ListRowPresenter1();
         private ListRowPresenter mShadowDisabledRowPresenter = new ListRowPresenter();
 
         public ShadowRowPresenterSelector() {
@@ -172,7 +172,7 @@ public class BrowseFragment extends AbstractBrowseFragment {
             RowPresenter.ViewHolder viewHolder=super.createRowViewHolder(parent);
             viewHolder.view.setBackgroundResource(R.color.background);
             HorizontalGridView rowView =((ListRowView)viewHolder.view).getGridView();
-            GridLayoutManager lm = (GridLayoutManager)rowView.getLayoutManager();
+            //GridLayoutManager lm = (GridLayoutManager)rowView.getLayoutManager();
             //rowView.setClipChildren(false);
             //rowView.setPadding(600,0,0,0);
             return viewHolder;

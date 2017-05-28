@@ -86,6 +86,7 @@ public class MainActivity extends Activity {
 
     private void recommendationDemo() {
         RecommendationFactory recommendationFactory = new RecommendationFactory(getApplicationContext(),RecommendationActivity.class);
+        recommendationFactory.setFastLaneColorRes(R.color.fastlane_background);
         IRecommendation recommendation = new IRecommendation(){
 
             @Override

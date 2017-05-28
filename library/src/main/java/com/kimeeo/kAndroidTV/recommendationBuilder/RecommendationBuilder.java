@@ -48,7 +48,6 @@ public class RecommendationBuilder {
     private String mGroupKey;
     private String mSort;
     private PendingIntent mIntent;
-    private int mColor=0;
 
 
     public RecommendationBuilder(Context context) {
@@ -63,10 +62,6 @@ public class RecommendationBuilder {
 
     public RecommendationBuilder setId(int id) {
         mId = id;
-        return this;
-    }
-    public RecommendationBuilder setColor(@ColorRes int id) {
-        mColor = id;
         return this;
     }
 
@@ -149,7 +144,7 @@ public class RecommendationBuilder {
                         .setOngoing(true)
                         .setGroup(mGroupKey)
                         .setSortKey(mSort)
-                        .setColor(mColor)
+                        .setColor(mFastLaneColor)
                         .setCategory(Notification.CATEGORY_RECOMMENDATION)
                         .setLargeIcon(mCardImageBitmap)
                         .setSmallIcon(mSmallIcon)

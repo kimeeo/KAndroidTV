@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Parcelable;
+import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
@@ -34,7 +35,7 @@ public class RecommendationFactory {
     private NotificationManager mNotificationManager;
 
     private Class mResponseActivityClass;
-    private int fastLaneColor= R.color.fastlane_background;
+    private int fastLaneColorRes= R.color.fastlane_background;
     private int backgroundWidth= 1920;
     private int backgroundHeight= 1080;
     private int cardWidth= 500;
@@ -67,10 +68,9 @@ public class RecommendationFactory {
                         .setDescription(recommendation.getDescription())
                         .setIntent(intent)
                         .setSmallIcon(smallIcon)
+                        .setFastLaneColor(getFastLaneColorRes())
                         .setBitmap(cardImageBitmap);
 
-                if (getFastLaneColor() != -1)
-                    recommendationBuilder.setFastLaneColor(getFastLaneColor());
 
 
                 Notification recommendNotification = recommendationBuilder.build();
@@ -124,12 +124,12 @@ public class RecommendationFactory {
     }
 
 
-    public int getFastLaneColor() {
-        return fastLaneColor;
+    public int getFastLaneColorRes() {
+        return fastLaneColorRes;
     }
 
-    public void setFastLaneColor(int fastLaneColor) {
-        this.fastLaneColor = fastLaneColor;
+    public void setFastLaneColorRes(@ColorRes int fastLaneColor) {
+        this.fastLaneColorRes = fastLaneColor;
     }
 
     public int getBackgroundWidth() {

@@ -88,6 +88,7 @@ public class RecommendationBuilder {
         return this;
     }
 
+
     public RecommendationBuilder setBackground(String uri) {
         mBackgroundUri = uri;
         return this;
@@ -114,11 +115,8 @@ public class RecommendationBuilder {
         File bitmapFile = getNotificationBackground(mContext, mId);
 
         if (mBackgroundBitmap != null) {
-            Log.d(TAG, "making URI for mBackgroundBitmap");
-            extras.putString(Notification.EXTRA_BACKGROUND_IMAGE_URI,
-                    Uri.parse(BACKGROUND_URI_PREFIX + Integer.toString(mId)).toString());
+            extras.putString(Notification.EXTRA_BACKGROUND_IMAGE_URI,Uri.parse(BACKGROUND_URI_PREFIX + Integer.toString(mId)).toString());
         } else {
-            Log.w(TAG, "mBackgroundBitmap is null");
         }
 
         mGroupKey = (mId < 3) ? "Group1" : (mId < 5) ? "Group2" : "Group3";
@@ -227,5 +225,9 @@ public class RecommendationBuilder {
         Log.i(TAG, "getNotificationBackground: " + context.getCacheDir() + "tmp" + Integer.toString(notificationId) + ".png");
         return new File(context.getCacheDir(), "tmp" + Integer.toString(notificationId) + ".png");
     }
+
+
+
+
 
 }

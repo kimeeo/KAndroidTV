@@ -1,5 +1,7 @@
 package com.kimeeo.kAndroidTV.recommendationBuilder;
 
+import android.graphics.Bitmap;
+
 /**
  * Created by BhavinPadhiyar on 5/28/17.
  */
@@ -8,5 +10,9 @@ public interface IRecommendation {
     String getImageUrl();
     String getTitle();
     String getDescription();
-    long getId();
+    Bitmap getImage();
+    int getId();
+    void setImage(Bitmap bitmap);
+    Bitmap getBackgroundBitmap();
+    void setBackgroundBitmap(Bitmap backgroundBitmap);
 }

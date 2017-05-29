@@ -17,14 +17,18 @@ package com.kimeeo.kAndroidTV.Demo;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
 import android.support.v4.app.NotificationCompat;
 
 import com.kimeeo.kAndroidTV.Demo.fragments.BrowseFragment;
+import com.kimeeo.kAndroidTV.recommendationBuilder.IAdvanceRecommendation;
 import com.kimeeo.kAndroidTV.recommendationBuilder.IRecommendation;
+import com.kimeeo.kAndroidTV.recommendationBuilder.Recommendation;
 import com.kimeeo.kAndroidTV.recommendationBuilder.RecommendationFactory;
+import com.kimeeo.kAndroidTV.recommendationBuilder.RecommendationHelper;
 
 import java.util.Locale;
 
@@ -85,6 +89,7 @@ public class MainActivity extends Activity {
     }
 
     private void recommendationDemo() {
+        /*
         RecommendationFactory recommendationFactory = new RecommendationFactory(getApplicationContext(),RecommendationActivity.class);
         recommendationFactory.setFastLaneColorRes(R.color.fastlane_background);
         IRecommendation recommendation = new IRecommendation(){
@@ -105,37 +110,91 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public Bitmap getImage() {
+                return null;
+            }
+
+            @Override
             public long getId() {
                 return 10;
+            }
+
+            @Override
+            public void setImage(Bitmap bitmap) {
+
+            }
+
+            @Override
+            public Bitmap getBackgroundBitmap() {
+                return null;
+            }
+
+            @Override
+            public void setBackgroundBitmap(Bitmap backgroundBitmap) {
+
             }
         };
         recommendationFactory.recommend(1, recommendation, NotificationCompat.PRIORITY_HIGH,R.drawable.ic_android_black_24dp);
+        */
 
+        RecommendationHelper recommendationHelper = new RecommendationHelper(getApplicationContext(),RecommendationActivity.class);
+        recommendationHelper.icon(R.drawable.ic_android_black_24dp);
+        recommendationHelper.addRecommendation(1,"Title 1","https://i.ytimg.com/vi/ijOlFh0PT7Y/hqdefault.jpg","Details 1");
+        recommendationHelper.addRecommendation(2,"Title 2","https://i.ytimg.com/vi/OLtrfo6Ejbc/hqdefault.jpg","Details 6");
+        recommendationHelper.addRecommendation(3,"Title 3","https://i.ytimg.com/vi/pK7W5npkhho/hqdefault.jpg","Details 5");
+        recommendationHelper.addRecommendation(4,"Title 4","https://i.ytimg.com/vi/9fbrH7XOuLY/hqdefault.jpg","Details 4");
 
-        recommendation = new IRecommendation(){
-
-            @Override
-            public String getImageUrl() {
-                return "https://i.ytimg.com/vi/ot9p29R2TG8/hqdefault.jpg";
-            }
-
-            @Override
-            public String getTitle() {
-                return "Recommendation 2";
-            }
-
-            @Override
-            public String getDescription() {
-                return "Recommendation Description 2";
-            }
-
-            @Override
-            public long getId() {
-                return 10;
-            }
-        };
-        recommendationFactory.recommend(2, recommendation, NotificationCompat.PRIORITY_HIGH,R.drawable.ic_android_black_24dp);
+        recommendationHelper.addRecommendation(new AdvanceRecommendation(5,"Advance","https://i.ytimg.com/vi/CzLWdNfNj-4/hqdefault.jpg","Details 4"));
+        recommendationHelper.recommendAll();
     }
+    public static class AdvanceRecommendation extends Recommendation implements IAdvanceRecommendation
+    {
+
+        public AdvanceRecommendation(int id, String title, String imageUrl, String description) {
+            super(id, title, imageUrl, description);
+        }
+
+        @Override
+        public Class getAcitivtyClass() {
+            return null;
+        }
+
+        @Override
+        public int getBackgroundWidth() {
+            return 200;
+        }
+
+        @Override
+        public int getBackgroundHeight() {
+            return 200;
+        }
+
+        @Override
+        public int getCardWidth() {
+            return 100;
+        }
+
+        @Override
+        public int getCardHeight() {
+            return 100;
+        }
+
+        @Override
+        public boolean useCustomHeight() {
+            return true;
+        }
+
+        @Override
+        public int getIcon() {
+            return R.drawable.ic_insert_emoticon_black_24dp;
+        }
+
+        @Override
+        public int getFastLaneColorRes() {
+            return R.color.lb_playback_progress_color_no_theme;
+        }
+    }
+
 
     private class DownloadWebPageTask extends AsyncTask<String, Void, Article> {
         @Override

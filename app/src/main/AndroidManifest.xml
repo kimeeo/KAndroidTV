@@ -38,6 +38,42 @@
         <activity android:name=".RecommendationActivity" android:theme="@style/Theme.Leanback"/>
 
 
+        <service
+            android:name=".dayDream.Screensaver"
+            android:exported="true"
+            android:label="@string/my_daydream_name">
+            <intent-filter>
+                <action android:name="android.service.dreams.DreamService" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <meta-data android:name="android.service.dream" android:resource="@xml/dream_info"/>
+        </service>
+
+        <activity
+            android:name=".dayDream.SetURL"
+            android:label="Dream URL"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".dayDream.SetURLInteractive"
+            android:label="Dream URL (Interactive)"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEND" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="text/plain" />
+            </intent-filter>
+        </activity>
+
+
     </application>
 
 </manifest>

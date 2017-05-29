@@ -25,6 +25,7 @@ import android.support.v17.leanback.widget.Presenter;
 import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
+import android.widget.Toast;
 
 import com.kimeeo.kAndroid.dataProvider.DataProvider;
 import com.kimeeo.kAndroidTV.R;
@@ -257,13 +258,16 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
     int totalTime=0;
     public void onEvent(String event)
     {
-        if(event.equals("start"))
+        if(event.equals("ad_start"))
+            Toast.makeText(getActivity(), "Video will play after this ad", Toast.LENGTH_LONG).show();
+
+
+        if(event.equals("video_start"))
         {
             start();
         }
-        else if(event.equals("progress"))
+        else if(event.equals("timeupdate"))
         {
-            start();
             mPlaybackControlsRow.setCurrentTimeLong((long)dmWebVideoView.currentTime*1000);
         }
         else if(event.equals("pause"))
@@ -272,9 +276,8 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
             notifyChanged(mPlayPauseAction);
             setFadingEnabled(false);
         }
-        else if(event.equals("play") || event.equals("playing"))
+        else if(event.equals("play"))
         {
-            start();
             mPlayPauseAction.setIcon(mPlayPauseAction.getDrawable(PlaybackControlsRow.PlayPauseAction.PAUSE));
             notifyChanged(mPlayPauseAction);
             setFadingEnabled(true);
@@ -284,10 +287,13 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
     protected void start() {
         if(totalTime==0) {
             totalTime =(int)dmWebVideoView.duration;
-            fragmentHelper.build();
-            fragmentHelper.next();
-            addPlaybackControlsRow();
-            loadCoverImage(mPlaybackControlsRow);
+            if(totalTime!=0) {
+                dmWebVideoView.setControls(false);
+                fragmentHelper.build();
+                fragmentHelper.next();
+                addPlaybackControlsRow();
+                loadCoverImage(mPlaybackControlsRow);
+            }
         }
     }
 
@@ -413,16 +419,9 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
 
     public void play(final String videoId) {
         this.videoId=videoId;
-        Handler h =new Handler();
-        Runnable r = new Runnable() {
-            @Override
-            public void run() {
-                dmWebVideoView.setVideoId(videoId);
-                dmWebVideoView.toggleControls();
-                dmWebVideoView.play();
-            }
-        };
-        h.postDelayed(r,3000);
+        dmWebVideoView.setVideoId(videoId);
+        dmWebVideoView.load();
+        dmWebVideoView.play();
     }
 
 

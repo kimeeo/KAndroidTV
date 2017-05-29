@@ -28,12 +28,13 @@ abstract public class AbstractDailymotionActivity extends Activity{
     private static final String TAG = "AbstractDailymotionActivity";
     AbstractDailymotionVideoPlayerFragment dailymotionVideoPlayerFragment;
 
+    DMWebVideoView webVideoView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout._dailymotion_playback_controls);
 
-        DMWebVideoView webVideoView = getDMWebVideoView();
+        webVideoView = getDMWebVideoView();
         dailymotionVideoPlayerFragment=createAbstractDailymotionVideoPlayerFragment(webVideoView);
 
 
@@ -48,6 +49,11 @@ abstract public class AbstractDailymotionActivity extends Activity{
 
     protected abstract AbstractDailymotionVideoPlayerFragment createAbstractDailymotionVideoPlayerFragment(DMWebVideoView youtubeTvView);
 
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        webVideoView.handleBackPress(this);
+    }
 
     @Override
     public void onDestroy() {

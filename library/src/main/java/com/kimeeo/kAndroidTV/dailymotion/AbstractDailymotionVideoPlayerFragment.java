@@ -92,11 +92,11 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
     final public boolean supportBackgroundChange(){return false;}
 
     public void setPlaybackQuality(int what) {
-        //setPlaybackQuality(dmWebVideoView.qualities.get(what));
+        setPlaybackQuality(qualities[what]);
     }
 
     public void setPlaybackQuality(String suggestedQuality) {
-        //dmWebVideoView.setPlaybackQuality(suggestedQuality);
+        dmWebVideoView.setQuality(suggestedQuality);
     }
 
     public void onActionClicked(Action action)
@@ -111,12 +111,9 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
             dmWebVideoView.seek((int)dmWebVideoView.currentTime-seekSize());
         }
         else if (action instanceof PlaybackControlsRow.HighQualityAction) {
-            String qualities = dmWebVideoView.qualities;
-            /*
-            List<VideoQuality> list=dmWebVideoView.qualities;
-            if(list!=null && list.size()>=2)
-                ((AbstractYoutubeActivity)getActivity()).openQualitySelector(youtubePlayer.getAvailableQualityLevels());
-                */
+            if(qualities!=null && qualities.length>=2)
+                ((AbstractDailymotionActivity)getActivity()).openQualitySelector(qualities);
+
         }
         else
         {
@@ -261,14 +258,30 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
         if(event.equals("ad_start"))
             Toast.makeText(getActivity(), "Video will play after this ad", Toast.LENGTH_LONG).show();
 
-
+        if(event.equals("video_end"))
+        {
+            getActivity().finish();
+        }
         if(event.equals("video_start"))
         {
             start();
         }
+        else if(event.equals("durationchange"))
+        {
+            if(totalTime!=0 && totalTime !=(int)dmWebVideoView.duration) {
+                totalTime = (int) dmWebVideoView.duration;
+                if(mPlaybackControlsRow!=null) {
+                    mPlaybackControlsRow.setTotalTimeLong(totalTime * 1000);
+                    try {
+                        fragmentHelper.getRowsAdapter().notifyItemRangeChanged(0,1);
+                    }catch (Exception e){}
+                }
+            }
+        }
         else if(event.equals("timeupdate"))
         {
             mPlaybackControlsRow.setCurrentTimeLong((long)dmWebVideoView.currentTime*1000);
+
         }
         else if(event.equals("pause"))
         {
@@ -282,7 +295,16 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
             notifyChanged(mPlayPauseAction);
             setFadingEnabled(true);
         }
+
+        if(event.equals("qualitiesavailable"))
+        {
+            String qualitiesString = dmWebVideoView.qualities;
+            if(qualitiesString.indexOf(",")!=-1)
+                qualities=qualitiesString.split(",");
+        }
+
     }
+    String[] qualities;
 
     protected void start() {
         if(totalTime==0) {

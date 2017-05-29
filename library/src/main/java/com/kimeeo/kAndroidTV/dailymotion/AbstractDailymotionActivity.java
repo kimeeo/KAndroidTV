@@ -88,10 +88,10 @@ abstract public class AbstractDailymotionActivity extends Activity{
         }
     }
 
-    public void openQualitySelector(List<String> availableQualityLevels) {
+    public void openQualitySelector(String[] qualities) {
         DialogActivity.Builder builder=new DialogActivity.Builder(this).title(getSelectQualityTitle());
-        for (int i = 0; i < availableQualityLevels.size(); i++) {
-            builder.addAction(i,availableQualityLevels.get(i));
+        for (int i = 0; i < qualities.length; i++) {
+            builder.addAction(i,qualities[i]);
         }
         builder.backgroundColor(Color.TRANSPARENT);
         builder.open();

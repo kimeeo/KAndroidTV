@@ -61,11 +61,6 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
     private YoutubeTvView youtubePlayer;
     private List<Action> secondaryActionsList;
     private String videoId;
-    private MediaSession mSession;
-
-    private class MediaSessionCallback extends MediaSession.Callback {
-
-    }
     public AbstractYoutubeVideoPlayerFragment(YoutubeTvView view)
     {
         this.youtubePlayer=view;

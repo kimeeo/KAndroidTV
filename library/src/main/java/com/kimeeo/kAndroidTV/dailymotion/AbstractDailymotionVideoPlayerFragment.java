@@ -53,6 +53,7 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
     private DMWebVideoView dmWebVideoView;
     private List<Action> secondaryActionsList;
     private String videoId;
+    private MediaSession mVideoSession;
     public AbstractDailymotionVideoPlayerFragment(DMWebVideoView dmWebVideoView)
     {
         this.dmWebVideoView=dmWebVideoView;
@@ -446,6 +447,9 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
         dmWebVideoView.play();
     }
 
+    public void title(final String title) {
+        dmWebVideoView.setTitle(title);
+    }
 
     public List<Action> getSecondaryActionsList() {
         return secondaryActionsList;

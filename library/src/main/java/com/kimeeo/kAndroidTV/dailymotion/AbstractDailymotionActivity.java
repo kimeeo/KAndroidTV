@@ -64,23 +64,15 @@ abstract public class AbstractDailymotionActivity extends Activity{
         DMWebVideoView youtubeTvView = (DMWebVideoView) findViewById(R.id.dmWebVideoView);
         return youtubeTvView;
     }
-
     @Override
     public void onPause() {
         super.onPause();
-        if (dailymotionVideoPlayerFragment.isPlaying()) {
-            if (!requestVisibleBehind(true)) {
-                stopPlayback();
-            }
-        } else {
-            requestVisibleBehind(false);
-        }
+        requestVisibleBehind(true);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        dailymotionVideoPlayerFragment.closePlayer();
     }
     private void stopPlayback() {
         if (dailymotionVideoPlayerFragment != null) {

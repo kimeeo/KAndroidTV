@@ -26,7 +26,7 @@ public class DailymotionActivityRow extends AbstractDailymotionActivity{
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        play("x5nkh44_3");
+        play("x5nkh44");
     }
 }
 

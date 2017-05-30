@@ -67,19 +67,12 @@ abstract public class AbstractYoutubeActivity extends Activity{
     @Override
     public void onPause() {
         super.onPause();
-        if (youtubeVideoPlayerFragment.isPlaying()) {
-            if (!requestVisibleBehind(true)) {
-                stopPlayback();
-            }
-        } else {
-            requestVisibleBehind(false);
-        }
+        requestVisibleBehind(true);
     }
 
     @Override
     protected void onStop() {
         super.onStop();
-        youtubeVideoPlayerFragment.closePlayer();
     }
     private void stopPlayback() {
         if (youtubeVideoPlayerFragment != null) {

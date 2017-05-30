@@ -25,6 +25,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.graphics.PorterDuff;
 import android.net.Uri;
@@ -46,6 +47,7 @@ import android.preference.PreferenceManager;
 import android.widget.TextView;
 import com.kimeeo.kAndroidTV.Demo.R;
 public class Screensaver extends DreamService {
+    /*
     private class LinkLauncher extends WebViewClient {
         @Override
         public boolean shouldOverrideUrlLoading(WebView view, String url) {
@@ -55,15 +57,22 @@ public class Screensaver extends DreamService {
             finish();
             return true;
         }
-    }
+    }*/
 
     @Override
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
-        setContentView(R.layout.example_saydream);
+        //setContentView(R.layout.example_saydream);
 
         setFullscreen(true);
+
+        TextView txtView = new TextView(this);
+        setContentView(txtView);
+        txtView.setText("Hello DayDream world from TechnoTalkative.com !!");
+        txtView.setTextColor(Color.rgb(184, 245, 0));
+        txtView.setTextSize(30);
+
         /*
 
         final SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);

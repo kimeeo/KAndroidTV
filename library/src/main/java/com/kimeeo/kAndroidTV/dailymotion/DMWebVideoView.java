@@ -6,11 +6,17 @@ package com.kimeeo.kAndroidTV.dailymotion;
 import android.R;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.media.AudioManager;
+import android.media.MediaMetadata;
 import android.media.MediaPlayer;
+import android.media.session.MediaSession;
+import android.media.session.PlaybackState;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -26,9 +32,29 @@ import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 import android.widget.VideoView;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Set;
 
+import fr.bmartel.youtubetv.utils.WebviewUtils;
+
 public class DMWebVideoView extends WebView {
+
+    private final static String MEDIA_SESSION_TAG = "com.kimeeo.kAndroidTV.dailymotion.DMWebVideoView.MediaSession";
+    private String title;
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    @Override
+    public String getTitle() {
+        return title;
+    }
 
     public interface Listener {
 
@@ -49,7 +75,7 @@ public class DMWebVideoView extends WebView {
         }
 
     }
-
+    private MediaSession mMediaSession;
     private WebSettings mWebSettings;
     private WebChromeClient mChromeClient;
     private VideoView mCustomVideoView;
@@ -205,8 +231,8 @@ public class DMWebVideoView extends WebView {
                         case "start": ended = false; break;
                         case "loadedmetadata": error = null; break;
                         case "timeupdate":
-                        case "ad_timeupdate": currentTime = Double.parseDouble(uri.getQueryParameter("time")); break;
-                        case "progress": bufferedTime = Double.parseDouble(uri.getQueryParameter("time")); break;
+                        case "ad_timeupdate": currentTime = Double.parseDouble(uri.getQueryParameter("time")); playbackState= PlaybackState.STATE_PLAYING;break;
+                        case "progress": bufferedTime = Double.parseDouble(uri.getQueryParameter("time")); playbackState= PlaybackState.STATE_PLAYING; break;
                         case "durationchange": duration = Double.parseDouble(uri.getQueryParameter("duration")); break;
                         case "seeking": seeking = true; currentTime = Double.parseDouble(uri.getQueryParameter("time")); break;
                         case "seeked": seeking = false; currentTime = Double.parseDouble(uri.getQueryParameter("time")); break;
@@ -215,22 +241,28 @@ public class DMWebVideoView extends WebView {
                         case "ad_start":
                         case "ad_play":
                         case "playing":
-                        case "play": paused = false; break;
-                        case "end": ended = true; break;
+                        case "play": paused = false; playbackState= PlaybackState.STATE_PLAYING;break;
+                        case "end": ended = true; playbackState= PlaybackState.STATE_NONE;break;
                         case "ad_pause":
                         case "ad_end":
                         case "video_end":
-                        case "pause": paused = true; break;
+                        case "pause": paused = true; playbackState= PlaybackState.STATE_PAUSED;break;
                         case "error":
                             error = new DMWebVideoView.Error(uri.getQueryParameter("code"), uri.getQueryParameter("title"), uri.getQueryParameter("message"));
+                            playbackState= PlaybackState.STATE_ERROR;
                             break;
-                        case "rebuffer": rebuffering = parseBooleanFromAPI(uri.getQueryParameter("rebuffering")); break;
+                        case "rebuffer": rebuffering = parseBooleanFromAPI(uri.getQueryParameter("rebuffering"));
+                            playbackState= PlaybackState.STATE_BUFFERING;
+                            break;
                         case "qualitiesavailable": qualities = uri.getQueryParameter("qualities"); break;
                         case "qualitychange": quality = uri.getQueryParameter("quality"); break;
                         case "subtitlesavailable": subtitles = uri.getQueryParameter("subtitles"); break;
                         case "subtitlechange": subtitle = uri.getQueryParameter("subtitle"); break;
                     }
 
+                    if(event.equals("video_start")) {
+                        startSession();
+                    }
                     if (mListener != null) {
                         mListener.onEvent(event);
                     }
@@ -240,6 +272,109 @@ public class DMWebVideoView extends WebView {
                 }
             }
         });
+
+
+    }
+    int playbackState;
+    protected void startSession() {
+        try {
+            if (mMediaSession != null) {
+                mMediaSession.setActive(false);
+                mMediaSession.release();
+            }
+            mMediaSession = new MediaSession(getContext(), MEDIA_SESSION_TAG);
+            mMediaSession.setCallback(new MediaSession.Callback() {
+                @Override
+                public boolean onMediaButtonEvent(Intent mediaButtonIntent) {
+                    return true;
+                }
+            });
+
+            mMediaSession.setFlags(MediaSession.FLAG_HANDLES_MEDIA_BUTTONS | MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
+
+            if (!mMediaSession.isActive()) {
+                mMediaSession.setActive(true);
+            }
+        }catch (Exception e){}
+        if (mMediaSession != null) {
+
+            if(title==null || title.trim().equals(""))
+                title = "Play Video";
+            updateMediaSession(mVideoId,true,playbackState,(long)currentTime,1,title,mMediaSession);
+        }
+    }
+
+
+    private void updateMediaSession(String videoId,
+                                    final boolean rebuildMedia,
+                                    final int playbackState,
+                                    final long position,
+                                    final float speed,
+                                    final String title,
+                                    final MediaSession mediaSession) {
+        new AsyncTask<String, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(String... videoId) {
+
+                String thumbnailUrl="http://www.dailymotion.com/thumbnail/video/"+videoId[0];
+
+                MediaMetadata.Builder mediaBuilder = null;
+                boolean updateMetadata = false;
+
+                if (rebuildMedia) {
+                    Bitmap bitmap = null;
+                    try {
+                        URL url = new URL(thumbnailUrl);
+                        bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+                    } catch (IOException e) {
+
+                    }
+
+
+                    mediaBuilder = new MediaMetadata.Builder();
+                    mediaBuilder.putString(MediaMetadata.METADATA_KEY_TITLE, title);
+                    if (bitmap != null) {
+                        mediaBuilder.putBitmap(MediaMetadata.METADATA_KEY_ART, bitmap);
+                    }
+                    updateMetadata = true;
+                }
+
+                updateMediaSession(updateMetadata, mediaBuilder, mediaSession, playbackState, position, speed);
+
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+            }
+        }.execute(videoId);
+    }
+
+
+    public static void updateMediaSession(boolean updateMetadata,
+                                          MediaMetadata.Builder mediaBuilder,
+                                          final MediaSession mediaSession,
+                                          final int playbackState,
+                                          final long position,
+                                          final float speed) {
+
+        if (mediaSession.isActive()) {
+
+            if (updateMetadata) {
+                mediaSession.setMetadata(mediaBuilder.build());
+            }
+            PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
+            stateBuilder.setState(playbackState,
+                    position,
+                    speed);
+            mediaSession.setPlaybackState(stateBuilder.build());
+        }
+    }
+
+    public MediaSession getMediaSession() {
+        return mMediaSession;
     }
 
     private boolean parseBooleanFromAPI(String value) {
@@ -272,6 +407,7 @@ public class DMWebVideoView extends WebView {
         if (mExtraParameters != null && !mExtraParameters.equals("")) {
             url += "&" + mExtraParameters;
         }
+        url += "&fields=title";
 
         // DMLog.d(DMLog.STUFF, "loading " + url);
 
@@ -284,6 +420,13 @@ public class DMWebVideoView extends WebView {
             if (mCustomVideoView != null) {
                 mCustomVideoView.stopPlayback();
             }
+            if(mMediaSession!=null) {
+                PlaybackState.Builder stateBuilder = new PlaybackState.Builder();
+                stateBuilder.setState(PlaybackState.STATE_PAUSED,12,1);
+                mMediaSession.setPlaybackState(stateBuilder.build());
+                mMediaSession.setActive(false);
+            }
+
             mRootLayout.removeView(mVideoLayout);
             mViewCallback.onCustomViewHidden();
             ((Activity) getContext()).setVolumeControlStream(AudioManager.USE_DEFAULT_STREAM_TYPE);

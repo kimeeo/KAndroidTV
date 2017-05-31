@@ -1,5 +1,6 @@
 package com.kimeeo.kAndroidTV.youtube;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -58,18 +59,16 @@ import fr.bmartel.youtubetv.model.VideoState;
 
 abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener,IPlayerListener,IProgressUpdateListener,IBufferStateListener
 {
+    public YoutubeTvView getYoutubePlayer() {
+        return youtubePlayer;
+    }
+
     private YoutubeTvView youtubePlayer;
     private List<Action> secondaryActionsList;
     private String videoId;
     public AbstractYoutubeVideoPlayerFragment(YoutubeTvView view)
     {
         this.youtubePlayer=view;
-        /*
-        mSession=youtubePlayer.getMediaSession();
-        mSession.setCallback(new MediaSessionCallback());
-        mSession.setFlags(MediaSession.FLAG_HANDLES_TRANSPORT_CONTROLS);
-        mSession.setActive(true);
-        */
     }
     public AbstractYoutubeVideoPlayerFragment()
     {
@@ -128,6 +127,10 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             List<VideoQuality> list=youtubePlayer.getAvailableQualityLevels();
              if(list!=null && list.size()>=2)
                 ((AbstractYoutubeActivity)getActivity()).openQualitySelector(youtubePlayer.getAvailableQualityLevels());
+        }
+        else if (action instanceof PlaybackControlsRow.PictureInPictureAction) {
+            if(getActivity() instanceof AbstractYoutubeActivity && ((AbstractYoutubeActivity) getActivity()).supportsPictureInPicture())
+                getActivity().enterPictureInPictureMode();
         }
         else
         {
@@ -344,7 +347,13 @@ abstract public class AbstractYoutubeVideoPlayerFragment extends PlaybackOverlay
             mPlaybackControlsRow.setSecondaryActionsAdapter(mSecondaryActionsAdapter);
             playbackControlsRowPresenter.setSecondaryActionsHidden(false);
             for (int i = 0; i < list.size(); i++) {
-                mSecondaryActionsAdapter.add(list.get(i));
+                if(list.get(i) instanceof PlaybackControlsRow.PictureInPictureAction )
+                {
+                    if(getActivity() instanceof AbstractYoutubeActivity && ((AbstractYoutubeActivity) getActivity()).supportsPictureInPicture())
+                        mSecondaryActionsAdapter.add(list.get(i));
+                }
+                else
+                    mSecondaryActionsAdapter.add(list.get(i));
             }
         }
     }

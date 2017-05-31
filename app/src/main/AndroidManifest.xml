@@ -33,10 +33,23 @@
         <activity android:name=".VerticalGridActivity" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".DetailsActivity" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".PageActivity" android:theme="@style/Theme.Leanback"/>
+
+
+        <activity android:name=".RecommendationActivity" android:theme="@style/Theme.Leanback"/>
+
         <activity android:name=".YoutubeActivityRow" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".YoutubeActivityDefault" android:theme="@style/Theme.Leanback"/>
-        <activity android:name=".DailymotionActivityRow" android:theme="@style/Theme.Leanback"/>
-        <activity android:name=".RecommendationActivity" android:theme="@style/Theme.Leanback"/>
+        <activity android:name=".DailymotionActivityRow" android:theme="@style/Theme.Leanback"
+            android:exported="true"
+            android:configChanges="screenSize|smallestScreenSize|screenLayout|orientation|layoutDirection"
+            android:launchMode="singleTask"
+            android:resizeableActivity="true"
+            android:supportsPictureInPicture="true"
+            />
+
+
+
+
 
 
         <service

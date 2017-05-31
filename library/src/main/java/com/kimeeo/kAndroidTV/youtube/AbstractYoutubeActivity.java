@@ -15,9 +15,12 @@
 package com.kimeeo.kAndroidTV.youtube;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.os.BuildCompat;
 
 import com.kimeeo.kAndroidTV.R;
 import com.kimeeo.kAndroidTV.dialog.DialogActivity;
@@ -68,7 +71,19 @@ abstract public class AbstractYoutubeActivity extends Activity{
     public void onPause() {
         super.onPause();
         requestVisibleBehind(true);
+        /*TODO
+        if (youtubeVideoPlayerFragment.isPlaying()) {
+            boolean isVisibleBehind = requestVisibleBehind(true);
+            boolean isPictureInPictureMode = supportsPictureInPicture() && isInPictureInPictureMode();
+            if (!isVisibleBehind && !isPictureInPictureMode)
+                youtubeVideoPlayerFragment.getYoutubePlayer().pause();
+        } else
+            requestVisibleBehind(true);
+            */
     }
+
+
+
 
     @Override
     protected void onStop() {
@@ -100,5 +115,10 @@ abstract public class AbstractYoutubeActivity extends Activity{
     }
     public String getSelectQualityTitle() {
         return getResources().getString(R.string._select_quality);
+    }
+
+    public boolean supportsPictureInPicture() {
+        return false;
+        //return BuildCompat.isAtLeastN() && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
     }
 }

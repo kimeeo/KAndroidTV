@@ -48,6 +48,7 @@ public class DailymotionVideoFragment extends AbstractDailymotionVideoPlayerFrag
         list.add(new PlaybackControlsRow.ThumbsDownAction(getActivity()));
         list.add(new PlaybackControlsRow.HighQualityAction(getActivity()));
         list.add(new PlaybackControlsRow.ClosedCaptioningAction(getActivity()));
+        list.add(new PlaybackControlsRow.PictureInPictureAction(getActivity()));
         setSecondaryActionsList(list);
         return list;
     }

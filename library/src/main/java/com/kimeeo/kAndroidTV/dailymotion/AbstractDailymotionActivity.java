@@ -16,8 +16,10 @@ package com.kimeeo.kAndroidTV.dailymotion;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.v4.os.BuildCompat;
 
 import com.kimeeo.kAndroidTV.R;
 import com.kimeeo.kAndroidTV.dialog.DialogActivity;
@@ -64,10 +66,20 @@ abstract public class AbstractDailymotionActivity extends Activity{
         DMWebVideoView youtubeTvView = (DMWebVideoView) findViewById(R.id.dmWebVideoView);
         return youtubeTvView;
     }
+
     @Override
     public void onPause() {
         super.onPause();
         requestVisibleBehind(true);
+        /* TODO
+        if (dailymotionVideoPlayerFragment.isPlaying()) {
+            boolean isVisibleBehind = requestVisibleBehind(true);
+            boolean isPictureInPictureMode = supportsPictureInPicture() && isInPictureInPictureMode();
+            if (!isVisibleBehind && !isPictureInPictureMode)
+                dailymotionVideoPlayerFragment.getDmWebVideoView().pause();
+        } else
+            requestVisibleBehind(true);
+        */
     }
 
     @Override
@@ -100,5 +112,8 @@ abstract public class AbstractDailymotionActivity extends Activity{
     }
     public String getSelectQualityTitle() {
         return getResources().getString(R.string._select_quality);
+    }
+    public boolean supportsPictureInPicture() {
+        return BuildCompat.isAtLeastN() && getPackageManager().hasSystemFeature(PackageManager.FEATURE_PICTURE_IN_PICTURE);
     }
 }

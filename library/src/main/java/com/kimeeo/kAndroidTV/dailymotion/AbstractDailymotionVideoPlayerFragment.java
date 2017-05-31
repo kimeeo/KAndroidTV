@@ -35,6 +35,7 @@ import com.kimeeo.kAndroidTV.core.DefaultArrayObjectAdapter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.core.RowBasedFragmentHelper;
 import com.kimeeo.kAndroidTV.core.WatcherArrayObjectAdapter;
+import com.kimeeo.kAndroidTV.youtube.AbstractYoutubeActivity;
 
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -50,6 +51,10 @@ import java.util.Map;
 
 abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOverlayFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener,DMWebVideoView.Listener
 {
+    public DMWebVideoView getDmWebVideoView() {
+        return dmWebVideoView;
+    }
+
     private DMWebVideoView dmWebVideoView;
     private List<Action> secondaryActionsList;
     private String videoId;
@@ -114,7 +119,10 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
         else if (action instanceof PlaybackControlsRow.HighQualityAction) {
             if(qualities!=null && qualities.length>=2)
                 ((AbstractDailymotionActivity)getActivity()).openQualitySelector(qualities);
-
+        }
+        else if (action instanceof PlaybackControlsRow.PictureInPictureAction) {
+            if(getActivity() instanceof AbstractDailymotionActivity && ((AbstractDailymotionActivity) getActivity()).supportsPictureInPicture())
+                getActivity().enterPictureInPictureMode();
         }
         else
         {
@@ -348,7 +356,13 @@ abstract public class AbstractDailymotionVideoPlayerFragment extends PlaybackOve
             mPlaybackControlsRow.setSecondaryActionsAdapter(mSecondaryActionsAdapter);
             playbackControlsRowPresenter.setSecondaryActionsHidden(false);
             for (int i = 0; i < list.size(); i++) {
-                mSecondaryActionsAdapter.add(list.get(i));
+                if(list.get(i) instanceof PlaybackControlsRow.PictureInPictureAction )
+                {
+                    if(getActivity() instanceof AbstractDailymotionActivity && ((AbstractDailymotionActivity) getActivity()).supportsPictureInPicture())
+                        mSecondaryActionsAdapter.add(list.get(i));
+                }
+                else
+                    mSecondaryActionsAdapter.add(list.get(i));
             }
         }
     }

@@ -12,6 +12,7 @@ public class Recommendation implements IRecommendation, Parcelable {
     private Bitmap image;
     private int id;
     private String title;
+    private String backgroundURL;
     private String imageUrl;
     private String description;
     private Bitmap backgroundBitmap;
@@ -53,6 +54,12 @@ public class Recommendation implements IRecommendation, Parcelable {
     public Bitmap getImage() {
         return image;
     }
+
+    @Override
+    public String getBackgroundURL() {
+        return backgroundURL;
+    }
+
     @Override
     public void setImage(Bitmap bitmap)
     {
@@ -63,6 +70,12 @@ public class Recommendation implements IRecommendation, Parcelable {
     public void setBackgroundBitmap(Bitmap backgroundBitmap) {
         this.backgroundBitmap=backgroundBitmap;
     }
+
+    @Override
+    public void setBackgroundURL(String backgroundURL) {
+        this.backgroundURL=backgroundURL;
+    }
+
     @Override
     public Bitmap getBackgroundBitmap() {
         return backgroundBitmap;
@@ -80,7 +93,7 @@ public class Recommendation implements IRecommendation, Parcelable {
         dest.writeString(this.title);
         dest.writeString(this.imageUrl);
         dest.writeString(this.description);
-        dest.writeParcelable(this.backgroundBitmap, flags);
+        dest.writeString(this.backgroundURL);
     }
 
     protected Recommendation(Parcel in) {
@@ -89,7 +102,7 @@ public class Recommendation implements IRecommendation, Parcelable {
         this.title = in.readString();
         this.imageUrl = in.readString();
         this.description = in.readString();
-        this.backgroundBitmap = in.readParcelable(Bitmap.class.getClassLoader());
+        this.backgroundURL = in.readString();
     }
 
     public static final Parcelable.Creator<Recommendation> CREATOR = new Parcelable.Creator<Recommendation>() {

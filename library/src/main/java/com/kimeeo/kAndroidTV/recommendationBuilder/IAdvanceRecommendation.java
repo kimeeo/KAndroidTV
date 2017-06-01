@@ -10,8 +10,6 @@ import android.support.annotation.DrawableRes;
 public interface IAdvanceRecommendation extends IRecommendation {
     Class getAcitivtyClass();
 
-    int getBackgroundWidth();
-    int getBackgroundHeight();
     int getCardWidth();
     int getCardHeight();
     boolean useCustomHeight();

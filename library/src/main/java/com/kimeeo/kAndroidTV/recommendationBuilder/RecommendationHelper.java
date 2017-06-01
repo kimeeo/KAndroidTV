@@ -1,5 +1,6 @@
 package com.kimeeo.kAndroidTV.recommendationBuilder;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -12,6 +13,7 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
 import com.kimeeo.kAndroidTV.R;
@@ -38,19 +40,26 @@ public class RecommendationHelper {
     private static final String RECOMMENDATION_DATA = "recommendationData";
     private static final String RECOMMENDATION_DATA_STRING = "recommendationDataString";
 
-    private Context mContext;
+    private Activity mContext;
     private NotificationManager mNotificationManager;
     private Class mResponseActivityClass;
     private List<IRecommendation> recommendationList =new ArrayList<>();
     private int fastLaneColorRes= R.color.fastlane_background;
+
     private int backgroundWidth= 1920;
     private int backgroundHeight= 1080;
+
     private int cardWidth= 500;
     private int cardHeight= 500;
     private int icon;
 
-    public RecommendationHelper(Context context, Class responseActivityClass) {
+    public RecommendationHelper(Activity context, Class responseActivityClass) {
         mContext = context;
+        DisplayMetrics mMetrics = new DisplayMetrics();
+        context.getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+        backgroundWidth = mMetrics.widthPixels;
+        backgroundHeight = mMetrics.heightPixels;
+
         this.mResponseActivityClass=responseActivityClass;
         if (mNotificationManager == null) {
             mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -60,17 +69,6 @@ public class RecommendationHelper {
 
     public RecommendationHelper fastLaneColorRes(@ColorRes int fastLaneColor) {
         this.fastLaneColorRes = fastLaneColor;
-        return this;
-    }
-
-
-    public RecommendationHelper backgroundWidth(int backgroundWidth) {
-        this.backgroundWidth = backgroundWidth;
-        return this;
-    }
-
-    public RecommendationHelper backgroundHeight(int backgroundHeight) {
-        this.backgroundHeight = backgroundHeight;
         return this;
     }
 
@@ -91,8 +89,10 @@ public class RecommendationHelper {
 
 
 
-
-
+    public IRecommendation getRecommendation(int index)
+    {
+        return recommendationList.get(index);
+    }
 
     public RecommendationHelper addRecommendation(IRecommendation recommendation)
     {
@@ -149,33 +149,35 @@ public class RecommendationHelper {
         }
     }
 
-    public void recommend(final IRecommendation recommendation) {
-        if(recommendation.getImage()!=null)
-        {
+    public void recommend( IRecommendation recommendation) {
+        if(recommendation.getImage()!=null && recommendation.getBackgroundBitmap()!=null)
             notifyRecommendation(recommendation);
-        }
-        else {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    int backgroundWidth=RecommendationHelper.this.backgroundWidth;
-                    int backgroundHeight=RecommendationHelper.this.backgroundHeight;
+        else
+            loadImagesTask(recommendation,recommendation.getImage()==null,recommendation.getBackgroundBitmap()==null);
+    }
+
+    private void loadImagesTask(final IRecommendation recommendation,final boolean loadCardImage,final boolean loadBackgroundImage) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(loadBackgroundImage)
+                {
+                    Bitmap backgroundBitmap = prepareBitmap(recommendation.getBackgroundURL(), backgroundWidth, backgroundHeight);
+                    recommendation.setBackgroundBitmap(backgroundBitmap);
+                }
+                if(loadCardImage) {
                     int cardWidth=RecommendationHelper.this.cardWidth;
                     int cardHeight=RecommendationHelper.this.cardHeight;
                     if(recommendation instanceof IAdvanceRecommendation && ((IAdvanceRecommendation)recommendation).useCustomHeight())
                     {
-                        backgroundWidth=((IAdvanceRecommendation)recommendation).getBackgroundWidth();
-                        backgroundHeight=((IAdvanceRecommendation)recommendation).getBackgroundHeight();
                         cardWidth=((IAdvanceRecommendation)recommendation).getCardWidth();
                         cardHeight=((IAdvanceRecommendation)recommendation).getCardHeight();
                     }
-                    Bitmap backgroundBitmap = prepareBitmap(recommendation.getImageUrl(), backgroundWidth, backgroundHeight);
-                    Bitmap cardImageBitmap = prepareBitmap(recommendation.getImageUrl(), cardWidth,cardHeight);
+                    Bitmap cardImageBitmap = prepareBitmap(recommendation.getImageUrl(), cardWidth, cardHeight);
                     recommendation.setImage(cardImageBitmap);
-                    recommendation.setBackgroundBitmap(backgroundBitmap);
-                    notifyRecommendation(recommendation);
-                }}).start();
-        }
+                }
+                notifyRecommendation(recommendation);
+            }}).start();
     }
 
     protected void notifyRecommendation(IRecommendation recommendation) {
@@ -190,7 +192,7 @@ public class RecommendationHelper {
                 .setBitmap(recommendation.getImage());
 
         if(recommendation.getBackgroundBitmap()!=null)
-        recommendationBuilder.setBackground(recommendation.getBackgroundBitmap());
+            recommendationBuilder.setBackground(recommendation.getBackgroundBitmap());
 
         if(recommendation instanceof IAdvanceRecommendation && ((IAdvanceRecommendation)recommendation).getFastLaneColorRes()>0)
             recommendationBuilder.setFastLaneColor(((IAdvanceRecommendation)recommendation).getFastLaneColorRes());

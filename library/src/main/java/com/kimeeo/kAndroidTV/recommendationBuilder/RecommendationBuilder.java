@@ -32,7 +32,7 @@ import com.kimeeo.kAndroidTV.R;
 public class RecommendationBuilder {
 
     private static final String TAG = RecommendationBuilder.class.getSimpleName();
-    private static final String BACKGROUND_URI_PREFIX = "content://com.corochann.androidtvapptutorial/";
+    private static final String BACKGROUND_URI_PREFIX = "content://com.kimeeo.kAndroidTV.recommendationBuilder/";
 
     private Context mContext;
 
@@ -43,7 +43,6 @@ public class RecommendationBuilder {
     private String mTitle;
     private String mDescription;
     private Bitmap mCardImageBitmap;
-    private String mBackgroundUri;
     private Bitmap mBackgroundBitmap;
     private String mGroupKey;
     private String mSort;
@@ -88,12 +87,6 @@ public class RecommendationBuilder {
         return this;
     }
 
-
-    public RecommendationBuilder setBackground(String uri) {
-        mBackgroundUri = uri;
-        return this;
-    }
-
     public RecommendationBuilder setBackground(Bitmap bitmap) {
         mBackgroundBitmap = bitmap;
         return this;
@@ -114,22 +107,22 @@ public class RecommendationBuilder {
         Bundle extras = new Bundle();
         File bitmapFile = getNotificationBackground(mContext, mId);
 
-        if (mBackgroundBitmap != null) {
-            extras.putString(Notification.EXTRA_BACKGROUND_IMAGE_URI,Uri.parse(BACKGROUND_URI_PREFIX + Integer.toString(mId)).toString());
-        } else {
-        }
-
         mGroupKey = (mId < 3) ? "Group1" : (mId < 5) ? "Group2" : "Group3";
         mSort = (mId < 3) ? "1.0" : (mId < 5) ? "0.7" : "0.3";
 
-        try {
-            bitmapFile.createNewFile();
-            FileOutputStream fOut = new FileOutputStream(bitmapFile);
-            mBackgroundBitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut); // <- background bitmap must be created by mBackgroundUri, and not  mCardImageBitmap
-            fOut.flush();
-            fOut.close();
-        } catch (IOException ioe) {
-            Log.d(TAG, "Exception caught writing bitmap to file!", ioe);
+
+        if (mBackgroundBitmap != null) {
+            extras.putString(Notification.EXTRA_BACKGROUND_IMAGE_URI, Uri.parse(BACKGROUND_URI_PREFIX + Integer.toString(mId)).toString());
+
+            try {
+                bitmapFile.createNewFile();
+                FileOutputStream fOut = new FileOutputStream(bitmapFile);
+                mBackgroundBitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut); // <- background bitmap must be created by mBackgroundUri, and not  mCardImageBitmap
+                fOut.flush();
+                fOut.close();
+            } catch (IOException ioe) {
+                Log.d(TAG, "Exception caught writing bitmap to file!", ioe);
+            }
         }
 
         Notification notification = new NotificationCompat.BigPictureStyle(
@@ -142,16 +135,13 @@ public class RecommendationBuilder {
                         .setOngoing(true)
                         .setGroup(mGroupKey)
                         .setSortKey(mSort)
-                        .setColor(mFastLaneColor)
+                        .setColor(mContext.getResources().getColor(R.color.fastlane_background))
                         .setCategory(Notification.CATEGORY_RECOMMENDATION)
                         .setLargeIcon(mCardImageBitmap)
                         .setSmallIcon(mSmallIcon)
                         .setContentIntent(mIntent)
                         .setExtras(extras))
                 .build();
-
-        Log.d(TAG, "Building notification - " + this.toString());
-
         return notification;
     }
 
@@ -164,7 +154,6 @@ public class RecommendationBuilder {
                 ", mTitle='" + mTitle + '\'' +
                 ", mDescription='" + mDescription + '\'' +
                 ", mCardImageBitmap='" + mCardImageBitmap + '\'' +
-                ", mBackgroundUri='" + mBackgroundUri + '\'' +
                 ", mBackgroundBitmap='" + mBackgroundBitmap + '\'' +
                 ", mIntent=" + mIntent +
                 '}';
@@ -193,8 +182,7 @@ public class RecommendationBuilder {
         }
 
         @Override
-        public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
-                            String sortOrder) {
+        public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,String sortOrder) {
             return null;
         }
 
@@ -208,26 +196,15 @@ public class RecommendationBuilder {
          * content provider serving files that are saved locally when recommendations are built
          */
         public ParcelFileDescriptor openFile(Uri uri, String mode) throws FileNotFoundException {
-            Log.i(TAG, "openFile");
             int backgroundId = Integer.parseInt(uri.getLastPathSegment());
             File bitmapFile = getNotificationBackground(getContext(), backgroundId);
             return ParcelFileDescriptor.open(bitmapFile, ParcelFileDescriptor.MODE_READ_ONLY);
         }
     }
 
-    /**
-     * returns file path to store background bitmap image (caching)
-     * @param context
-     * @param notificationId
-     * @return the file path of background image
-     */
     private static File getNotificationBackground(Context context, int notificationId) {
         Log.i(TAG, "getNotificationBackground: " + context.getCacheDir() + "tmp" + Integer.toString(notificationId) + ".png");
         return new File(context.getCacheDir(), "tmp" + Integer.toString(notificationId) + ".png");
     }
-
-
-
-
 
 }

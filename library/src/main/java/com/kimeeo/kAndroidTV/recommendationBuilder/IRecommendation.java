@@ -11,8 +11,12 @@ public interface IRecommendation {
     String getTitle();
     String getDescription();
     Bitmap getImage();
+    String getBackgroundURL();
+    void setBackgroundURL(String backgroundURL);
+
     int getId();
     void setImage(Bitmap bitmap);
     Bitmap getBackgroundBitmap();
     void setBackgroundBitmap(Bitmap backgroundBitmap);
+
 }

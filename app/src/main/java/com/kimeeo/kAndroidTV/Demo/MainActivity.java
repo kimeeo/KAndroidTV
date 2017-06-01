@@ -17,20 +17,14 @@ package com.kimeeo.kAndroidTV.Demo;
 import android.app.Activity;
 import android.app.Fragment;
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.speech.tts.TextToSpeech;
-import android.support.v4.app.NotificationCompat;
 
 import com.kimeeo.kAndroidTV.Demo.fragments.BrowseFragment;
 import com.kimeeo.kAndroidTV.recommendationBuilder.IAdvanceRecommendation;
-import com.kimeeo.kAndroidTV.recommendationBuilder.IRecommendation;
 import com.kimeeo.kAndroidTV.recommendationBuilder.Recommendation;
-import com.kimeeo.kAndroidTV.recommendationBuilder.RecommendationFactory;
 import com.kimeeo.kAndroidTV.recommendationBuilder.RecommendationHelper;
-
-import java.util.Locale;
 
 import me.angrybyte.goose.Article;
 import me.angrybyte.goose.Configuration;
@@ -137,12 +131,12 @@ public class MainActivity extends Activity {
         recommendationFactory.recommend(1, recommendation, NotificationCompat.PRIORITY_HIGH,R.drawable.ic_android_black_24dp);
         */
 
-        RecommendationHelper recommendationHelper = new RecommendationHelper(getApplicationContext(),RecommendationActivity.class);
+        RecommendationHelper recommendationHelper = new RecommendationHelper(this,RecommendationActivity.class);
         recommendationHelper.icon(R.drawable.ic_android_black_24dp);
-        recommendationHelper.addRecommendation(1,"Title 1","https://i.ytimg.com/vi/ijOlFh0PT7Y/hqdefault.jpg","Details 1");
-        recommendationHelper.addRecommendation(2,"Title 2","https://i.ytimg.com/vi/OLtrfo6Ejbc/hqdefault.jpg","Details 6");
-        recommendationHelper.addRecommendation(3,"Title 3","https://i.ytimg.com/vi/pK7W5npkhho/hqdefault.jpg","Details 5");
-        recommendationHelper.addRecommendation(4,"Title 4","https://i.ytimg.com/vi/9fbrH7XOuLY/hqdefault.jpg","Details 4");
+        recommendationHelper.addRecommendation(1,"Title 1","https://i.ytimg.com/vi/ijOlFh0PT7Y/hqdefault.jpg","Details 1").getRecommendation(0).setBackgroundURL("https://i.ytimg.com/vi/ijOlFh0PT7Y/hqdefault.jpg");
+        recommendationHelper.addRecommendation(2,"Title 2","https://i.ytimg.com/vi/OLtrfo6Ejbc/hqdefault.jpg","Details 6").getRecommendation(1).setBackgroundURL("https://i.ytimg.com/vi/OLtrfo6Ejbc/hqdefault.jpg");
+        recommendationHelper.addRecommendation(3,"Title 3","https://i.ytimg.com/vi/pK7W5npkhho/hqdefault.jpg","Details 5").getRecommendation(2).setBackgroundURL("https://i.ytimg.com/vi/pK7W5npkhho/hqdefault.jpg");
+        recommendationHelper.addRecommendation(4,"Title 4","https://i.ytimg.com/vi/9fbrH7XOuLY/hqdefault.jpg","Details 4").getRecommendation(3).setBackgroundURL("https://i.ytimg.com/vi/9fbrH7XOuLY/hqdefault.jpg");
 
         recommendationHelper.addRecommendation(new AdvanceRecommendation(5,"Advance","https://i.ytimg.com/vi/CzLWdNfNj-4/hqdefault.jpg","Details 4"));
         recommendationHelper.recommendAll();
@@ -157,16 +151,6 @@ public class MainActivity extends Activity {
         @Override
         public Class getAcitivtyClass() {
             return null;
-        }
-
-        @Override
-        public int getBackgroundWidth() {
-            return 200;
-        }
-
-        @Override
-        public int getBackgroundHeight() {
-            return 200;
         }
 
         @Override

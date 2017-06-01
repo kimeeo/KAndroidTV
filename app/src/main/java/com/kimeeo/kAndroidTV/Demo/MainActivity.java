@@ -137,8 +137,9 @@ public class MainActivity extends Activity {
         recommendationHelper.addRecommendation(2,"Title 2","https://i.ytimg.com/vi/OLtrfo6Ejbc/hqdefault.jpg","Details 6").getRecommendation(1).setBackgroundURL("https://i.ytimg.com/vi/OLtrfo6Ejbc/hqdefault.jpg");
         recommendationHelper.addRecommendation(3,"Title 3","https://i.ytimg.com/vi/pK7W5npkhho/hqdefault.jpg","Details 5").getRecommendation(2).setBackgroundURL("https://i.ytimg.com/vi/pK7W5npkhho/hqdefault.jpg");
         recommendationHelper.addRecommendation(4,"Title 4","https://i.ytimg.com/vi/9fbrH7XOuLY/hqdefault.jpg","Details 4").getRecommendation(3).setBackgroundURL("https://i.ytimg.com/vi/9fbrH7XOuLY/hqdefault.jpg");
-
+/*
         recommendationHelper.addRecommendation(new AdvanceRecommendation(5,"Advance","https://i.ytimg.com/vi/CzLWdNfNj-4/hqdefault.jpg","Details 4"));
+        */
         recommendationHelper.recommendAll();
     }
     public static class AdvanceRecommendation extends Recommendation implements IAdvanceRecommendation

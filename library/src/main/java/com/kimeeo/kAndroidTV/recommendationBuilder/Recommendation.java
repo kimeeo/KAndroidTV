@@ -91,21 +91,23 @@ public class Recommendation implements IRecommendation, Parcelable {
         dest.writeParcelable(this.image, flags);
         dest.writeInt(this.id);
         dest.writeString(this.title);
+        dest.writeString(this.backgroundURL);
         dest.writeString(this.imageUrl);
         dest.writeString(this.description);
-        dest.writeString(this.backgroundURL);
+        dest.writeParcelable(this.backgroundBitmap, flags);
     }
 
     protected Recommendation(Parcel in) {
         this.image = in.readParcelable(Bitmap.class.getClassLoader());
         this.id = in.readInt();
         this.title = in.readString();
+        this.backgroundURL = in.readString();
         this.imageUrl = in.readString();
         this.description = in.readString();
-        this.backgroundURL = in.readString();
+        this.backgroundBitmap = in.readParcelable(Bitmap.class.getClassLoader());
     }
 
-    public static final Parcelable.Creator<Recommendation> CREATOR = new Parcelable.Creator<Recommendation>() {
+    public static final Creator<Recommendation> CREATOR = new Creator<Recommendation>() {
         @Override
         public Recommendation createFromParcel(Parcel source) {
             return new Recommendation(source);

@@ -236,7 +236,11 @@ public class RecommendationHelper {
         detailsIntent.putExtra(NOTIFICATION_ID, recommendation.getId());
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(mContext);
-        stackBuilder.addParentStack(mResponseActivityClass);
+        if(recommendation instanceof IAdvanceRecommendation && ((IAdvanceRecommendation)recommendation).getAcitivtyClass()!=null)
+            stackBuilder.addParentStack(((IAdvanceRecommendation)recommendation).getAcitivtyClass());
+        else
+            stackBuilder.addParentStack(mResponseActivityClass);
+
         stackBuilder.addNextIntent(detailsIntent);
         detailsIntent.setAction(Long.toString(recommendation.getId()));
         return stackBuilder.getPendingIntent(recommendation.getId(), PendingIntent.FLAG_UPDATE_CURRENT);

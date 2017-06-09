@@ -28,25 +28,15 @@ dependencies {
     })
     final SUPPORT_LIBRARY_VERSION = '25.3.0'
     compile "com.android.support:leanback-v17:$SUPPORT_LIBRARY_VERSION"
-
     final KANDROID_CORE_VERSION = 'V3.0.7Beta'
     compile ("com.github.kimeeo:KAndroid_core:$KANDROID_CORE_VERSION@aar"){
         transitive=true
     }
-
-
-
     final KANDROID_DATAPROVDER_VERSION = 'V3.0.7Beta'
     compile ("com.github.kimeeo:KAndroid_DataProvider:$KANDROID_DATAPROVDER_VERSION@aar"){
         transitive=true
     }
-
-
     testCompile 'junit:junit:4.12'
-
     //https://github.com/bertrandmartel/youtubetv
     compile 'fr.bmartel:youtubetv:1.2'
-//
-//    https://github.com/hitherejoe/LeanbackCards
-    //compile 'com.hitherejoe.leanback:leanbackcards:0.1.0'
 }

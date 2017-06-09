@@ -26,9 +26,6 @@ import com.kimeeo.kAndroidTV.recommendationBuilder.IAdvanceRecommendation;
 import com.kimeeo.kAndroidTV.recommendationBuilder.Recommendation;
 import com.kimeeo.kAndroidTV.recommendationBuilder.RecommendationHelper;
 
-import me.angrybyte.goose.Article;
-import me.angrybyte.goose.Configuration;
-import me.angrybyte.goose.ContentExtractor;
 
 /*
  * MainActivity class that loads MainFragment1
@@ -180,7 +177,7 @@ public class MainActivity extends Activity {
         }
     }
 
-
+/*
     private class DownloadWebPageTask extends AsyncTask<String, Void, Article> {
         @Override
         protected Article doInBackground(String... urls) {
@@ -202,8 +199,9 @@ public class MainActivity extends Activity {
         System.out.println(result);
     }
 };
+*/
 
-    private TextToSpeech tts;
+//    private TextToSpeech tts;
     @Override
     public boolean onSearchRequested() {
         startActivity(new Intent(this, SearchActivity.class));

@@ -30,6 +30,7 @@ public class ErrorActivity extends Activity implements OnboardingFragment.OnFini
     public static final String BACKGROUND_COLOR="backgroundColor";
     public static final String BACKGROUND_DRAWABLER_RES="backgroundDrawablerRes";
     public static final String REQUEST_CODE="requestCode";
+    public static final String BUTTON_CLICK="buttonClick";
 
 
     int requestCode;
@@ -74,6 +75,13 @@ public class ErrorActivity extends Activity implements OnboardingFragment.OnFini
     }
 
     protected void done() {
+        if(requestCode!=-1)
+        {
+            Intent intent = new Intent();
+            intent.putExtra(BUTTON_CLICK,true);
+            setResult(Activity.RESULT_OK, intent);
+        }
+        finish();
 
     }
     public void onBackPressed() {
@@ -85,6 +93,7 @@ public class ErrorActivity extends Activity implements OnboardingFragment.OnFini
         if(requestCode!=-1)
         {
             Intent intent = new Intent();
+            intent.putExtra(BUTTON_CLICK,false);
             setResult(Activity.RESULT_OK, intent);
         }
         finish();

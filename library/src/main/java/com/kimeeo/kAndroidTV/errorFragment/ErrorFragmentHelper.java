@@ -171,9 +171,6 @@ public class ErrorFragmentHelper {
         if(imageDrawable!=null)
             errorFragment.setImageDrawable(imageDrawable);
 
-
-
-
         if(onClickListener!=null) {
             errorFragment.setButtonClickListener(onClickListener);
             if(buttonText==null)

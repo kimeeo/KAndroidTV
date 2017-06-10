@@ -10,5 +10,5 @@ public interface IHeaderItem
 {
     String getID();
     String getName();
-    List<Object> getData();
+    List getData();
 }

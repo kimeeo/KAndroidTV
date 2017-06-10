@@ -41,10 +41,7 @@ public class MainActivity extends Activity {
         if (savedInstanceState == null) {
             Fragment fragment = new BrowseFragment();
             getFragmentManager().beginTransaction().replace(R.id.fragmentContainer, fragment).commit();
-
-
             recommendationDemo();
-
         }
         /*
         DownloadWebPageTask task = new DownloadWebPageTask();

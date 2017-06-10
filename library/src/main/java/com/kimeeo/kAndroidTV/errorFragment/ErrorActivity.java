@@ -102,7 +102,7 @@ public class ErrorActivity extends Activity implements OnboardingFragment.OnFini
         private int imageRes;
         private int backgroundColor;
         private int backgroundDrawablerRes;
-
+        private Class<?> errorActivityClass=ErrorActivity.class;
 
 
         public Builder(Activity activity)
@@ -112,6 +112,12 @@ public class ErrorActivity extends Activity implements OnboardingFragment.OnFini
 
         public Builder title(String value) {
             this.title=value;
+            return this;
+        }
+
+        public Builder errorActivityClass(Class<?> value)
+        {
+            this.errorActivityClass=value;
             return this;
         }
 
@@ -171,7 +177,7 @@ public class ErrorActivity extends Activity implements OnboardingFragment.OnFini
         }
         public void forceShow(int requestCode)
         {
-            Intent intent=new Intent(activity,ErrorActivity.class);
+            Intent intent=new Intent(activity,errorActivityClass);
             intent.putExtra(TITLE,title);
             intent.putExtra(MESSAGE,message);
             intent.putExtra(IMAGE_RES,imageRes);

@@ -29,6 +29,8 @@ import java.util.List;
 
 public class DialogActivity extends Activity implements DialogFragment.OnActionClicked {
 
+
+
     @Override public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState == null)
@@ -101,9 +103,9 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
     static final public String ACTIONS_DESCRIPTION ="actionsDescription";
 
     static final public int REQUEST_CODE =1222;
-    static public void openDialog(Activity activity, int[] actionsIDs, String[] actionsLabels,int[] actionsIcons,String[] actionsDescriptions,String title, String description,@DrawableRes int icon,@DrawableRes int background,int backgroundColor)
+    static public void openDialog(Activity activity,Class dialogActivityClass, int[] actionsIDs, String[] actionsLabels,int[] actionsIcons,String[] actionsDescriptions,String title, String description,@DrawableRes int icon,@DrawableRes int background,int backgroundColor)
     {
-        Intent intent=new Intent(activity,DialogActivity.class);
+        Intent intent=new Intent(activity,dialogActivityClass);
         intent.putExtra(TITLE,title);
         intent.putExtra(DESCRIPTION,description);
         intent.putExtra(ICON,icon);
@@ -116,6 +118,11 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
         intent.putExtra(BACKGROUND_COLOR,backgroundColor);
 
         activity.startActivityForResult(intent, REQUEST_CODE);
+    }
+
+    static public void openDialog(Activity activity,int[] actionsIDs, String[] actionsLabels,int[] actionsIcons,String[] actionsDescriptions,String title, String description,@DrawableRes int icon,@DrawableRes int background,int backgroundColor)
+    {
+        openDialog(activity,DialogActivity.class,actionsIDs,actionsLabels,actionsIcons,actionsDescriptions,title,description,icon,background,backgroundColor);
     }
     public static class Builder
     {
@@ -172,6 +179,12 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
             this.description =activity.getString(description);
             return this;
         }
+        public Builder dialogActivityClass(Class value)
+        {
+            this.dialogActivityClass =value;
+            return this;
+        }
+
         public Builder actions(List<Action> actions)
         {
             this.actions =actions;
@@ -222,6 +235,8 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
         }
 
 
+        private Class<?> dialogActivityClass = DialogActivity.class;
+
         public Builder open()
         {
             int[] actionsIDs =new int[actions.size()];
@@ -234,7 +249,7 @@ public class DialogActivity extends Activity implements DialogFragment.OnActionC
                 actionsIcons[i]=actions.get(i).getIcon();
                 actionsDescriptions[i]=actions.get(i).getDescription();
             }
-            openDialog(activity,actionsIDs,actionsLabels,actionsIcons,actionsDescriptions,title,description,icon,background,backgroundColor);
+            openDialog(activity,dialogActivityClass,actionsIDs,actionsLabels,actionsIcons,actionsDescriptions,title,description,icon,background,backgroundColor);
 
             return this;
         }

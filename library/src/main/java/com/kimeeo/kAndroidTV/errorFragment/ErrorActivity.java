@@ -110,12 +110,31 @@ public class ErrorActivity extends Activity implements OnboardingFragment.OnFini
             this.activity=activity;
         }
 
+        public Builder title(String value) {
+            this.title=value;
+            return this;
+        }
+
+        public Builder titleRes(@StringRes int value) {
+            this.title=activity.getString(value);
+            return this;
+        }
+
+
+        public Builder message(String value) {
+            this.message=value;
+            return this;
+        }
+
+        public Builder messageRes(@StringRes int value) {
+            this.message=activity.getString(value);
+            return this;
+        }
 
         public Builder buttonLabel(String value) {
             this.buttonLabel=value;
             return this;
         }
-
 
         public Builder buttonLabelRes(@StringRes int value) {
             this.buttonLabel=activity.getString(value);

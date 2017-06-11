@@ -211,7 +211,7 @@ abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment im
                 startEntranceTransition();
             }
         }, 500);
-        updateBackground(mDetailsBackground,data,getWindowWidth(),getWindowHeight());
+        updateBackground(mDetailsBackground,data);
     }
 
     protected void setImage(DetailsOverviewRow detailsOverview, Object data) {
@@ -262,7 +262,7 @@ abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment im
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
         return new ArrayObjectAdapter(presenter);
     }
-    protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data,int width,int height) {}
+    protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data) {}
     public Class getSearchActivity() {
         return null;
     }

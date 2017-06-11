@@ -18,7 +18,7 @@ import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
 abstract public class AbstractSmallDetailsWithRowsFragment extends AbstractDetailsWithRowsFragment implements BackgroundImageHelper.OnUpdate {
 
     private BackgroundImageHelper backgroundImageHelper;
-    //private DisplayMetrics mMetrics;
+    private DisplayMetrics mMetrics;
     @Override
     final public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
     {
@@ -33,6 +33,8 @@ abstract public class AbstractSmallDetailsWithRowsFragment extends AbstractDetai
     public BackgroundImageHelper getBackgroundImageHelper()
     {
         backgroundImageHelper = new BackgroundImageHelper(getActivity(),this);
+        mMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
         return backgroundImageHelper;
     }
     @Override
@@ -49,7 +51,7 @@ abstract public class AbstractSmallDetailsWithRowsFragment extends AbstractDetai
 
     final protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground, Object data) {
         if(backgroundImageHelper.getBackgroundManager()!=null)
-            updateDetailsBackground(backgroundImageHelper.getBackgroundManager(),data,getWindowWidth(),getWindowHeight());
+            updateDetailsBackground(backgroundImageHelper.getBackgroundManager(),data,mMetrics.widthPixels,mMetrics.heightPixels);
     }
 
     protected boolean getStyleLarge() {

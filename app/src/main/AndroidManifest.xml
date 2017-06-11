@@ -89,6 +89,12 @@
         </activity>
 
 
+        <provider
+            android:name=".BGContentProvider"
+            android:authorities="com.kimeeo.kAndroidTV.Demo.recommendationBuilder"
+            android:exported="true" />
+
+
     </application>
 
 </manifest>

@@ -10,6 +10,12 @@
         android:supportsRtl="true">
         <activity android:name=".dialog.DialogActivity" android:theme="@style/Theme.Leanback"/>
         <activity android:name=".onboardingFragment.OnBoardActivity" android:theme="@style/Theme.Leanback"/>
+        <activity android:name=".errorFragment.ErrorActivity" android:theme="@style/Theme.Leanback"/>
+
+        <provider
+            android:name=".recommendationBuilder.RecommendationBuilder$RecommendationBackgroundContentProvider"
+            android:authorities="com.kimeeo.kAndroidTV.recommendationBuilder"
+            android:exported="true" />
     </application>
 
 </manifest>

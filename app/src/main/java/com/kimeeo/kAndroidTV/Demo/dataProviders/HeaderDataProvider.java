@@ -63,13 +63,13 @@ public class HeaderDataProvider extends StaticDataProvider {
             this.name = name;
         }
 
-        public void setData(List<Object> data) {
+        public void setData(List data) {
             this.data = data;
         }
 
         private String id;
         private String name;
-        private List<Object> data;
+        private List data;
 
         @Override
         public String getID() {
@@ -82,7 +82,7 @@ public class HeaderDataProvider extends StaticDataProvider {
         }
 
         @Override
-        public List<Object> getData() {
+        public List getData() {
             return data;
         }
     }

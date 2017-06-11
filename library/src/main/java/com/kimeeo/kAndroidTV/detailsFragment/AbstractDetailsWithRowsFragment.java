@@ -32,6 +32,7 @@ import android.support.v17.leanback.widget.PresenterSelector;
 import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowHeaderPresenter;
 import android.support.v17.leanback.widget.RowPresenter;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,17 @@ import java.util.Map;
 
 abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener
 {
+    private int windowWidth;
+
+    public int getWindowHeight() {
+        return windowHeight;
+    }
+
+    private int windowHeight;
+
+    public int getWindowWidth() {
+        return windowWidth;
+    }
 
     @Override
     public boolean supportAutoPageLoader() {return true;}
@@ -102,6 +114,10 @@ abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment im
         super.onCreate(savedInstanceState);
         setupUi();
         setupUIElements();
+        DisplayMetrics mMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+        windowWidth=mMetrics.widthPixels;
+        windowHeight=mMetrics.heightPixels;
     }
     protected RowBasedFragmentHelper createBrowseFragmentHelper() {
         return new MyRowBasedFragmentHelper(this,this);
@@ -195,7 +211,7 @@ abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment im
                 startEntranceTransition();
             }
         }, 500);
-        updateBackground(mDetailsBackground,data);
+        updateBackground(mDetailsBackground,data,getWindowWidth(),getWindowHeight());
     }
 
     protected void setImage(DetailsOverviewRow detailsOverview, Object data) {
@@ -246,7 +262,7 @@ abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment im
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
         return new ArrayObjectAdapter(presenter);
     }
-    protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data) {}
+    protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground,Object data,int width,int height) {}
     public Class getSearchActivity() {
         return null;
     }

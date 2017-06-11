@@ -62,15 +62,28 @@ import java.util.Map;
 
 abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment implements RowBasedFragmentHelper.HelperProvider,OnActionClickedListener
 {
-    private int windowWidth;
+    private int windowWidth=-1;
 
     public int getWindowHeight() {
+        if(windowHeight==-1) {
+            DisplayMetrics mMetrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+            windowWidth = mMetrics.widthPixels;
+            windowHeight = mMetrics.heightPixels;
+        }
+
         return windowHeight;
     }
 
-    private int windowHeight;
+    private int windowHeight=-1;
 
     public int getWindowWidth() {
+        if(windowWidth==-1) {
+            DisplayMetrics mMetrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
+            windowWidth = mMetrics.widthPixels;
+            windowHeight = mMetrics.heightPixels;
+        }
         return windowWidth;
     }
 
@@ -114,10 +127,7 @@ abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment im
         super.onCreate(savedInstanceState);
         setupUi();
         setupUIElements();
-        DisplayMetrics mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-        windowWidth=mMetrics.widthPixels;
-        windowHeight=mMetrics.heightPixels;
+
     }
     protected RowBasedFragmentHelper createBrowseFragmentHelper() {
         return new MyRowBasedFragmentHelper(this,this);

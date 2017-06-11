@@ -34,7 +34,6 @@ abstract public class WebViewFragment extends Fragment implements BrowseFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         FrameLayout root = new FrameLayout(getActivity());
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.MATCH_PARENT,FrameLayout.LayoutParams.MATCH_PARENT);
-        lp.setMarginStart(32);
         mWebview = new WebView(getActivity());
         mWebview.setWebViewClient(new WebViewClient());
         mWebview.getSettings().setJavaScriptEnabled(true);

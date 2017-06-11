@@ -17,14 +17,10 @@ import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
 import com.kimeeo.kAndroidTV.dailymotion.AbstractDailymotionVideoPlayerFragment;
 import com.kimeeo.kAndroidTV.dailymotion.DMWebVideoView;
-import com.kimeeo.kAndroidTV.detailsFragment.AbstractDetailsFragment;
-import com.kimeeo.kAndroidTV.youtube.AbstractYoutubeVideoPlayerFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
-import fr.bmartel.youtubetv.YoutubeTvView;
 
 /**
  * Created by BhavinPadhiyar on 5/18/17.

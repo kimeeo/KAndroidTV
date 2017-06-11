@@ -3,7 +3,6 @@ package com.kimeeo.kAndroidTV.Demo.fragments;
 import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.support.annotation.NonNull;
-import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.DetailsFragmentBackgroundController;
 import android.support.v17.leanback.widget.Action;
 import android.support.v17.leanback.widget.ArrayObjectAdapter;
@@ -30,8 +29,7 @@ import com.kimeeo.kAndroidTV.Demo.presenter.Row1PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.presenter.Row2PresenterSelector;
 import com.kimeeo.kAndroidTV.Demo.presenter.TextCardPresenter;
 import com.kimeeo.kAndroidTV.core.IHeaderItem;
-import com.kimeeo.kAndroidTV.detailsFragment.AbstractDetailsFragment;
-import com.kimeeo.kAndroidTV.detailsFragment.AbstractSmallDetailsFragment;
+import com.kimeeo.kAndroidTV.detailsFragment.AbstractDetailsWithRowsFragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +39,7 @@ import java.util.List;
  * Created by BhavinPadhiyar on 5/18/17.
  */
 
-public class DetailsFullFragment extends AbstractDetailsFragment {
+public class DetailsFullFragment extends AbstractDetailsWithRowsFragment {
 
 
     @NonNull

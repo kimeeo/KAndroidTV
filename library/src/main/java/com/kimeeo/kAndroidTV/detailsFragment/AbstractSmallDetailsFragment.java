@@ -1,74 +1,55 @@
 package com.kimeeo.kAndroidTV.detailsFragment;
 
-import android.graphics.BitmapFactory;
 import android.support.annotation.ColorRes;
+import android.support.annotation.NonNull;
 import android.support.v17.leanback.app.BackgroundManager;
 import android.support.v17.leanback.app.DetailsFragmentBackgroundController;
+import android.support.v17.leanback.widget.ArrayObjectAdapter;
 import android.support.v17.leanback.widget.DetailsOverviewRowPresenter;
-import android.support.v17.leanback.widget.FullWidthDetailsOverviewRowPresenter;
-import android.support.v17.leanback.widget.FullWidthDetailsOverviewSharedElementHelper;
+import android.support.v17.leanback.widget.HeaderItem;
 import android.support.v17.leanback.widget.Presenter;
+import android.support.v17.leanback.widget.PresenterSelector;
+import android.support.v17.leanback.widget.Row;
 import android.support.v17.leanback.widget.RowPresenter;
 import android.util.DisplayMetrics;
 
+import com.kimeeo.kAndroid.dataProvider.DataProvider;
+import com.kimeeo.kAndroid.dataProvider.StaticDataProvider;
 import com.kimeeo.kAndroidTV.R;
 import com.kimeeo.kAndroidTV.core.BackgroundImageHelper;
+import com.kimeeo.kAndroidTV.core.IHeaderItem;
+
+import java.util.HashMap;
 
 /**
  * Created by BhavinPadhiyar on 5/24/17.
  */
 
-abstract public class AbstractSmallDetailsFragment extends AbstractDetailsFragment implements BackgroundImageHelper.OnUpdate {
-
-    private BackgroundImageHelper backgroundImageHelper;
-    private DisplayMetrics mMetrics;
-    @Override
-    final public void updateBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
-    {
-
+abstract public class AbstractSmallDetailsFragment extends AbstractSmallDetailsWithRowsFragment implements BackgroundImageHelper.OnUpdate {
+    final public String getFirstTimeLoaderMessage() {
+        return null;
     }
-
-    public void updateDetailsBackground(BackgroundManager mBackgroundManager, Object item, int width, int height)
-    {
-
-    }
+    @NonNull
     @Override
-    public BackgroundImageHelper getBackgroundImageHelper()
-    {
-        backgroundImageHelper = new BackgroundImageHelper(getActivity(),this);
-        mMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(mMetrics);
-        return backgroundImageHelper;
+    final public DataProvider createDataProvider() {
+        DataProvider dataProvider = new StaticDataProvider();
+        dataProvider.setNextEnabled(false);
+        dataProvider.setRefreshEnabled(false);
+        dataProvider.setCanLoadNext(false);
+        dataProvider.setCanLoadRefresh(false);
+        return dataProvider;
     }
     @Override
-    public boolean supportBackgroundChange(){return true;}
-
+    final protected Presenter getCardPresenterSelector() {
+        return null;
+    }
     @Override
-    protected RowPresenter createActionDetailedViewPresenter() {
-        DetailsOverviewRowPresenter detailsRowPresenter = createDetailsOverviewRowPresenter(createDetailsDescriptionPresenter());
-        if(getDetailsBGColorRes()!=-1)
-            detailsRowPresenter.setBackgroundColor(getResources().getColor(getDetailsBGColorRes()));
-        detailsRowPresenter.setStyleLarge(getStyleLarge());
-        return detailsRowPresenter;
+    final public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
+        return null;
     }
-
-    final protected void updateBackground(DetailsFragmentBackgroundController mDetailsBackground, Object data) {
-        if(backgroundImageHelper.getBackgroundManager()!=null)
-            updateDetailsBackground(backgroundImageHelper.getBackgroundManager(),data,mMetrics.widthPixels,mMetrics.heightPixels);
+    final public Row getListRow(IHeaderItem headerItem, HeaderItem header, ArrayObjectAdapter listRowAdapter) {
+        return null;
     }
-
-    protected boolean getStyleLarge() {
-        return true;
-    }
-
-    @ColorRes
-    protected int getDetailsBGColorRes() {
-        return R.color.fastlane_background;
-    }
-
-    protected  DetailsOverviewRowPresenter createDetailsOverviewRowPresenter(Presenter presenter)
-    {
-        return new DetailsOverviewRowPresenter(presenter);
-    }
-
+    @Override
+    final protected HashMap<Class<?>, Object> getClassPresenterMap() {return null;}
 }

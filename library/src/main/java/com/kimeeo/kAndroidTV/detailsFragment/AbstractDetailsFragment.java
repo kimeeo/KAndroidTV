@@ -54,10 +54,6 @@ abstract public class AbstractDetailsFragment extends AbstractDetailsWithRowsFra
         return dataProvider;
     }
     @Override
-    final protected Presenter getCardPresenterSelector() {
-        return null;
-    }
-    @Override
     final public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
         return null;
     }

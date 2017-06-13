@@ -40,10 +40,6 @@ abstract public class AbstractSmallDetailsFragment extends AbstractSmallDetailsW
         return dataProvider;
     }
     @Override
-    final protected Presenter getCardPresenterSelector() {
-        return null;
-    }
-    @Override
     final public PresenterSelector getRowItemPresenterSelector(IHeaderItem headerItem) {
         return null;
     }

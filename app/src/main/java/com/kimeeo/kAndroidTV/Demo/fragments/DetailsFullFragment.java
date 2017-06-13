@@ -48,10 +48,7 @@ public class DetailsFullFragment extends AbstractDetailsWithRowsFragment {
         return new HeaderDataProvider();
     }
 
-    @Override
-    protected Presenter getCardPresenterSelector() {
-        return new TextCardPresenter();
-    }
+
     protected  List<Action> createActionlist()
     {
         List<Action> list = new ArrayList<>();

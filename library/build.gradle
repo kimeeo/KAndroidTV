@@ -26,13 +26,13 @@ dependencies {
     androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
-    final SUPPORT_LIBRARY_VERSION = '25.3.0'
+    final SUPPORT_LIBRARY_VERSION = '25.4.0'
     compile "com.android.support:leanback-v17:$SUPPORT_LIBRARY_VERSION"
-    final KANDROID_CORE_VERSION = 'V3.0.7Beta'
+    final KANDROID_CORE_VERSION = 'Ant-V1.0.0'
     compile ("com.github.kimeeo:KAndroid_core:$KANDROID_CORE_VERSION@aar"){
         transitive=true
     }
-    final KANDROID_DATAPROVDER_VERSION = 'V3.0.7Beta'
+    final KANDROID_DATAPROVDER_VERSION = 'Ant-V1.0.0'
     compile ("com.github.kimeeo:KAndroid_DataProvider:$KANDROID_DATAPROVDER_VERSION@aar"){
         transitive=true
     }

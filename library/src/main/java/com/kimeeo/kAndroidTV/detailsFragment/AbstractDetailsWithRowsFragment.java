@@ -268,7 +268,6 @@ abstract public class AbstractDetailsWithRowsFragment extends DetailsFragment im
     abstract protected FullWidthDetailsOverviewRowPresenter createDetailsRowPresenter(Presenter detailsDescriptionPresenter);
     abstract protected Presenter createDetailsDescriptionPresenter();
 
-    abstract protected Presenter getCardPresenterSelector();
     public ArrayObjectAdapter getRowArrayObjectAdapter(IHeaderItem headerItem,Presenter presenter) {
         return new ArrayObjectAdapter(presenter);
     }

@@ -40,7 +40,7 @@ public class RecommendationHelper {
     private static final String RECOMMENDATION_DATA = "recommendationData";
     private static final String RECOMMENDATION_DATA_STRING = "recommendationDataString";
 
-    private Activity mContext;
+    private Context mContext;
     private NotificationManager mNotificationManager;
     private Class mResponseActivityClass;
     private List<IRecommendation> recommendationList =new ArrayList<>();
@@ -65,6 +65,15 @@ public class RecommendationHelper {
             mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
         }
     }
+
+    public RecommendationHelper(Context context, Class responseActivityClass) {
+        mContext = context;
+        this.mResponseActivityClass=responseActivityClass;
+        if (mNotificationManager == null) {
+            mNotificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+    }
+
 
 
     public RecommendationHelper fastLaneColorRes(@ColorRes int fastLaneColor) {
